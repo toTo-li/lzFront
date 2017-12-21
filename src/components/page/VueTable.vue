@@ -64,6 +64,8 @@
         },
         methods: {
             changePage(values) {
+                console.log(values);
+                console.log(this.query);
                 this.information.pagination.per_page = values.perpage;
                 this.information.data = this.information.data;
             },
@@ -82,11 +84,19 @@
             }
         },
         beforeMount(){
+            console.log(11111);
             if(process.env.NODE_ENV === 'development'){
                 this.url = '/ms/table/source';
             };
             axios.get(this.url).then( (res) => {
                 this.information = res.data;
+            })
+        },
+        updated(){
+            this.$nextTick(function () {
+                // Code that will run only after the
+                // entire view has been re-rendered
+                console.log(23123123);
             })
         }
     }
