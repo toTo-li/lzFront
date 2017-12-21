@@ -12,8 +12,8 @@
 			  	添加用户的表单部分
 			  	:model="ruleForm"	数据绑定
 			  	:rules="rules"	验证规则
-			  	ref="ruleForm"  ref被用来给元素或子组件注册引用信息。引用信息将会注册在父组件的 $refs对象上		可以获取表单的每个元素以进行验证 
-			  	
+			  	ref="ruleForm"  ref被用来给元素或子组件注册引用信息。引用信息将会注册在父组件的 $refs对象上		可以获取表单的每个元素以进行验证
+
 			  	prop="name"		表单控件相对应的验证规则
 			  -->
 			  <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
@@ -22,7 +22,7 @@
 				  </el-form-item>
 				  <el-form-item label="角色" prop="role">
 				    <el-select v-model="roleValue" placeholder="请选择角色权限">
-				      <el-option 
+				      <el-option
 				      	v-for="item in ruleForm.role"
 				      	:key="item.value"
 				      	:label="item.label"
@@ -35,7 +35,7 @@
 				  -->
 				  <el-form-item label="关联账号" prop="rAccount">
 				    <el-select v-model="accountValue" placeholder="请选择关联账号（可多选）">
-				      <el-option 
+				      <el-option
 				      	v-for="item in ruleForm.rAccount"
 				      	:key="item.value"
 				      	:label="item.label"
@@ -43,7 +43,7 @@
 				      	></el-option>
 				    </el-select>
 				  </el-form-item>
-				  
+
 				  <el-form-item label="联系人" prop="contact">
 				    <el-input  v-model="ruleForm.desc"></el-input>
 				  </el-form-item>
@@ -55,12 +55,12 @@
 				    <el-button @click="resetForm('ruleForm')">重置</el-button>
 				  </el-form-item>-->
 				</el-form>
-			  <!--弹出框的取消/保存部分-->			
+			  <!--弹出框的取消/保存部分-->
 			  <span slot="footer" class="dialog-footer">
 			    <el-button @click="dialogVisible = false">取 消</el-button>
 			    <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
 			  </span>
-			  
+
 			</el-dialog>
 	</div>
 </template>
@@ -104,7 +104,7 @@
 		        //角色的默认选项
 		        roleValue:'',
 		        //关联账号的默认选项，这里的value1要与下拉选项中v-model绑定，并且value1的值要与rAccount中的value值一样，记得value1不能放在ruleForm中，否则会找不到！
-		        accountValue:"",        
+		        accountValue:"",
 		        //表单控件验证规则
 		        rules: {
 		          name: [
@@ -132,7 +132,7 @@
 			      	//将弹出框关闭
 			      	this.dialogVisible = false;
 			      	//关闭后将数据提交
-			      	
+
 			    },
 			    //弹出框关闭前的确认
 			    handleClose(done) {
@@ -143,7 +143,7 @@
 			          .catch(_ => {});
 			    }
 		    }
-		
+
 	}
 </script>
 

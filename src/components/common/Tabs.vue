@@ -2,11 +2,20 @@
 	  <div>
 	  	<el-tabs v-model="activeName" @tab-click="handleClick">
 		    <el-tab-pane label="任务管理" name="first">
-		    		任务管理
+                    <v-task-manage-add></v-task-manage-add>
+                    <v-task-manage-list></v-task-manage-list>
 		    </el-tab-pane>
-		    <el-tab-pane label="库存查看" name="second">库存查看</el-tab-pane>
-		    <el-tab-pane label="任务审核" name="third">任务审核</el-tab-pane>
-		    <el-tab-pane label="报表" name="fourth">报表</el-tab-pane>
+		    <el-tab-pane label="库存查看" name="second">
+                    <v-stock-list></v-stock-list>
+            </el-tab-pane>
+		    <el-tab-pane label="任务审核" name="third">
+                    <v-task-check-list></v-task-check-list>
+            </el-tab-pane>
+		    <el-tab-pane label="报表" name="fourth">
+                    <v-task-list></v-task-list>
+
+                    <v-community-list></v-community-list>
+            </el-tab-pane>
 		    <el-tab-pane label="权限管理" name="fifth">
 		    		<v-user-list></v-user-list>
 		    </el-tab-pane>
@@ -15,10 +24,28 @@
 </template>
 
 <script>
-	import vUserList from '../page/PermissionsManage/UserList.vue' 
-	export default {
+//    权限管理
+	import vUserList from '../page/PermissionsManage/UserList.vue'
+//    报表
+    import vTaskList from '../page/ReportTable/TaskList.vue'
+    import vCommunityList from '../page/ReportTable/CommunityList.vue'
+//    库存查看
+    import vStockList from '../page/StockList/StockList.vue'
+//    任务审核
+    import vTaskCheckList from '../page/TaskList/TaskCheckList.vue'
+//    任务管理
+    import vTaskManageAdd from '../page/TaskManage/TaskManageAdd.vue'
+    import vTaskManageList from '../page/TaskManage/TaskManageList.vue'
+
+
+
+export default {
 		  components:{
-		  	vUserList
+		  	vUserList,
+            vTaskList,vCommunityList,
+            vStockList,
+            vTaskCheckList,
+            vTaskManageAdd,vTaskManageList
 		  },
 	    data() {
 	      return {
@@ -27,7 +54,7 @@
 	    },
 	    methods: {
 	      handleClick(tab, event) {
-	        console.log(tab, event);
+//	        console.log(tab, event);
 	      }
 	    }
 	  };

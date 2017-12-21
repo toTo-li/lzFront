@@ -1,48 +1,36 @@
 <template>
     <div class="table">
         <!--<div class="crumbs">-->
-            <!--<el-breadcrumb separator="/">-->
-                <!--<el-breadcrumb-item><i class="el-icon-menu"></i> 表格</el-breadcrumb-item>-->
-                <!--<el-breadcrumb-item>基础表格</el-breadcrumb-item>-->
-            <!--</el-breadcrumb>-->
+        <!--<el-breadcrumb separator="/">-->
+        <!--<el-breadcrumb-item><i class="el-icon-menu"></i> 表格</el-breadcrumb-item>-->
+        <!--<el-breadcrumb-item>基础表格</el-breadcrumb-item>-->
+        <!--</el-breadcrumb>-->
         <!--</div>-->
         <div class="handle-box">
-                <div>
-                    <span>每页显示：</span>
-                    <el-select v-model="select_per" placeholder="10" class="handle-select mr10" @change="selectChange">
-                        <el-option v-for="(item,index) in page_sizes"  :key="index" :label="item" :value="item">{{item}}</el-option>
-                    </el-select>
-                </div>
+            <div>
+                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>-<el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+            </div>
 
-                <div>
-                    <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                    <el-button type="primary" icon="search" @click="search">搜索</el-button>
-                </div>
+            <div>
+                <el-select v-model="select_per" placeholder="10" class="handle-select mr10">
+                    <el-option v-for="(item,index) in page_sizes"  :key="index" :label="item" :value="item">{{item}}</el-option>
+                </el-select>
+                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <el-button type="primary" icon="download" @click="search">下载</el-button>
+            </div>
 
         </div>
         <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-            <el-table-column prop="id" label="角色ID" width="80"></el-table-column>  <!-- type="selection" -->
-            <el-table-column prop="name" label="角色名称" sortable width="150">
+            <el-table-column prop="date" label="任务ID" width="120"></el-table-column>  <!-- type="selection" -->
+            <el-table-column prop="address" label="任务名称" sortable >
             </el-table-column>
-            <el-table-column prop="rolePermi" label="角色权限" width="120">
+            <el-table-column prop="name" label="发布次数" width="120">
             </el-table-column>
-            <!--<el-table-column prop="address" label="关联账号" :formatter="formatter" width="250">
-            </el-table-column>-->
-            <el-table-column label="操作" prop="opertion">
-                <template slot-scope="scope" >
-                    <el-button size="small"
-                               @click="handleEdit(scope.$index, scope.row)" v-if="scope.row.opertion.read">查看</el-button>
-                    <el-button size="small" type="danger"
-                               @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.update">修改</el-button>
-                    <el-button size="small" type="danger"
-                               @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.delete">删除</el-button>
-                    <!--<el-button size="small" type="danger"-->
-                               <!--@click="handleDelete(scope.$index, scope.row)">暂停</el-button>-->
-                </template>
+            <el-table-column prop="name" label="曝光数" width="120">
             </el-table-column>
-            <!--<el-table-column prop="name" label="角色权限" width="120">-->
-            <!--</el-table-column>-->
-
+            <el-table-column prop="name" label="点击数" width="120">
+            </el-table-column>
         </el-table>
         <!--<el-button type="primary" icon="delete" class="handle-del mr10 butMargin" @click="delAll">批量删除</el-button>-->
         <div class="pagination">
@@ -50,11 +38,10 @@
                 @current-change ="handleCurrentChange"
                 @size-change="pageSizeChange"
                 layout="sizes,prev, pager, next"
-                :total="total"
+                :total="1000"
                 :page-size="select_per"
                 :page-sizes="page_sizes"
-
-                >
+            >
             </el-pagination>
         </div>
     </div>
@@ -65,16 +52,24 @@
         data() {
             return {
                 url: './static/vuetable.json',
+//              存放数据
                 tableData: [],
+//              当前显示第几页
                 cur_page: 1,
+//              多选
                 multipleSelection: [],
+//
                 select_cate: '',
+//              每页显示条数
                 select_per:10,
+//              查找关键字
                 select_word: '',
                 del_list: [],
+//              搜索关键字
                 is_search: false,
-                page_sizes:[10,15,20,25,30],
-                total:1000
+//              设置每页显示的条数
+                page_sizes:[10,15,20,25,30]
+
             }
         },
         created(){
@@ -92,7 +87,10 @@
                         }
                     }
                     if(!is_del){
-                        if(self.select_word==""||d.name.indexOf(self.select_word) > -1){
+                        if(d.address.indexOf(self.select_cate) > -1 &&
+                            (d.name.indexOf(self.select_word) > -1 ||
+                                d.address.indexOf(self.select_word) > -1)
+                        ){
                             return d;
                         }
                     }
@@ -100,16 +98,12 @@
             }
         },
         methods: {
-            //          每页显示条数事件
-            selectChange(val){
-                this.pageSizeChange(val);
-            },
             pageSizeChange(val){
-                console.log(val);
+
                 this.select_per = val;
             },
             handleCurrentChange(val){
-                console.log(val);
+
                 this.cur_page = val;
                 this.getData();
             },
@@ -119,24 +113,9 @@
 //                    self.url = '/ms/table/list';
                     self.url = '/static/vuetable.json';
                 };
-                self.$axios.get("https://www.easy-mock.com/mock/5a2f6f336ce8af6869ec349d/example/role").then((res) => {
-                    self.tableData = res.data.data;
+                self.$axios.get(self.url, {page:self.cur_page}).then((res) => {
+                    self.tableData = res.data.list;
                 })
-            },
-            search(){
-                this.is_search = true;
-            },
-            formatter(row, column) {
-                return row.address;
-            },
-            filterTag(value, row) {
-                return row.tag === value;
-            },
-            handleEdit(index, row) {
-                this.$message('编辑第'+(index+1)+'行');
-            },
-            handleDelete(index, row) {
-                this.$message.error('删除第'+(index+1)+'行');
             },
             delAll(){
                 const self = this,
@@ -149,6 +128,9 @@
                 self.$message.error('删除了'+str);
                 self.multipleSelection = [];
             },
+            search(){
+                this.is_search = true;
+            },
             handleSelectionChange(val) {
                 console.log(val);
                 this.multipleSelection = val;
@@ -160,6 +142,8 @@
 <style scoped>
     .table{
         margin-top:10px;
+        overflow:hidden;
+        *zoom:1;
     }
     .handle-box{
         margin-bottom: 5px;
@@ -170,7 +154,7 @@
         width: 120px;
     }
     .handle-input{
-        width: 300px;
+        width: 150px;
         display: inline-block;
     }
     /*分页*/
