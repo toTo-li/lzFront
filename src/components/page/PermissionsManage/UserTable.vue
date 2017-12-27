@@ -41,11 +41,10 @@
                                @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.stop">暂停</el-button>
                 </template>
             </el-table-column>
-            <el-table-column prop="state" label="角色权限" width="120">
+            <el-table-column prop="state" label="状态" width="120">
                 <template slot-scope="scope">
                     <span v-if="scope.row.state">启用</span>
                     <span v-else>暂停</span>
-
                 </template>
             </el-table-column>
 

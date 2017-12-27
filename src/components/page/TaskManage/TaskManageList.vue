@@ -1,104 +1,98 @@
 <template>
-    <div class="table">
-        <!--<div class="crumbs">-->
-        <!--<el-breadcrumb separator="/">-->
-        <!--<el-breadcrumb-item><i class="el-icon-menu"></i> 表格</el-breadcrumb-item>-->
-        <!--<el-breadcrumb-item>基础表格</el-breadcrumb-item>-->
-        <!--</el-breadcrumb>-->
-        <!--</div>-->
-        <div class="handle-box">
-            <div>
-                <span>每页显示：</span>
-                <el-select v-model="select_per" placeholder="10" class="handle-select mr10" @change="selectChange">
-                    <el-option v-for="(item,index) in page_sizes"  :key="index" :label="item" :value="item">{{item}}</el-option>
-                </el-select>
-            </div>
-            <div>
-                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
-            </div>
-        </div>
-        <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-            <el-table-column prop="id" label="任务ID" width="80"></el-table-column>  <!-- type="selection" -->
-            <el-table-column prop="name" label="任务名称" sortable width="150">
-            </el-table-column>
-            <el-table-column prop="userPermi" label="投放类型" width="120">
-            </el-table-column>
-            <el-table-column prop="userPermi" label="发送时间点" width="240">
-            </el-table-column>
-            <el-table-column prop="userPermi" label="操作状态" width="120">
-            </el-table-column>
-            <el-table-column prop="userPermi" label="审核状态" width="120">
-            </el-table-column>
-            <!--<el-table-column prop="relateCount" label="关联账号" :formatter="formatter" width="250">-->
-                <!--<template slot-scope="scope">-->
-                    <!--<span v-for="item in scope.row.relateCount">{{item}}</span>-->
-                <!--</template>-->
-            <!--</el-table-column>-->
-            <el-table-column label="操作" prop="opertion">
-                <template slot-scope="scope">
-                    <el-button size="small"
-                               @click="handleEdit(scope, scope.row)" v-if="scope.row.opertion.read">查看</el-button>
-                    <el-button size="small" type="danger"
-                               @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.update">修改</el-button>
-                    <el-button size="small" type="danger"
-                               @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.delete">删除</el-button>
-                    <el-button size="small" type="danger"
-                               @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.stop">暂停</el-button>
-                </template>
-            </el-table-column>
-            <el-table-column prop="state" label="可用社群列表" width="120">
-                <template slot-scope="scope">
-                    <el-button size="small"
-                               @click="handleEdit(scope, scope.row)" >查看</el-button>
-                </template>
-            </el-table-column>
+    <div>
+        <el-button type="primary" @click="addTask">新建投放任务</el-button>
+        <div class="table">
 
-        </el-table>
-        <!--<el-button type="primary" icon="delete" class="handle-del mr10 butMargin" @click="delAll">批量删除</el-button>-->
-        <div class="pagination">
-            <el-pagination
-                @current-change ="handleCurrentChange"
-                @size-change="pageSizeChange"
-                layout="prev, pager, next"
-                :total="total"
-                :page-size="select_per"
-                :page-sizes="page_sizes"
-            >
-            </el-pagination>
-        </div>
-        <el-dialog
-            :visible.sync="dialogVisible"
-            width="20%"
-            :before-close="handleClose">
-            <h3>任务1可发送社群及时间点: </h3>
-            <el-table
-                :data="tableData3"
-                height="250"
-                style="width: 100%">
-                <el-table-column
-                    prop="date"
-                    label="群ID"
-                    width="380">
+            <div class="handle-box">
+                <div>
+                    <span>每页显示：</span>
+                    <el-select v-model="select_per" placeholder="10" class="handle-select mr10" @change="selectChange">
+                        <el-option v-for="(item,index) in page_sizes"  :key="index" :label="item" :value="item">{{item}}</el-option>
+                    </el-select>
+                </div>
+                <div>
+                    <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                    <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                </div>
+            </div>
+            <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+                <el-table-column prop="id" label="任务ID" width="80"></el-table-column>  <!-- type="selection" -->
+                <el-table-column prop="name" label="任务名称" sortable width="150">
                 </el-table-column>
-                <el-table-column
-                    prop="date"
-                    label="日期"
-                    width="380">
+                <el-table-column prop="userPermi" label="投放类型" width="120">
                 </el-table-column>
-                <el-table-column
-                    prop="name"
-                    label="发布状态"
-                >
+                <el-table-column prop="userPermi" label="发送时间点" width="240">
+                </el-table-column>
+                <el-table-column prop="userPermi" label="操作状态" width="120">
+                </el-table-column>
+                <el-table-column prop="userPermi" label="审核状态" width="120">
+                </el-table-column>
+
+                <el-table-column label="操作" prop="opertion">
+                    <template slot-scope="scope">
+                        <el-button size="small"
+                                   @click="handleEdit(scope, scope.row)" v-if="scope.row.opertion.read">查看</el-button>
+                        <el-button size="small" type="danger"
+                                   @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.update">修改</el-button>
+                        <el-button size="small" type="danger"
+                                   @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.delete">删除</el-button>
+                        <el-button size="small" type="danger"
+                                   @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.stop">暂停</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="state" label="可用社群列表" width="120">
+                    <template slot-scope="scope">
+                        <el-button size="small"
+                                   @click="handleEdit(scope, scope.row)" >查看</el-button>
+                    </template>
                 </el-table-column>
 
             </el-table>
-            <!--弹出框的取消/保存部分-->
-            <span slot="footer" class="dialog-footer">
+            <!--<el-button type="primary" icon="delete" class="handle-del mr10 butMargin" @click="delAll">批量删除</el-button>-->
+            <div class="pagination">
+                <el-pagination
+                    @current-change ="handleCurrentChange"
+                    @size-change="pageSizeChange"
+                    layout="prev, pager, next"
+                    :total="total"
+                    :page-size="select_per"
+                    :page-sizes="page_sizes"
+                >
+                </el-pagination>
+            </div>
+            <el-dialog
+                :visible.sync="dialogVisible"
+                width="20%"
+                :before-close="handleClose">
+                <h3>任务1可发送社群及时间点: </h3>
+                <el-table
+                    :data="tableData3"
+                    height="250"
+                    style="width: 100%">
+                    <el-table-column
+                        prop="date"
+                        label="群ID"
+                        width="380">
+                    </el-table-column>
+                    <el-table-column
+                        prop="date"
+                        label="日期"
+                        width="380">
+                    </el-table-column>
+                    <el-table-column
+                        prop="name"
+                        label="发布状态"
+                    >
+                    </el-table-column>
+
+                </el-table>
+                <!--弹出框的取消/保存部分-->
+                <span slot="footer" class="dialog-footer">
 			    <el-button type="primary" @click="submitForm()">确定</el-button>
 			  </span>
 
-        </el-dialog>
+            </el-dialog>
+        </div>
     </div>
 </template>
 
@@ -269,6 +263,10 @@
                         done();
                     })
                     .catch(_ => {});
+            },
+//            新建投放任务
+            addTask(){
+                this.$router.push("/addtask");
             }
         }
     }
