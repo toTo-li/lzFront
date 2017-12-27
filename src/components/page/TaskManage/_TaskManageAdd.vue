@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-button type="primary" @click="dialogVisible = true">新建投放任务</el-button>
+        <el-button type="primary" @click="addTask">新建投放任务</el-button>
         <!--
             添加用户的弹出框部分
         -->
@@ -8,6 +8,8 @@
             :visible.sync="dialogVisible"
             width="20%"
             :before-close="handleClose">
+
+
             <!--<v-new-task-pictures @submitClose="submitForm"></v-new-task-pictures>-->
             <el-form  label-width="110px" :rules="rules" :model="ruleForm" ref="ruleForm" >
                 <el-form-item label="任务名称:" prop="name">
@@ -32,51 +34,63 @@
                         placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
+
+                <el-form-item >
+                    <el-card class="box-card" v-for="(item,index) in cWuliao" :key="index" >
+                        <div slot="header" class="clearfix">
+                            <span>卡片名称</span>
+                            <el-button style="float: right; padding: 3px 0" type="text" @click="close(index)">X</el-button>
+                        </div>
+                        <div class="text item">
+
+                        </div>
+                    </el-card>
+                </el-form-item>
                 <el-form-item >
                     <el-button type="primary" @click="addWuLiao()">添加物料</el-button>
 
                 </el-form-item>
 
 
-                <el-form-item label="物料:" prop="name">
-                </el-form-item>
-                <el-form-item label="投放类型:" prop="type">
-                    <el-select v-model="ruleForm.type" placeholder="请选择">
-                        <el-option
-                            v-for="item in ruleForm.options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="落地页:" prop="showPage">
-                    <el-input  placeholder="请输入内容" v-model="ruleForm.showPage"></el-input>
-                </el-form-item>
-                <el-form-item label="文字:" prop="showPageDesc">
-                    <el-input
-                        type="textarea"
-                        :rows="2"
-                        placeholder="请输入内容"
-                        v-model="ruleForm.showPageDesc"
-                    ></el-input>
-                </el-form-item>
-                <el-form-item label="图片预览:" >
-                    <el-upload
-                        action="https://jsonplaceholder.typicode.com/posts/"
-                        list-type="picture-card"
-                        :on-preview="handlePictureCardPreview"
-                        :on-remove="handleRemove"
-                    >
-                        <i class="el-icon-plus"></i>
-                    </el-upload>
-                    <el-dialog :visible.sync="ruleForm.dialogVisible" size="tiny">
-                        <img width="100%" :src="ruleForm.dialogImageUrl" alt="">
-                    </el-dialog>
-                </el-form-item>
-                <el-form-item label="物料URL:" prop="wlUrl">
-                    <el-input  placeholder="请输入内容" v-model="ruleForm.wlUrl"></el-input>
-                </el-form-item>
+                <!--<el-form-item label="物料:" prop="name">-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="投放类型:" prop="type">-->
+                    <!--<el-select v-model="ruleForm.type" placeholder="请选择">-->
+                        <!--<el-option-->
+                            <!--v-for="item in ruleForm.options"-->
+                            <!--:key="item.value"-->
+                            <!--:label="item.label"-->
+                            <!--:value="item.value">-->
+                        <!--</el-option>-->
+                    <!--</el-select>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="落地页:" prop="showPage">-->
+                    <!--<el-input  placeholder="请输入内容" v-model="ruleForm.showPage"></el-input>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="文字:" prop="showPageDesc">-->
+                    <!--<el-input-->
+                        <!--type="textarea"-->
+                        <!--:rows="2"-->
+                        <!--placeholder="请输入内容"-->
+                        <!--v-model="ruleForm.showPageDesc"-->
+                    <!--&gt;</el-input>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="图片预览:" >-->
+                    <!--<el-upload-->
+                        <!--action="https://jsonplaceholder.typicode.com/posts/"-->
+                        <!--list-type="picture-card"-->
+                        <!--:on-preview="handlePictureCardPreview"-->
+                        <!--:on-remove="handleRemove"-->
+                    <!--&gt;-->
+                        <!--<i class="el-icon-plus"></i>-->
+                    <!--</el-upload>-->
+                    <!--<el-dialog :visible.sync="ruleForm.dialogVisible" size="tiny">-->
+                        <!--<img width="100%" :src="ruleForm.dialogImageUrl" alt="">-->
+                    <!--</el-dialog>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="物料URL:" prop="wlUrl">-->
+                    <!--<el-input  placeholder="请输入内容" v-model="ruleForm.wlUrl"></el-input>-->
+                <!--</el-form-item>-->
 
 
 
@@ -98,12 +112,13 @@
 </template>
 
 <script>
-    import vNewTaskPictures from './NewTask/NewTaskPictures.vue'
+    import vNewTaskPictures from './NewTaskPictures.vue'
     export default {
         data(){
             return {
                 //是否显示弹出框
                 dialogVisible: false,
+                innerVisible:false,
                 ruleForm:{
                     name:"",
                     description:"",
@@ -180,13 +195,7 @@
             }
         },
         methods:{
-            //添加用户的保存事件
-            submitForm(formName){
-                //将弹出框关闭
-                this.dialogVisible = false;
-                //关闭后将数据提交
 
-            },
             //弹出框关闭前的确认
             handleClose(done) {
                 this.$confirm('确认关闭？')
@@ -196,7 +205,7 @@
                     .catch(_ => {});
             },
             submitForm(){
-
+                this.dialogVisible = false;
                 this.$emit('submitClose');
             },
 //            图片预览
@@ -210,12 +219,20 @@
 //            添加物料
             addWuLiao(){
                 this.cWuliao = this.wuliaos;
+                this.innerVisible = true;
             },
 //            删除物料
             close(a){
                 this.cWuliao = this.cWuliao.filter(function(item,index){
                     return index!=a;
                 });
+            },
+//            新建投放任务
+            addTask(){
+                var currPath = this.$route.path;
+                console.log(currPath);
+                this.$router.push("/manage");
+//                this.dialogVisible = true;
             }
         },
         components:{
@@ -226,4 +243,27 @@
 </script>
 
 <style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .clearfix:before,
+    .clearfix:after {
+        display: table;
+        content: "";
+    }
+    .clearfix:after {
+        clear: both
+    }
+    .box-card {
+        width: 500px;
+        margin-bottom:20px;
+    }
+    .box-card:last-child{
+        margin-bottom:0px;
+    }
 </style>
