@@ -64,6 +64,8 @@
 //						}).then(function(res){
 //							console.log(res);
 //						});
+
+
                         if(self.ruleForm.username==self.formData.name){
                         	self.$router.push('/home');
                         }else{
