@@ -12,13 +12,14 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
                 </div>
-                <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名和密码随便填。</p>
+                <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名和密码随便填!</p>
             </el-form>
         </div>
     </div>
 </template>
 
 <script>
+    import * as types from "../../store/types";
     export default {
         data: function(){
         	 var checkName = (rule, value, callback)=>{
@@ -55,23 +56,32 @@
                 self.$refs[formName].validate((valid) => {
                     if (valid) {
 //                      localStorage.setItem('ms_username',self.ruleForm.username);
+                        
+						this.$axios.post("/users/login",{
+								username:self.ruleForm.username,
+                                password:self.ruleForm.password
+							}).then(function(res){
+                                if(res.data.token){
+                                    console.log(res.data);
+                                    // 将拿到的token存放到状态管理对象里面
+                                    self.$store.commit(types.LOGIN,res.data);
+                                    // 然后跳转页面，需要做用户验证
+                                    self.$router.push('/home');
+                                }else{
+                                    self.$message({
+                                        message: res.message,
+                                        type: 'warning'
+                                    });
+                                }
+						    },function(err){
+                                self.$message({
+                                        message: err,
+                                        type: 'warning'
+                                    });                               
+                            }).catch(function(error){
+                                console.log(error);
+                            });
 
-
-//						this.$axios.get("http://localhost:8088",{
-//							params:{
-//								name:self.ruleForm.username
-//							}
-//						}).then(function(res){
-//							console.log(res);
-//						});
-                        if(self.ruleForm.username==self.formData.name){
-                        	self.$router.push('/home');
-                        }else{
-                        	this.$message({
-					          message: '用户名错误!!!',
-					          type: 'warning'
-					        });
-                        }
                     } else {
                         console.log('error submit!!');
                         return false;

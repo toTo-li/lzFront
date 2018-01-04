@@ -15,6 +15,7 @@
     </div>
 </template>
 <script>
+    import * as types from '../../store/types'
     export default {
         data() {
             return {
@@ -29,8 +30,8 @@
         },
         methods:{
             handleCommand(command) {
-                if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
+                if(command == 'loginout'){                    
+                    this.$store.commit(types.LOGOUT);
                     this.$router.push('/login');
                 }
             }

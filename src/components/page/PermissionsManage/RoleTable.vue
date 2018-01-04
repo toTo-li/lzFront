@@ -1,11 +1,5 @@
 <template>
     <div class="table">
-        <!--<div class="crumbs">-->
-            <!--<el-breadcrumb separator="/">-->
-                <!--<el-breadcrumb-item><i class="el-icon-menu"></i> 表格</el-breadcrumb-item>-->
-                <!--<el-breadcrumb-item>基础表格</el-breadcrumb-item>-->
-            <!--</el-breadcrumb>-->
-        <!--</div>-->
         <div class="handle-box">
                 <div>
                     <span>每页显示：</span>
@@ -24,24 +18,20 @@
             <el-table-column prop="id" label="角色ID" width="80"></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="name" label="角色名称" sortable width="150">
             </el-table-column>
-            <el-table-column prop="rolePermi" label="角色权限" width="120">
+            <el-table-column prop="menus" label="角色权限" >
             </el-table-column>
             <!--<el-table-column prop="address" label="关联账号" :formatter="formatter" width="250">
             </el-table-column>-->
-            <el-table-column label="操作" prop="opertion">
+            <el-table-column label="操作" prop="opertion" width="300">
                 <template slot-scope="scope" >
                     <el-button size="small"
-                               @click="handleEdit(scope.$index, scope.row)" v-if="scope.row.opertion.read">查看</el-button>
+                               @click="handleEdit(scope.$index, scope.row)" >查看</el-button>
                     <el-button size="small" type="danger"
-                               @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.update">修改</el-button>
+                               @click="handleDelete(scope.$index, scope.row)" >修改</el-button>
                     <el-button size="small" type="danger"
-                               @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.delete">删除</el-button>
-                    <!--<el-button size="small" type="danger"-->
-                               <!--@click="handleDelete(scope.$index, scope.row)">暂停</el-button>-->
+                               @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
                 </template>
             </el-table-column>
-            <!--<el-table-column prop="name" label="角色权限" width="120">-->
-            <!--</el-table-column>-->
 
         </el-table>
         <!--<el-button type="primary" icon="delete" class="handle-del mr10 butMargin" @click="delAll">批量删除</el-button>-->
@@ -53,7 +43,6 @@
                 :total="total"
                 :page-size="select_per"
                 :page-sizes="page_sizes"
-
                 >
             </el-pagination>
         </div>
@@ -73,7 +62,7 @@
                 select_word: '',
                 del_list: [],
                 is_search: false,
-                page_sizes:[10,15,20,25,30],
+                page_sizes:[5,10,20,25,30],
                 total:1000
             }
         },
@@ -83,20 +72,7 @@
         computed: {
             data(){
                 const self = this;
-                return self.tableData.filter(function(d){
-                    let is_del = false;
-                    for (let i = 0; i < self.del_list.length; i++) {
-                        if(d.name === self.del_list[i].name){
-                            is_del = true;
-                            break;
-                        }
-                    }
-                    if(!is_del){
-                        if(self.select_word==""||d.name.indexOf(self.select_word) > -1){
-                            return d;
-                        }
-                    }
-                })
+                return self.tableData;
             }
         },
         methods: {
@@ -119,18 +95,24 @@
 //                    self.url = '/ms/table/list';
                     self.url = '/static/vuetable.json';
                 };
-                self.$axios.get("https://www.easy-mock.com/mock/5a2f6f336ce8af6869ec349d/example/role").then((res) => {
+
+                /*
+                
+                id:1
+                menuIds:null
+                menus:"任务管理,任务管理,任务管理,库存查看,库存查看,库存查看,任务审核,任务审核,任务审核,报表,报表,报表,权限管理,用户管理,角色管理"
+                name:"栗子云管理员"
+                remarks:"管理员内置"
+                
+                */
+                self.$axios.get(`/roles?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
+                    console.log(res.data);
+                    self.total = res.data.pagination.total;
                     self.tableData = res.data.data;
                 })
             },
             search(){
                 this.is_search = true;
-            },
-            formatter(row, column) {
-                return row.address;
-            },
-            filterTag(value, row) {
-                return row.tag === value;
             },
             handleEdit(index, row) {
                 this.$message('编辑第'+(index+1)+'行');
@@ -138,17 +120,17 @@
             handleDelete(index, row) {
                 this.$message.error('删除第'+(index+1)+'行');
             },
-            delAll(){
-                const self = this,
-                    length = self.multipleSelection.length;
-                let str = '';
-                self.del_list = self.del_list.concat(self.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += self.multipleSelection[i].name + ' ';
-                }
-                self.$message.error('删除了'+str);
-                self.multipleSelection = [];
-            },
+            // delAll(){
+            //     const self = this,
+            //         length = self.multipleSelection.length;
+            //     let str = '';
+            //     self.del_list = self.del_list.concat(self.multipleSelection);
+            //     for (let i = 0; i < length; i++) {
+            //         str += self.multipleSelection[i].name + ' ';
+            //     }
+            //     self.$message.error('删除了'+str);
+            //     self.multipleSelection = [];
+            // },
             handleSelectionChange(val) {
                 console.log(val);
                 this.multipleSelection = val;

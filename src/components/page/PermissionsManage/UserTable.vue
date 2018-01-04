@@ -22,28 +22,33 @@
             <el-table-column prop="id" label="用户ID" width="80"></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="name" label="用户名" sortable width="150">
             </el-table-column>
-            <el-table-column prop="userPermi" label="角色权限" width="120">
+            <el-table-column prop="roleName" label="角色权限" width="120">
             </el-table-column>
-            <el-table-column prop="relateCount" label="关联账号" :formatter="formatter" width="250">
-                <template slot-scope="scope">
-                     <span v-for="item in scope.row.relateCount">{{item}}</span>
-                </template>
+            <el-table-column prop="contactName" label="关联账号"  width="250">
+                
             </el-table-column>
             <el-table-column label="操作" prop="opertion">
                 <template slot-scope="scope">
                     <el-button size="small"
-                               @click="handleEdit(scope, scope.row)" v-if="scope.row.opertion.read">查看</el-button>
+                               @click="handleEdit(scope, scope.row)" >查看</el-button>
                     <el-button size="small" type="danger"
-                               @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.update">修改</el-button>
+                               @click="handleUpdate(scope.$index, scope.row)" >修改</el-button>
                     <el-button size="small" type="danger"
-                               @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.delete">删除</el-button>
-                    <el-button size="small" type="danger"
-                               @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.stop">暂停</el-button>
+                               @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
+                    <template v-if="scope.row.status==0">
+                       <el-button size="small" type="danger"
+                               @click="handleStop(scope.$index, scope.row)" >暂停</el-button>
+                    </template>           
+                    <template v-else>
+                       <el-button size="small" type="danger"
+                               @click="handleStop(scope.$index, scope.row)" >启用</el-button>
+                    </template>  
+                    
                 </template>
             </el-table-column>
-            <el-table-column prop="state" label="状态" width="120">
+            <el-table-column prop="status" label="状态" width="120">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.state">启用</span>
+                    <span v-if="scope.row.status==0">启用</span>
                     <span v-else>暂停</span>
                 </template>
             </el-table-column>
@@ -58,7 +63,6 @@
                 :total="total"
                 :page-size="select_per"
                 :page-sizes="page_sizes"
-
                 >
             </el-pagination>
         </div>
@@ -79,11 +83,12 @@
 //
                 select_cate: '',
                 total:1000,
-                select_per:10,
+                select_per:5,
                 select_word: '',
                 del_list: [],
                 is_search: false,
-                page_sizes:[10,15,20,25,30]
+                page_sizes:[5,15,20,25,30],
+                frozenText:""
 
             }
         },
@@ -119,6 +124,7 @@
             pageSizeChange(val){
                 console.log(val);
                 this.select_per = val;
+                this.getData();
             },
             //          分页按钮
             handleCurrentChange(val){
@@ -130,58 +136,119 @@
             getData(){
                 let self = this;
                 if(process.env.NODE_ENV === 'development'){
-//                    self.url = '/ms/table/list';
                     self.url = '/static/vuetable.json';
                 };
                 /*
-                *
-                *  {
-                *     cur_page：cur_page,
-                *     select_per：select_per，
-                *     total:total
-                *  }
-                *
-                *   "total": 100,
-                    "per_page": 5,
-                    "current_page": 1,
-                    "last_page": 1,
-                    "from": 1,
-                    "to": 10
-                * */
-                self.$axios.get("https://www.easy-mock.com/mock/5a2f6f336ce8af6869ec349d/example/user").then((res) => {
-                    console.log(res);
+
+                contactName: "栗子云"
+                email: "admin@thextrader.cn"
+                id: 1
+                name: "admin"
+                remarks: "管理员用户"
+                roleName: "栗子云管理员"
+                status: 0
+                
+                */ 
+                self.$axios.get(`/users?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
+                    console.log(res.data);
+                    
+                    self.total = res.data.pagination.total;
                     self.tableData = res.data.data;
                 })
             },
 //          搜索
             search(){
                 this.is_search = true;
+                this.getData();
             },
-            formatter(row, column) {
-                return row.address;
-            },
-            filterTag(value, row) {
-                return row.tag === value;
-            },
+            // 查看用户信息
             handleEdit(index, row) {
-                console.log(index);
-                this.$message('编辑第'+(index+1)+'行');
+                
+                let self = this;
+                this.$axios.get(`/users/${row.id}`).then(function(res){
+                    if(res.status == 200){
+                        self.$store.commit('readUsers',res.data);
+                        self.$store.commit("userDialog",{userDialogNum:2,flag:true});
+                    }else{
+                        return false;
+                    }
+                });
             },
+            // 修改信息
+            handleUpdate(index, row){
+                let self = this;
+                this.$axios.get(`/users/${row.id}`).then(function(res){
+                    if(res.status == 200){
+                        self.$store.commit('readUsers',res.data);
+                        self.$store.commit("userDialog",{userDialogNum:3,flag:true,updateId:row.id});
+                        // self.$message({
+                        //     message: '删除用户成功！',
+                        //     type: 'success'
+                        // });
+                    }else{
+                        return false;
+                    }
+                });
+            },
+            // 删除
             handleDelete(index, row) {
-                this.$message.error('删除第'+(index+1)+'行');
+                let self = this;
+                this.$axios.delete(`/users/${row.id}`).then(function(res){
+                    if(res.status == 200 || res.status == 204){
+                        // self.$store.commit('readUsers',res.data);
+                        // self.$store.commit("userDialog",{userDialogNum:3,flag:true});
+                        self.$message({
+                            message: '删除用户成功！',
+                            type: 'success'
+                        });
+                        self.getData();
+                    }else{
+                        return false;
+                    }
+                });
             },
-//          多选删除
-            delAll(){
-                const self = this,
-                    length = self.multipleSelection.length;
-                let str = '';
-                self.del_list = self.del_list.concat(self.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += self.multipleSelection[i].name + ' ';
+            // 冻结
+            handleStop(index, row){
+                console.log(row);
+                if(row.status==0){
+                    /*
+                        未冻结，启用状态，调用冻结接口
+                        /users/frozen/{id}
+                    */ 
+                    var self = this;
+                    self.$axios.put(`/users/frozen/${row.id}`).then(function(res){
+                        console.log(res);
+                        if(res.status==200){
+                            self.getData();
+                        }
+                        
+                    })
+                }else{
+                    /*
+                        冻结，未启用状态，调用解除冻结接口
+                        /users/unfroze/{id}
+                    */
+                    var self = this;
+                    self.$axios.put(`/users/unfrozen/${row.id}`).then(function(res){
+                        console.log(res);
+                        self.getData();
+                    })
                 }
-                self.$message.error('删除了'+str);
-                self.multipleSelection = [];
             },
+            
+//          多选删除
+            // delAll(){
+            //     const self = this,
+            //         length = self.multipleSelection.length;
+            //     let str = '';
+            //     self.del_list = self.del_list.concat(self.multipleSelection);
+            //     for (let i = 0; i < length; i++) {
+            //         str += self.multipleSelection[i].name + ' ';
+            //     }
+            //     self.$message.error('删除了'+str);
+            //     self.multipleSelection = [];
+            // },
+
 //          选择项发生变化时会触发该事件
             handleSelectionChange(val) {
                 console.log(val);

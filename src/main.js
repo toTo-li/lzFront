@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import App from './App';
 import router from './router';
-import axios from 'axios';
+import axios from './http';
+import store from './store/store'
 import ElementUI from 'element-ui';
 // import elementUIVerify  from 'element-ui-verify';
 
@@ -12,8 +13,12 @@ import "babel-polyfill";
 Vue.use(ElementUI);
 // Vue.use(elementUIVerify);
 
+
+
 Vue.prototype.$axios = axios;
 new Vue({
     router,
+    store,
     render: h => h(App)
 }).$mount('#app');
+
