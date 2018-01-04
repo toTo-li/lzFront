@@ -41,9 +41,9 @@
 	export default {
 		data(){
 			return {
-				//是否显示弹出框
+					  //是否显示弹出框
 	        	dialogVisible: false,
-				//表单数据
+					  //表单数据
 		        ruleForm: {
 		          name: ''
 		        },
@@ -61,7 +61,7 @@
 			  }
 		    },
 		    methods:{
-				//添加用户的保存事件
+				  //添加用户的保存事件
 			    submitForm(formName){
 			      	//将弹出框关闭
 			      	this.dialogVisible = false;
