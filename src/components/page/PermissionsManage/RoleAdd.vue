@@ -1,11 +1,11 @@
 <template>
 	<div>
-		<el-button type="primary" @click="dialogVisible = true">+添加角色</el-button>
+		<el-button type="primary" @click="openRoleDialog">+添加角色</el-button>
     	<!--
     		添加用户的弹出框部分
     	-->
 	    <el-dialog
-			  :visible.sync="dialogVisible"
+			  :visible.sync="roledialogVisible"
 			  width="20%"
 			  :before-close="handleClose">
 			  <!--
@@ -16,21 +16,20 @@
 			  	
 			  	prop="name"		表单控件相对应的验证规则
 			  -->
-			<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
+			<el-form :model="ruleForms" :rules="rules" ref="ruleForms" label-width="100px">
 				  <el-form-item label="用户名" prop="name">
-				    <el-input v-model="ruleForm.name"></el-input>
+				    <el-input v-model="ruleForms.name" :disabled="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色" prop="role">
-				    <el-checkbox-group v-model="checkedPermis">
-				      <el-checkbox v-for="permi in permissions" :label="permi" :key="permi">{{permi}}</el-checkbox></br>
+				    <el-checkbox-group v-model="menus">
+				      <el-checkbox v-for="permi in permissions" :label="permi.id"  :key="permi.id" :disabled="disabled">{{permi.name}}</el-checkbox></br>
 				    </el-checkbox-group>
 				  </el-form-item>
-				  
 			</el-form>
 			<!--弹出框的取消/保存部分-->			
 			<span slot="footer" class="dialog-footer">
-			    <el-button @click="dialogVisible = false">取 消</el-button>
-			    <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+			    <el-button @click="close('ruleForms')">取 消</el-button>
+			    <el-button type="primary" @click="submitForm('ruleForms')">保存</el-button>
 			</span>
 			  
 		</el-dialog>
@@ -38,6 +37,8 @@
 </template>
 
 <script>
+	// 这里引入状态管理模块,当然也可以不引入，使用this.$store即可
+  import store from "../../../store/store";
 	export default {
 		data(){
 			return {
@@ -45,7 +46,8 @@
 	        	dialogVisible: false,
 					  //表单数据
 		        ruleForm: {
-		          name: ''
+							name: '',
+							rescs: []
 		        },
 		        //表单控件验证规则
 		        rules: {
@@ -55,27 +57,156 @@
 		          ]
 		        },
 		        //多选数据
-        		checkedPermis: [],
-        		permissions: ['任务管理', '库存查看', '任务审核', '报表'],
-        		isIndeterminate: true
+        		menus: [],
+        		permissions:[],
+						isIndeterminate: true,
+						// 只读
+						disabled:false,
 			  }
-		    },
+				},
+				computed:{
+					    // 由用户添加按钮和查看按钮触发弹出框
+							roledialogVisible:{
+								 get(){
+										var self = this;
+										self.$axios.get('/roles/menus').then(function(res){
+											if(res.status == 200){
+													self.permissions = res.data;
+											}else{
+												  return false;
+											}
+										});
+										return store.state.roleDialog;
+								 },
+								 set(){
+											
+								 }
+							},
+							// 当状态管理器中的状态改变 判断由哪个操作按钮触发弹出框并显示对应的样式
+							ruleForms:{
+								get(){
+									if(store.state.roleDialogNum==1){
+											this.disabled = false;
+										  return this.ruleForm;
+									}else if(store.state.roleDialogNum==2){
+											this.menus = this.permis;
+											console.log(this.menus,121212121212);
+											
+											this.disabled = true;
+											return store.state.readRole;
+									}else if(store.state.roleDialogNum==3){
+											// this.roleValue = store.state.updateId;
+											this.disabled = false;
+											return store.state.readRole;
+									}else{
+											this.disabled = false;
+											return this.ruleForm;
+									}
+									
+								},
+								set(){}
+							},
+
+
+							permis:{
+								get(){
+									var result = this.permissions.filter(function(item,index){
+                        var result1 = store.state.readRole.rescs.filter(function(item1,index1){
+														return item.id == item1.id;
+												});
+												console.log(result1,2323232323);
+												return result1[0].id;
+									});
+									console.log(result,343434343);
+									return result;
+								},
+								set(){}
+							},
+
+							
+							// 将权限的id数组转换为字符串格式 '1,3,4,6'
+							menuIds:{
+								get(){
+									return this.menus.join(",")
+								},
+								set(){}
+							}
+				},
 		    methods:{
 				  //添加用户的保存事件
 			    submitForm(formName){
-			      	//将弹出框关闭
-			      	this.dialogVisible = false;
-			      	//关闭后将数据提交
-			      	
-			    },
+						  
+							let users = this.ruleForm;
+							console.log(users);
+							
+							var self = this;
+							if(store.state.roleDialogNum==1){
+								  console.log(self);
+									
+									self.$refs[formName].validate((valid)=>{
+											if(valid){
+													// 用户添加 
+													this.$axios.post('/roles',{
+															name:users.name,
+															menuIds:self.menuIds
+													}).then(function(res){
+
+														if(res.status == 200 || res.status==201){
+															console.log(res);
+															self.$message({
+																message: '角色添加成功！',
+																type: 'success'
+															});
+															self.$store.commit("roleDialog",{roleDialogNum:1,flag:false,fresh:store.state.fresh});
+														}else{
+															self.$message.error('角色添加失败！');
+														}
+
+													});
+											}else{
+												return false;
+											}
+									})
+							}else if(store.state.roleDialogNum==2){
+										self.$store.commit("roleDialog",{roleDialogNum:2,flag:false});
+							}else if(store.state.roleDialogNum==3){
+								    console.log(store.state.updateRoleId);
+								    console.log(users);
+										
+										self.$axios.put(`/roles/${store.state.updateRoleId}`,{
+											       name:store.state.readRole.name,
+														 menuIds:self.menuIds
+										}).then(function(res){
+											console.log(res);
+											
+											if(res.status == 200){
+													self.$message({
+														message: '用户修改成功！',
+														type: 'success'
+													});
+													self.$store.commit("roleDialog",{roleDialogNum:3,flag:false,fresh:store.state.fresh});
+											}
+										})
+							}
+							
+					},
+					// 取消添加用户弹出框
+					close(formName){
+						this.$store.commit("roleDialog",{roleDialogNum:1,flag:false});
+						this.$refs[formName].resetFields();
+					},
 			    //弹出框关闭前的确认
 			    handleClose(done) {
 			        this.$confirm('确认关闭？')
 			          .then(_ => {
-			            done();
+			            this.$store.commit("roleDialog",{roleDialogNum:1,flag:false});
 			          })
 			          .catch(_ => {});
-			    }
+					},
+					// 弹出框
+					openRoleDialog(){
+						 this.$store.commit("roleDialog",{roleDialogNum:1,flag:true});
+					}
 		    }
 		
 	}

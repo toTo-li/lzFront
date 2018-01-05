@@ -27,9 +27,9 @@
                     <el-button size="small"
                                @click="handleEdit(scope.$index, scope.row)" >查看</el-button>
                     <el-button size="small" type="danger"
-                               @click="handleDelete(scope.$index, scope.row)" >修改</el-button>
+                               @click="handleUpdate(scope.$index, scope.row)" v-if="scope.row.id!=1">修改</el-button>
                     <el-button size="small" type="danger"
-                               @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
+                               @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.id!=1">删除</el-button>
                 </template>
             </el-table-column>
 
@@ -39,13 +39,20 @@
             <el-pagination
                 @current-change ="handleCurrentChange"
                 @size-change="pageSizeChange"
-                layout="sizes,prev, pager, next"
+                layout="prev, pager, next"
                 :total="total"
                 :page-size="select_per"
                 :page-sizes="page_sizes"
                 >
             </el-pagination>
         </div>
+        <!-- 
+            添加和修改后刷新列表的解决方法：
+                利用Vuex的状态的改变，然后使用计算属性监听状态的变化，实现跨组件调用方法。
+            
+            目前还没有想到更好的方式，先这样实现功能把！
+         -->
+        <div v-show="false">{{refresh}}</div>
     </div>
 </template>
 
@@ -63,7 +70,7 @@
                 del_list: [],
                 is_search: false,
                 page_sizes:[5,10,20,25,30],
-                total:1000
+                total:1
             }
         },
         created(){
@@ -73,6 +80,10 @@
             data(){
                 const self = this;
                 return self.tableData;
+            },
+            refresh(){
+                this.getData();
+                return this.$store.state.fresh;
             }
         },
         methods: {
@@ -83,6 +94,7 @@
             pageSizeChange(val){
                 console.log(val);
                 this.select_per = val;
+                this.getData();
             },
             handleCurrentChange(val){
                 console.log(val);
@@ -113,12 +125,48 @@
             },
             search(){
                 this.is_search = true;
+                this.getData();
             },
+            // 查看角色信息
             handleEdit(index, row) {
-                this.$message('编辑第'+(index+1)+'行');
+                let self = this;
+                this.$axios.get(`/roles/${row.id}`).then(function(res){
+                    console.log(res.data);
+                    if(res.status == 200){
+                        self.$store.commit('readRoles',res.data);
+                        self.$store.commit("roleDialog",{roleDialogNum:2,flag:true});
+                    }else{
+                        return false;
+                    }
+                });
             },
+            // 修改信息
+            handleUpdate(index, row){
+                let self = this;
+                this.$axios.get(`/roles/${row.id}`).then(function(res){
+                    console.log(res.data);
+                    if(res.status == 200){
+                        self.$store.commit('readRoles',res.data);
+                        self.$store.commit("roleDialog",{roleDialogNum:3,flag:true,updateRoleId:row.id});
+                    }else{
+                        return false;
+                    }
+                });
+            },
+            // 删除
             handleDelete(index, row) {
-                this.$message.error('删除第'+(index+1)+'行');
+                let self = this;
+                this.$axios.delete(`/roles/${row.id}`).then(function(res){
+                    if(res.status == 200 || res.status == 204){
+                        self.$message({
+                            message: '删除用户成功！',
+                            type: 'success'
+                        });
+                        self.getData();
+                    }else{
+                        return false;
+                    }
+                });
             },
             // delAll(){
             //     const self = this,
@@ -131,6 +179,7 @@
             //     self.$message.error('删除了'+str);
             //     self.multipleSelection = [];
             // },
+//          选择项发生变化时会触发该事件
             handleSelectionChange(val) {
                 console.log(val);
                 this.multipleSelection = val;
@@ -163,4 +212,7 @@
     .butMargin{
         margin:5px 0px;
     }
+
+    
+
 </style>

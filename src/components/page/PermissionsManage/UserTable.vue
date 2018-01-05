@@ -14,7 +14,7 @@
                     </el-select>
                 </div>
                 <div>
-                    <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                    <el-input v-model="select_word" placeholder="请输入用户名" class="handle-input mr10"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </div>
         </div>
@@ -66,6 +66,13 @@
                 >
             </el-pagination>
         </div>
+         <!-- 
+            添加和修改后刷新列表的解决方法：
+                利用Vuex的状态的改变，然后使用计算属性监听状态的变化，实现跨组件调用方法。
+            
+            目前还没有想到更好的方式，先这样实现功能把！
+         -->
+        <div v-show="false">{{refresh}}</div>
     </div>
 </template>
 
@@ -87,9 +94,13 @@
                 select_word: '',
                 del_list: [],
                 is_search: false,
-                page_sizes:[5,15,20,25,30],
-                frozenText:""
+                page_sizes:[5,15,20,25,30]
 
+            }
+        },
+        watch:{
+            select_word:function(){
+                this.getData();
             }
         },
         created(){
@@ -113,6 +124,10 @@
                         }
                     }
                 })
+            },
+            refresh(){
+                this.getData();
+                return this.$store.state.fresh;
             }
         },
         methods: {
@@ -149,12 +164,17 @@
                 status: 0
                 
                 */ 
-                self.$axios.get(`/users?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
-                    console.log(res.data);
-                    
-                    self.total = res.data.pagination.total;
-                    self.tableData = res.data.data;
-                })
+                if(self.$store.state.token){
+                    self.$axios.get(`/users?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
+                        console.log(res.data);
+                        
+                        self.total = res.data.pagination.total;
+                        self.tableData = res.data.data;
+                     })
+                }else{
+                    return false;
+                }
+                
             },
 //          搜索
             search(){
@@ -181,10 +201,6 @@
                     if(res.status == 200){
                         self.$store.commit('readUsers',res.data);
                         self.$store.commit("userDialog",{userDialogNum:3,flag:true,updateId:row.id});
-                        // self.$message({
-                        //     message: '删除用户成功！',
-                        //     type: 'success'
-                        // });
                     }else{
                         return false;
                     }

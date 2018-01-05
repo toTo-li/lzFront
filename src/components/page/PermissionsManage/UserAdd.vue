@@ -18,15 +18,15 @@
 			  -->
 			  <el-form :model="ruleForms" :rules="rules" ref="ruleForms" label-width="100px">
 				  <el-form-item label="用户名" prop="name">
-				    <el-input v-model="ruleForms.name" :disabled="disabled"></el-input>
+				    <el-input v-model="ruleForms.name" :disabled="disabled" @blur="checkName"></el-input>
 				  </el-form-item>
 					<el-form-item label="密码" prop="password" v-if="passwordFlag">
 				    <el-input v-model="ruleForms.password" :disabled="disabled"></el-input>
 				  </el-form-item>
-				  <el-form-item label="角色" prop="role">
+				  <el-form-item label="角色" prop="roleValue">
 				    <el-select v-model="roleValue" placeholder="请选择角色权限" :disabled="disabled">
 				      <el-option
-				      	v-for='item in ruleForm.role'
+				      	v-for='item in ruleForms.role'
 				      	:key="item.id"
 				      	:label="item.name"
 				      	:value="item.id"
@@ -112,8 +112,8 @@
 							password: [
 		            { required: true, message: '请输入密码', trigger: 'blur' }
 		          ],
-		          role: [
-		            { required: true, message: '请选择角色权限', trigger: 'blur' }
+		          roleValue: [
+		            {  message: '请选择角色权限', trigger: 'blur' }
 		          ],
 		          rAccount: [
 		            { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
@@ -195,7 +195,7 @@
 															name:users.name,
 															password:users.password,
 															email:users.email,
-															roleId:this.roleValue,
+															roleId:self.roleValue || 1,
 															contactName:users.contactName,
 															status:0
 													}).then(function(res){
@@ -205,7 +205,7 @@
 																message: '用户添加成功！',
 																type: 'success'
 															});
-															self.$store.commit("userDialog",{userDialogNum:1,flag:false});
+															self.$store.commit("userDialog",{userDialogNum:1,flag:false,fresh:store.state.fresh});
 														}else{
 															self.$message.error('用户添加失败！');
 														}
@@ -221,7 +221,7 @@
 										self.$axios.put(`/users/${store.state.updateId}`,{
 											        name:store.state.readUser.name,
 															email:store.state.readUser.email,
-															roleId:this.roleValue || 1,
+															roleId:self.roleValue || 1,
 															contactName:store.state.readUser.contactName,
 										}).then(function(res){
 											if(res.status == 200){
@@ -229,7 +229,7 @@
 														message: '用户修改成功！',
 														type: 'success'
 													});
-													self.$store.commit("userDialog",{userDialogNum:3,flag:false});
+													self.$store.commit("userDialog",{userDialogNum:3,flag:false,fresh:store.state.fresh});
 											}
 										})
 							}
@@ -250,9 +250,29 @@
 					},
 					openUserDialog(){
 						 this.$store.commit("userDialog",{userDialogNum:1,flag:true});
+					},
+					// 检查用户名是否存在
+					checkName(){
+						var self = this;
+						// var url = "";
+						// if(store.state.userDialogNum==1){
+						// 	url =  `/users/checkName/${self.ruleForms.name}`;
+						// }else if(store.state.userDialogNum==3){
+						// 	url =  `/users/checkName/${store.state.updateId}/${self.ruleForms.name}`
+						// }
+						self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
+								console.log(res);
+								if(!res.data){
+										self.$message({
+											message: '用户已存在，请重新输入！',
+											type: 'error'
+										}); 
+								}
+						})
+						
 					}
 
-		    }
+		  }
 
 	}
 </script>

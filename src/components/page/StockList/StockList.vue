@@ -15,13 +15,19 @@
             </div>
 
         </div>
+        <!-- 
+
+            id:2
+            memberCount:32
+            name:"运动"
+         -->
         <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
             <el-table-column prop="date" label="ID" width="120"></el-table-column>  <!-- type="selection" -->
-            <el-table-column prop="address" label="社群ID" sortable >
+            <el-table-column prop="id" label="社群ID" sortable width="120">
             </el-table-column>
-            <el-table-column prop="name" label="社群名称" width="120">
+            <el-table-column prop="name" label="社群名称" >
             </el-table-column>
-            <el-table-column prop="name" label="群人数" width="120">
+            <el-table-column prop="memberCount" label="群人数" width="200">
             </el-table-column>
             <el-table-column prop="name" label="可用库存" width="120">
                 <template slot-scope="scope">
@@ -35,8 +41,8 @@
             <el-pagination
                 @current-change ="handleCurrentChange"
                 @size-change="pageSizeChange"
-                layout="sizes,prev, pager, next"
-                :total="1000"
+                layout="prev, pager, next"
+                :total="total"
                 :page-size="select_per"
                 :page-sizes="page_sizes"
             >
@@ -52,7 +58,6 @@
             <el-table
                 :data="tableData3"
                 height="250"
-
                 style="width: 100%">
                 <el-table-column
                     prop="date"
@@ -99,6 +104,8 @@
                 is_search: false,
 //              设置每页显示的条数
                 page_sizes:[10,15,20,25,30],
+                // 总数
+                total:0,
                 tableData3: [{
                     date: '2016-05-03',
                     name: '王小虎',
@@ -163,9 +170,13 @@
 //                    self.url = '/ms/table/list';
                     self.url = '/static/vuetable.json';
                 };
-                self.$axios.get(self.url, {page:self.cur_page}).then((res) => {
-                    self.tableData = res.data.list;
+                self.$axios.get(`/groups?per_page=${self.select_per}&page=${self.cur_page}&search=${self.select_word}`).then((res) => {
+                    self.total = res.data.pagination.total;
+                    self.tableData = res.data.data;
+                    console.log(res);
+                    
                 })
+
             },
 //          每页显示数改变触发
             pageSizeChange(val){

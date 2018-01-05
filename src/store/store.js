@@ -10,7 +10,7 @@ export default new Vuex.Store({
         token:null,
         // title
         title:'',
-
+/*****************************************************/ 
         // 存放目前登录的用户信息
         user:{},
         // 判断用户添加部分的弹出框
@@ -22,13 +22,33 @@ export default new Vuex.Store({
              2：查看用户
              3：修改用户
              ...
-        
         */ 
         userDialogNum:0,
         // 存放查看用户按钮的信息
         readUser:null,
         // 修改用户的id
-        updateId:null
+        updateId:null,
+/*****************************************************/ 
+        // 判断角色添加部分的弹出框
+        roleDialog:false,
+        /*
+          用来判定弹出框由谁调用：
+             0：默认值
+             1：添加角色
+             2：查看角色
+             3：修改角色
+             ...
+        */ 
+        roleDialogNum:0,
+        // 存放查看角色按钮的信息
+        readRole:null,
+        // 修改角色的id
+        updateRoleId:null,
+        // 添加角色成功后的刷新角色列表的开关
+        fresh:1
+/*****************************************************/ 
+        
+
         
     },
     mutations:{
@@ -44,6 +64,8 @@ export default new Vuex.Store({
         [types.TITLE]:(state,data)=>{
             state.title = data;
         },
+/*****************************************************/ 
+        
         //用户管理模块的弹出框控制
         userDialog:(state,data)=>{
             state.userDialog = data.flag;
@@ -53,7 +75,21 @@ export default new Vuex.Store({
         // 查看按钮的用户信息
         readUsers:(state,data)=>{
             state.readUser = data;
+        },
+/*****************************************************/ 
+
+        //角色管理模块的弹出框控制
+        roleDialog:(state,data)=>{
+            state.roleDialog = data.flag;
+            state.roleDialogNum = data.roleDialogNum
+            state.updateRoleId = data.updateRoleId || null;
+            state.fresh = -data.fresh || 1;
+        },
+        // 查看按钮的角色信息
+        readRoles:(state,data)=>{
+            state.readRole = data;
         }
+/*****************************************************/ 
 
 
     }
