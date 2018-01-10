@@ -19,28 +19,48 @@
                 <el-table-column prop="id" label="任务ID" width="80"></el-table-column>  <!-- type="selection" -->
                 <el-table-column prop="name" label="任务名称" sortable width="150">
                 </el-table-column>
-                <el-table-column prop="userPermi" label="投放类型" width="120">
+                <!-- <el-table-column prop="userPermi" label="投放类型" width="120">
+                </el-table-column> -->
+                <el-table-column prop="times" label="发送时间点" width="500">
+                    <template slot-scope="scope">
+                        <span>{{scope.row.times | timesTran}}</span>
+                    </template>
                 </el-table-column>
-                <el-table-column prop="userPermi" label="发送时间点" width="240">
+                <el-table-column prop="commitStatus" label="操作状态" width="100" >
+                    
+                    <template slot-scope="scope">
+                        <span>{{scope.row.commitStatus==0?"未提交":"已提交"}}</span>
+                    </template>
+                    
                 </el-table-column>
-                <el-table-column prop="userPermi" label="操作状态" width="120">
+                <el-table-column prop="auditStatus" label="审核状态" width="100">
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.auditStatus==0">未审核</span>
+                        <span v-else-if="scope.row.auditStatus==1">审核通过</span>
+                        <span v-else>审核拒绝</span>
+                    </template>
                 </el-table-column>
-                <el-table-column prop="userPermi" label="审核状态" width="120">
+                <el-table-column prop="pushStatus" label="发布状态" width="100">
+                    <template slot-scope="scope">
+                        <span>{{scope.row.pushStatus==0?"未发布":"已发布"}}</span>
+                    </template>
                 </el-table-column>
 
                 <el-table-column label="操作" prop="opertion">
                     <template slot-scope="scope">
                         <el-button size="small"
-                                   @click="handleEdit(scope, scope.row)" v-if="scope.row.opertion.read">查看</el-button>
+                                   @click="handleRead(scope.$index, scope.row)" >查看</el-button>
                         <el-button size="small" type="danger"
-                                   @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.update">修改</el-button>
+                                   @click="handleUpdate(scope.$index, scope.row)" >修改</el-button>
                         <el-button size="small" type="danger"
-                                   @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.delete">删除</el-button>
+                                   @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
                         <el-button size="small" type="danger"
-                                   @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.opertion.stop">暂停</el-button>
+                                   @click="handleSubmit(scope.$index, scope.row)" >提交任务</el-button>
+                        <el-button size="small" type="danger"
+                                   @click="handleUnPush(scope.$index, scope.row)" :disabled="scope.row.pushStatus==0?true:false" >取消发布</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column prop="state" label="可用社群列表" width="120">
+                <el-table-column label="可用社群列表" width="120">
                     <template slot-scope="scope">
                         <el-button size="small"
                                    @click="handleEdit(scope, scope.row)" >查看</el-button>
@@ -48,7 +68,6 @@
                 </el-table-column>
 
             </el-table>
-            <!--<el-button type="primary" icon="delete" class="handle-del mr10 butMargin" @click="delAll">批量删除</el-button>-->
             <div class="pagination">
                 <el-pagination
                     @current-change ="handleCurrentChange"
@@ -60,6 +79,44 @@
                 >
                 </el-pagination>
             </div>
+<!-- 任务查看弹出框 -->
+            <el-dialog
+                :visible.sync="dialogTaskVisible"
+                width="20%"
+                :before-close="handleClose">
+                <h3>任务{{taskRead.name}}: </h3>
+                <div class="readElForm">
+                    <el-form :model="taskRead" ref="taskRead" label-width="100px" >
+                        <el-form-item label="任务ID:" prop="id">
+                            <span>{{taskRead.id}}</span>
+                        </el-form-item>
+                        <el-form-item label="任务名称:" prop="name">
+                            <span>{{taskRead.name}}</span>
+                        </el-form-item>
+                        <el-form-item label="发送时间点:" prop="times">
+                            <template slot-scope="scope">
+                                <span>{{taskRead.times | timesTran}}</span>
+                            </template>
+                        </el-form-item>
+                        <el-form-item label="操作状态:" prop="commitStatus">
+                            <span>{{taskRead.commitStatus==0?"未提交":"已提交"}}</span>
+                        </el-form-item>
+                        <el-form-item label="审核状态:" prop="auditStatus">
+                                <span v-if="taskRead.auditStatus==0">未审核</span>
+                                <span v-else-if="taskRead.auditStatus==1">审核通过</span>
+                                <span v-else>审核拒绝</span>
+                        </el-form-item>
+                        <el-form-item label="发布状态:" prop="pushStatus">
+                            <span>{{taskRead.pushStatus==0?"未发布":"已发布"}}</span>
+                        </el-form-item>
+                    </el-form>
+                </div>
+                <!--弹出框的取消/保存部分-->
+                <span slot="footer" class="dialog-footer">
+			      <el-button type="primary" @click="readEnter()">确定</el-button>
+			    </span>
+            </el-dialog>
+<!-- 可用社群列表弹出框 -->
             <el-dialog
                 :visible.sync="dialogVisible"
                 width="20%"
@@ -90,7 +147,6 @@
                 <span slot="footer" class="dialog-footer">
 			    <el-button type="primary" @click="submitForm()">确定</el-button>
 			  </span>
-
             </el-dialog>
         </div>
     </div>
@@ -100,20 +156,17 @@
     export default {
         data() {
             return {
+                // 可用社群列表弹出框
                 dialogVisible:false,
-                url: './static/vuetable.json',
+                // 任务查看列表弹出框
+                dialogTaskVisible:false,
 //              存放数据
                 tableData: [],
 //              当前显示第几页
                 cur_page: 1,
-//              多选
-                multipleSelection: [],
-//
-                select_cate: '',
                 total:1000,
                 select_per:10,
                 select_word: '',
-                del_list: [],
                 is_search: false,
                 page_sizes:[10,15,20,25,30],
                 tableData3: [{
@@ -144,7 +197,9 @@
                     date: '2016-05-07',
                     name: '王小虎',
                     address: '上海市普陀区金沙江路 1518 弄'
-                }]
+                }],
+                // 任务查看数据
+                taskRead:{}
 
             }
         },
@@ -155,95 +210,122 @@
 //          数据更新
             data(){
                 const self = this;
-                return self.tableData.filter(function(d){
-                    let is_del = false;
-                    for (let i = 0; i < self.del_list.length; i++) {
-                        if(d.name === self.del_list[i].name){
-                            is_del = true;
-                            break;
-                        }
+                return self.tableData;
+            }
+        },
+        watch:{
+            // 监听搜索框
+            select_word:function(){
+                this.getData();
+            }
+        },
+        filters:{
+            timesTran:function(val){
+                
+                if(val != "undefined"){
+                    if(typeof val == "string"){
+                        val = JSON.parse(val)
                     }
-                    if(!is_del){
-                        if(self.select_word==""||d.name.indexOf(self.select_word) > -1){
-                            return d;
-                        }
+                    if(typeof val != "undefined"){
+                        return val.join(";  ");
                     }
-                })
+                    
+                }else{
+                    return false;
+                }
+                
             }
         },
         methods: {
-            //          每页显示条数事件
-            selectChange(val){
-                this.pageSizeChange(val);
-            },
-            //          每页显示条数
-            pageSizeChange(val){
-                console.log(val);
-                this.select_per = val;
-            },
-            //          分页按钮
-            handleCurrentChange(val){
-                console.log(val);
-                this.cur_page = val;
-                this.getData();
-            },
-            //          获取数据
-            getData(){
-                let self = this;
-                if(process.env.NODE_ENV === 'development'){
-//                    self.url = '/ms/table/list';
-                    self.url = '/static/vuetable.json';
-                };
-                /*
-                *
-                *  {
-                *     cur_page：cur_page,
-                *     select_per：select_per，
-                *     total:total
-                *  }
-                *
-                *   "total": 100,
-                    "per_page": 5,
-                    "current_page": 1,
-                    "last_page": 1,
-                    "from": 1,
-                    "to": 10
-                * */
-                self.$axios.get("https://www.easy-mock.com/mock/5a2f6f336ce8af6869ec349d/example/user").then((res) => {
-                    console.log(res);
-                    self.tableData = res.data.data;
-                })
-            },
 //          搜索
             search(){
                 this.is_search = true;
+                this.getData();
             },
-            formatter(row, column) {
-                return row.address;
+            // 查看
+            handleRead(index,row){
+                this.dialogTaskVisible = true;
+                let self = this;
+                self.$axios.get(`/tasks/${row.id}`).then(function(res){
+                    self.taskRead = res.data;
+                })
             },
-            filterTag(value, row) {
-                return row.tag === value;
+            readEnter(){
+                this.dialogTaskVisible = false;
+                this.taskRead = {};
             },
+            // 修改
             handleEdit(index, row) {
                 this.dialogVisible = true;
                 console.log(index);
                 this.$message('编辑第'+(index+1)+'行');
             },
+            // 删除
             handleDelete(index, row) {
-                this.$message.error('删除第'+(index+1)+'行');
+                let self = this;
+                console.log(row.id);
+                self.$axios.delete(`/tasks/${row.id}`).then(function(res){
+                    if(res.status==204){
+                        self.$message({
+                            message: '任务删除成功！',
+                            type: 'success'
+                        });
+                        self.getData();
+                    }
+                })
             },
-//          多选删除
-            delAll(){
-                const self = this,
-                    length = self.multipleSelection.length;
-                let str = '';
-                self.del_list = self.del_list.concat(self.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += self.multipleSelection[i].name + ' ';
-                }
-                self.$message.error('删除了'+str);
-                self.multipleSelection = [];
+            // 提交任务
+            handleSubmit(index,row){
+                let self = this;
+                self.$axios.put(`/tasks/commit/${row.id}`).then(function(res){
+                    if(res.status==200){
+                        self.$message({
+                            message: '任务提交成功！',
+                            type: 'success'
+                        });
+                        self.getData();
+                    }
+                });
             },
+            handleUnPush(index,row){
+                let self = this;
+                self.$axios.put(`/tasks/unpush/${row.id}`).then(function(res){
+                    console.log(res);
+                    if(res.status == 200){
+                        self.$message({
+                            message: `${res.data.msg}`,
+                            type: 'success'
+                        });
+                        self.getData();
+                    }
+                });
+            },
+//          每页显示条数事件
+            selectChange(val){
+                this.pageSizeChange(val);
+            },
+//          每页显示条数
+            pageSizeChange(val){
+                this.select_per = val;
+                this.getData();
+            },
+//          分页按钮
+            handleCurrentChange(val){
+                console.log(val);
+                this.cur_page = val;
+                this.getData();
+            },
+//          获取数据
+            getData(){
+                let self = this;
+                self.$axios.get(`/tasks?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
+                    console.log(res);
+                    self.total = res.data.pagination.total;
+                    self.tableData = res.data.data;
+
+                })
+            },
+
 //          选择项发生变化时会触发该事件
             handleSelectionChange(val) {
                 console.log(val);
@@ -295,5 +377,8 @@
     }
     .butMargin{
         margin:5px 0px;
+    }
+    .readElForm{
+        margin-top:30px;
     }
 </style>

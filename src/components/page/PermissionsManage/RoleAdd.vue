@@ -18,7 +18,7 @@
 			  -->
 			<el-form :model="ruleForms" :rules="rules" ref="ruleForms" label-width="100px">
 				  <el-form-item label="用户名" prop="name">
-				    <el-input v-model="ruleForms.name" :disabled="disabled"></el-input>
+				    <el-input v-model="ruleForms.name" :readonly="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色" prop="role">
 				    <el-checkbox-group v-model="menus">
@@ -87,16 +87,16 @@
 								get(){
 									if(store.state.roleDialogNum==1){
 											this.disabled = false;
+											this.menus = [];
 										  return this.ruleForm;
 									}else if(store.state.roleDialogNum==2){
 											this.menus = this.permis;
-											console.log(this.menus,121212121212);
-											
 											this.disabled = true;
 											return store.state.readRole;
 									}else if(store.state.roleDialogNum==3){
 											// this.roleValue = store.state.updateId;
 											this.disabled = false;
+											this.menus = this.permis;
 											return store.state.readRole;
 									}else{
 											this.disabled = false;
@@ -106,24 +106,24 @@
 								},
 								set(){}
 							},
-
-
+              // 点击查看和修改时，复选框的默认选项。将此角色已有的权限标记为选中状态。
 							permis:{
 								get(){
-									var result = this.permissions.filter(function(item,index){
+									var r = [];
+									this.permissions.forEach(function(item,index){
                         var result1 = store.state.readRole.rescs.filter(function(item1,index1){
 														return item.id == item1.id;
 												});
-												console.log(result1,2323232323);
-												return result1[0].id;
+												if(result1.length != 0){
+															r.push(result1[0].id);
+												}
 									});
-									console.log(result,343434343);
-									return result;
+									return r;
 								},
 								set(){}
 							},
 
-							
+
 							// 将权限的id数组转换为字符串格式 '1,3,4,6'
 							menuIds:{
 								get(){

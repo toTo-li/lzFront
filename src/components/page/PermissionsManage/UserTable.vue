@@ -125,6 +125,7 @@
                     }
                 })
             },
+            // 添加修改后表格的刷新
             refresh(){
                 this.getData();
                 return this.$store.state.fresh;
@@ -147,6 +148,7 @@
                 this.cur_page = val;
                 this.getData();
             },
+
             //          获取数据
             getData(){
                 let self = this;

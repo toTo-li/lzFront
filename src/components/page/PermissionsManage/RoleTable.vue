@@ -81,6 +81,7 @@
                 const self = this;
                 return self.tableData;
             },
+            // 添加修改后表格的刷新
             refresh(){
                 this.getData();
                 return this.$store.state.fresh;

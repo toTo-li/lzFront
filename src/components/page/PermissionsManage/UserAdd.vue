@@ -18,13 +18,13 @@
 			  -->
 			  <el-form :model="ruleForms" :rules="rules" ref="ruleForms" label-width="100px">
 				  <el-form-item label="用户名" prop="name">
-				    <el-input v-model="ruleForms.name" :disabled="disabled" @blur="checkName"></el-input>
+				    <el-input v-model="ruleForms.name" :readonly="disabled" @blur="checkName"></el-input>
 				  </el-form-item>
 					<el-form-item label="密码" prop="password" v-if="passwordFlag">
-				    <el-input v-model="ruleForms.password" :disabled="disabled"></el-input>
+				    <el-input v-model="ruleForms.password" :readonly="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色" prop="roleValue">
-				    <el-select v-model="roleValue" placeholder="请选择角色权限" :disabled="disabled">
+				    <el-select v-model="roleValue" placeholder="请选择角色权限" :readonly="disabled">
 				      <el-option
 				      	v-for='item in ruleForms.role'
 				      	:key="item.id"
@@ -52,10 +52,10 @@
 				  </el-form-item>
 
 				  <el-form-item label="联系人" prop="contact">
-				    <el-input  v-model="ruleForms.contactName" :disabled="disabled"></el-input>
+				    <el-input  v-model="ruleForms.contactName" :readonly="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="Email" prop="Email">
-				    <el-input  v-model="ruleForms.email" :disabled="disabled"></el-input>
+				    <el-input  v-model="ruleForms.email" :readonly="disabled"></el-input>
 				  </el-form-item>
 				  <!--<el-form-item>
 				    <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
@@ -83,9 +83,7 @@
 				//表单数据
 		        ruleForm: {
 		          name: '',
-		          role: [
-		             
-		          ],
+		          role: [],
 		          rAccount: [{
 									value: '选项1',
 									label: '黄金糕'
@@ -101,7 +99,7 @@
 							password:''
 		        },
 		        //角色的默认选项
-		        roleValue:'',
+		        roleValue:1,
 		        //关联账号的默认选项，这里的value1要与下拉选项中v-model绑定，并且value1的值要与rAccount中的value值一样，记得value1不能放在ruleForm中，否则会找不到！
 		        accountValue:"",
 		        //表单控件验证规则
@@ -138,7 +136,10 @@
 									  var self = this;
 									  self.$axios.get('/roles/all').then(function(res){
 											self.ruleForm.role = res.data;
-										})
+											self.$store.commit("addUserSelectVal",res.data)
+											
+											
+										});
 										return store.state.userDialog;
 								 },
 								 set(){
@@ -149,17 +150,24 @@
 							ruleForms:{
 								get(){
 									if(store.state.userDialogNum==1){
+										  // 是否为只读
 											this.disabled = false;
-										  this.passwordFlag = true;
+											// 密码框的显示
+											this.passwordFlag = true;
+											// 角色的默认选项
+											this.roleValue = "";
 										  return this.ruleForm;
 									}else{
 										  this.passwordFlag = false;
 											if(store.state.userDialogNum==2){
 													this.disabled = true;
+													this.roleValue = store.state.readUser.roleName;
 													return store.state.readUser;
 											}else if(store.state.userDialogNum==3){
 												  // this.roleValue = store.state.updateId;
 													this.disabled = false;
+													this.roleValue = store.state.readUser.roleName;
+													console.log(store.state);
 													return store.state.readUser;
 											}else{
 													this.disabled = false;
@@ -218,10 +226,16 @@
 							}else if(store.state.userDialogNum==2){
 										self.$store.commit("userDialog",{userDialogNum:2,flag:false});
 							}else if(store.state.userDialogNum==3){
+								    console.log(self.roleValue);
+								    var result1 = self.ruleForm.role.filter(function(item1,index1){
+														return  self.roleValue == item1.name;
+										});
+										console.log(result1,11111111111111111);
+										
 										self.$axios.put(`/users/${store.state.updateId}`,{
 											        name:store.state.readUser.name,
 															email:store.state.readUser.email,
-															roleId:self.roleValue || 1,
+															roleId:result1[0].id || 1,
 															contactName:store.state.readUser.contactName,
 										}).then(function(res){
 											if(res.status == 200){

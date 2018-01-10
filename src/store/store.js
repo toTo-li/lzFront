@@ -25,9 +25,11 @@ export default new Vuex.Store({
         */ 
         userDialogNum:0,
         // 存放查看用户按钮的信息
-        readUser:null,
+        readUser:{},
         // 修改用户的id
         updateId:null,
+        // 查看和修改的角色下拉选项
+        selectValue:"",
 /*****************************************************/ 
         // 判断角色添加部分的弹出框
         roleDialog:false,
@@ -71,10 +73,15 @@ export default new Vuex.Store({
             state.userDialog = data.flag;
             state.userDialogNum = data.userDialogNum
             state.updateId = data.updateId || null;
+            state.fresh = -data.fresh || 1;
+            
         },
         // 查看按钮的用户信息
         readUsers:(state,data)=>{
             state.readUser = data;
+        },
+        addUserSelectVal:(state,data)=>{
+            state.readUser.role = data;
         },
 /*****************************************************/ 
 

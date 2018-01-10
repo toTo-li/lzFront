@@ -4,6 +4,7 @@ import router from './router';
 import axios from './http';
 import store from './store/store'
 import ElementUI from 'element-ui';
+import Moment from 'moment';
 // import elementUIVerify  from 'element-ui-verify';
 
 import 'element-ui/lib/theme-default/index.css';    // 默认主题
@@ -14,7 +15,7 @@ Vue.use(ElementUI);
 // Vue.use(elementUIVerify);
 
 
-
+Vue.prototype.$moment = Moment;
 Vue.prototype.$axios = axios;
 new Vue({
     router,
