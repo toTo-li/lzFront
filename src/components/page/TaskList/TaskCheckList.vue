@@ -200,8 +200,8 @@
  
 //          查看
             handleRead(index,row){
-                this.dialogVisible = true;
-                console.log(row);
+               this.$store.commit('getTaskUpdateId',row.id);
+               this.$router.push('/taskcheckread');
             },
             // 审核通过并发布 
             handleAuditAndPush(index,row){

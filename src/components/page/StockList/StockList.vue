@@ -1,6 +1,5 @@
 <template>
     <div class="table">
-
         <el-button type="primary" >同步社群信息</el-button>
         <div class="handle-box">
             <div>
@@ -8,19 +7,11 @@
                     <el-option v-for="(item,index) in page_sizes"  :key="index" :label="item" :value="item">{{item}}</el-option>
                 </el-select>
             </div>
-
             <div>
                 <el-input v-model="select_word" placeholder="请输入社群名称" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </div>
-
         </div>
-        <!-- 
-
-            id:2
-            memberCount:32
-            name:"运动"
-         -->
         <el-table :data="data" border style="width: 100%" ref="multipleTable" >
             <el-table-column prop="id" label="社群ID" sortable width="320">
             </el-table-column>
@@ -30,8 +21,7 @@
             </el-table-column>
             <el-table-column prop="name" label="可用库存" width="120">
                 <template slot-scope="scope">
-                    <el-button size="small"
-                               @click="handleEdit(scope.index, scope.row)" >查看</el-button>
+                    <el-button size="small"  @click="handleEdit(scope.index, scope.row)" >查看</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -75,7 +65,6 @@
             <span slot="footer" class="dialog-footer">
 			    <el-button type="primary" @click="submitForm()">确定</el-button>
             </span>
-
         </el-dialog>
     </div>
 </template>
@@ -86,7 +75,6 @@
             return {
 //              是否显示弹出框
                 dialogVisible:false,
-                url: './static/vuetable.json',
 //              存放数据
                 tableData: [],
 //              当前显示第几页
@@ -112,6 +100,12 @@
 //          实例创建完后获取数据
             this.getData();
         },
+        watch:{
+//          监听搜索框
+            select_word:function(){
+                this.getData();
+            }
+        },
         computed: {
 //          数据过滤筛选
             data(){
@@ -120,20 +114,16 @@
             }
         },
         methods: {
-//            获取数据的方法
+//          获取数据的方法
             getData(){
                 let self = this;
-                if(process.env.NODE_ENV === 'development'){
-//                    self.url = '/ms/table/list';
-                    self.url = '/static/vuetable.json';
-                };
                 self.$axios.get(`/groups?per_page=${self.select_per}&page=${self.cur_page}&search=${self.select_word}`).then((res) => {
                     self.total = res.data.pagination.total;
                     self.tableData = res.data.data;
                 })
 
             },
-            //          每页显示条数事件
+//          每页显示条数事件
             selectChange(val){
                 this.pageSizeChange(val);
             },
@@ -150,6 +140,7 @@
 //          搜索事件
             search(){
                 this.is_search = true;
+                this.getData();
             },
 
 //          查看
@@ -158,7 +149,6 @@
                 let self = this;
                 self.currentId = row.id;
                 self.$axios.get(`/groups/times?gid=${row.id}`).then((res) => {
-                    console.log(res);
                     self.tableData3 = res.data;
                 })
             },
@@ -166,7 +156,7 @@
             submitForm(){
                 this.dialogVisible = false;
             },
-            //弹出框关闭前的确认
+//          弹出框关闭前的确认
             handleClose(done) {
                 this.$confirm('确认关闭？')
                     .then(_ => {

@@ -1,20 +1,21 @@
 <template xmlns="">
     <div>
+        <el-button type="primary" :style="{'margin-bottom':'20px'}" @click="back">返回任务管理列表</el-button>
         <el-form  label-width="110px" :rules="rules" :model="ruleForm" ref="ruleForm" >
             <el-form-item label="任务名称:" prop="name">
                 <el-input  placeholder="请输入内容" v-model="ruleForm.name"></el-input>
             </el-form-item>
-            <el-form-item label="描述:" prop="description">
+            <el-form-item label="描述:" prop="desc">
                 <el-input
                     type="textarea"
                     :rows="2"
                     placeholder="请输入内容"
-                    v-model="ruleForm.description"
+                    v-model="ruleForm.desc"
                    >
                 </el-input>
             </el-form-item>
-            <el-form-item label="标签:" prop="tagNames">
-                <el-input  placeholder="请输入内容" v-model="ruleForm.tagNames"></el-input>
+            <el-form-item label="标签:" prop="tags">
+                <el-input  placeholder="请输入内容" v-model="ruleForm.tags"></el-input>
             </el-form-item>
             <el-form-item label="发送时间:" prop="times">
                 <template v-for="(item,index) in ruleForm.times" >
@@ -217,14 +218,14 @@
             <el-form-item >
                 <el-button type="primary" @click="addWuLiao()">添加物料</el-button>
             </el-form-item>
-            <el-form-item label="是否@ALL:" prop="flag">
-                <el-select v-model="ruleForm.flag" placeholder="请选择">
+            <el-form-item label="是否@ALL:" prop="all">
+                <el-select v-model="ruleForm.all" placeholder="请选择">
                     <el-option label="是" value="1"></el-option>
                     <el-option label="否" value="2"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="期望曝光人数:" prop="hopeNums">
-                <el-input  placeholder="请输入内容" v-model="ruleForm.hopeNums"></el-input>
+            <el-form-item label="期望曝光人数:" prop="hope">
+                <el-input  placeholder="请输入内容" v-model="ruleForm.hope"></el-input>
             </el-form-item>
             <el-form-item  >
                 <el-button type="primary" @click="submitForm()">确定</el-button>
@@ -235,6 +236,7 @@
 </template>
 
 <script>
+
     export default {
         data(){
             return{
@@ -242,9 +244,9 @@
 //                    任务名称
                     name:"",
 //                    任务描述
-                    description:"",
+                    desc:"",
 //                    标签
-                    tagNames:"",
+                    tags:"",
 //                    时间
                     times:[{
                         time:Date.now()
@@ -284,9 +286,9 @@
                         },
                     }],
 //                    是否全部投放
-                    flag:"",
+                    all:"",
 //                    期望曝光人数
-                    hopeNums:1,
+                    hope:1,
 
                 },
                 // 小程序
@@ -306,10 +308,10 @@
                         { required: true, message: '请输入活动名称', trigger: 'blur' },
                         // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
                     ],
-                    description: [
+                    desc: [
                         { required: true, message: '请输入活动描述', trigger: 'blur' }
                     ],
-                    tagNames:[
+                    tags:[
                         { required: true, message: '请输入标签', trigger: 'blur' }
                     ],
                     type: [
@@ -327,17 +329,19 @@
                     wlUrl:[
                         { required: true, message: '不能为空', trigger: 'blur' }
                     ],
-                    flag:[
+                    all:[
                         { required: true, message: '不能为空', trigger: 'blur' }
                     ],
-                    hopeNums:[
+                    hope:[
                         { required: true, message: '请填写曝光数', trigger: 'blur' }
                     ]
                 },
 
             }
         },
-        
+        created(){
+            this.getData();
+        },
         methods:{
             submitForm(){
                 let self = this;
@@ -346,23 +350,23 @@
                 
                 // 日期格式转化
                 this.timeFormat();
-                self.$axios.post("/tasks",{
-                    name:Task.name,
-                    desc:Task.description,
-                    tags:Task.tagNames,
-                    times:self.timeFormated,
-                    all:Task.flag,
-                    hope:Task.hopeNums,
-                    materials:JSON.stringify(Task.materials)
-                }).then(function(res){
-                    if(res.status==201){
-                        self.$message({
-                            message: '任务新建成功！',
-                            type: 'success'
-                        });
-                    }
-                    console.log(res);
-                })
+                // self.$axios.post("/tasks",{
+                //     name:Task.name,
+                //     desc:Task.desc,
+                //     tags:Task.tags,
+                //     times:self.timeFormated,
+                //     all:Task.all,
+                //     hope:Task.hope,
+                //     materials:JSON.stringify(Task.materials)
+                // }).then(function(res){
+                //     if(res.status==201){
+                //         self.$message({
+                //             message: '任务新建成功！',
+                //             type: 'success'
+                //         });
+                //     }
+                //     console.log(res);
+                // })
             },
             // 时间格式转化
             timeFormat(){
@@ -378,6 +382,7 @@
                     return str;
                 }
                 self.timeFormated =  this.ruleForm.times.map(function(item){
+
                     return new Date(item.time).Format('YYYY-MM-DD HH:mm:SS');
                 });
                 console.log(self.timeFormated);
@@ -412,7 +417,26 @@
                     this.ruleForm.materials[index].app.pics.push(imgUrl)
                 }
             },
-
+            getData(){
+                let self = this;
+                let taskId =  self.$store.state.taskUpdateId;
+                
+                self.$axios.get(`/tasks/${taskId}`).then(function(res){
+                    console.log(res);
+                    if(res.status==200){
+                        self.ruleForm = res.data;
+                        self.ruleForm.materials = JSON.parse(res.data.materials);
+                        let a = JSON.parse(res.data.times).map(function(item){
+                            return {time:new Date(item)};
+                        })
+                        self.ruleForm.times = a;
+                        console.log(self.ruleForm);
+                    }
+                    
+                    
+                    // self.taskRead = res.data;
+                })
+            },
 //            添加物料
             addWuLiao(){
                 var w = {
@@ -486,6 +510,10 @@
                 this.ruleForm.materials = this.ruleForm.materials.filter(function(item,index){
                     return index!=a;
                 });
+            },
+            // 
+            back(){
+                this.$router.push("/basetable");
             }
         }
     }

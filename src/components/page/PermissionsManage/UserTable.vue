@@ -18,16 +18,15 @@
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </div>
         </div>
-        <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+        <el-table :data="data" border style="width: 100%" ref="multipleTable" >
             <el-table-column prop="id" label="用户ID" width="80"></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="name" label="用户名" sortable width="150">
             </el-table-column>
-            <el-table-column prop="roleName" label="角色权限" width="120">
+            <el-table-column prop="roleName" label="角色权限" >
             </el-table-column>
-            <el-table-column prop="contactName" label="关联账号"  width="250">
-                
+            <el-table-column prop="contactName" label="关联账号"  width="450">
             </el-table-column>
-            <el-table-column label="操作" prop="opertion">
+            <el-table-column label="操作" prop="opertion" width="320">
                 <template slot-scope="scope">
                     <el-button size="small"
                                @click="handleEdit(scope, scope.row)" >查看</el-button>
@@ -138,13 +137,11 @@
             },
             //          每页显示条数
             pageSizeChange(val){
-                console.log(val);
                 this.select_per = val;
                 this.getData();
             },
             //          分页按钮
             handleCurrentChange(val){
-                console.log(val);
                 this.cur_page = val;
                 this.getData();
             },
@@ -168,8 +165,6 @@
                 */ 
                 if(self.$store.state.token){
                     self.$axios.get(`/users?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
-                        console.log(res.data);
-                        
                         self.total = res.data.pagination.total;
                         self.tableData = res.data.data;
                      })
@@ -227,7 +222,6 @@
             },
             // 冻结
             handleStop(index, row){
-                console.log(row);
                 if(row.status==0){
                     /*
                         未冻结，启用状态，调用冻结接口
@@ -235,7 +229,6 @@
                     */ 
                     var self = this;
                     self.$axios.put(`/users/frozen/${row.id}`).then(function(res){
-                        console.log(res);
                         if(res.status==200){
                             self.getData();
                         }
@@ -248,30 +241,10 @@
                     */
                     var self = this;
                     self.$axios.put(`/users/unfrozen/${row.id}`).then(function(res){
-                        console.log(res);
                         self.getData();
                     })
                 }
             },
-            
-//          多选删除
-            // delAll(){
-            //     const self = this,
-            //         length = self.multipleSelection.length;
-            //     let str = '';
-            //     self.del_list = self.del_list.concat(self.multipleSelection);
-            //     for (let i = 0; i < length; i++) {
-            //         str += self.multipleSelection[i].name + ' ';
-            //     }
-            //     self.$message.error('删除了'+str);
-            //     self.multipleSelection = [];
-            // },
-
-//          选择项发生变化时会触发该事件
-            handleSelectionChange(val) {
-                console.log(val);
-                this.multipleSelection = val;
-            }
         }
     }
 </script>

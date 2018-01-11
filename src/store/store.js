@@ -11,6 +11,9 @@ export default new Vuex.Store({
         // title
         title:'',
 /*****************************************************/ 
+        //任务审核修改的任务id
+        taskUpdateId:"", 
+/*****************************************************/ 
         // 存放目前登录的用户信息
         user:{},
         // 判断用户添加部分的弹出框
@@ -95,6 +98,10 @@ export default new Vuex.Store({
         // 查看按钮的角色信息
         readRoles:(state,data)=>{
             state.readRole = data;
+        },
+/*****************************************************/ 
+        getTaskUpdateId:(state,data)=>{
+            state.taskUpdateId = data;
         }
 /*****************************************************/ 
 

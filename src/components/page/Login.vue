@@ -12,7 +12,7 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
                 </div>
-                <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名和密码随便填!</p>
+                <!-- <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名和密码随便填!</p> -->
             </el-form>
         </div>
     </div>
@@ -34,10 +34,6 @@
                     username: '',
                     password: ''
                 },
-                formData:{
-                	name:"ljy",
-                	psd:"111"
-                },
                 rules: {
                     username: [
                         { validator:checkName,trigger: 'blur'}
@@ -55,8 +51,6 @@
                 const self = this;
                 self.$refs[formName].validate((valid) => {
                     if (valid) {
-//                      localStorage.setItem('ms_username',self.ruleForm.username);
-                        
 						this.$axios.post("/users/login",{
 								username:self.ruleForm.username,
                                 password:self.ruleForm.password
@@ -75,7 +69,7 @@
                                 }
 						    },function(err){
                                 self.$message({
-                                        message: err,
+                                        message: "服务器未响应！",
                                         type: 'warning'
                                     });                               
                             }).catch(function(error){

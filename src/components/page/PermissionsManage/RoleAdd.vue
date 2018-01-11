@@ -52,8 +52,7 @@
 		        //表单控件验证规则
 		        rules: {
 		          name: [
-		            { required: true, message: '请输入角色名称', trigger: 'blur' },
-		            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+		            { required: true, message: '请输入角色名称', trigger: 'blur' }
 		          ]
 		        },
 		        //多选数据
@@ -137,11 +136,9 @@
 			    submitForm(formName){
 						  
 							let users = this.ruleForm;
-							console.log(users);
 							
 							var self = this;
 							if(store.state.roleDialogNum==1){
-								  console.log(self);
 									
 									self.$refs[formName].validate((valid)=>{
 											if(valid){
@@ -152,7 +149,6 @@
 													}).then(function(res){
 
 														if(res.status == 200 || res.status==201){
-															console.log(res);
 															self.$message({
 																message: '角色添加成功！',
 																type: 'success'
@@ -170,14 +166,11 @@
 							}else if(store.state.roleDialogNum==2){
 										self.$store.commit("roleDialog",{roleDialogNum:2,flag:false});
 							}else if(store.state.roleDialogNum==3){
-								    console.log(store.state.updateRoleId);
-								    console.log(users);
 										
 										self.$axios.put(`/roles/${store.state.updateRoleId}`,{
 											       name:store.state.readRole.name,
 														 menuIds:self.menuIds
 										}).then(function(res){
-											console.log(res);
 											
 											if(res.status == 200){
 													self.$message({

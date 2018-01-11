@@ -18,13 +18,13 @@
 			  -->
 			  <el-form :model="ruleForms" :rules="rules" ref="ruleForms" label-width="100px">
 				  <el-form-item label="用户名" prop="name">
-				    <el-input v-model="ruleForms.name" :readonly="disabled" @blur="checkName"></el-input>
+				    <el-input v-model="ruleForms.name" :disabled="disabled" @blur="checkName"></el-input>
 				  </el-form-item>
 					<el-form-item label="密码" prop="password" v-if="passwordFlag">
-				    <el-input v-model="ruleForms.password" :readonly="disabled"></el-input>
+				    <el-input v-model="ruleForms.password" :disabled="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色" prop="roleValue">
-				    <el-select v-model="roleValue" placeholder="请选择角色权限" :readonly="disabled">
+				    <el-select v-model="roleValue" placeholder="请选择角色权限" :disabled="disabled" >
 				      <el-option
 				      	v-for='item in ruleForms.role'
 				      	:key="item.id"
@@ -52,10 +52,10 @@
 				  </el-form-item>
 
 				  <el-form-item label="联系人" prop="contact">
-				    <el-input  v-model="ruleForms.contactName" :readonly="disabled"></el-input>
+				    <el-input  v-model="ruleForms.contactName" :disabled="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="Email" prop="Email">
-				    <el-input  v-model="ruleForms.email" :readonly="disabled"></el-input>
+				    <el-input  v-model="ruleForms.email" :disabled="disabled"></el-input>
 				  </el-form-item>
 				  <!--<el-form-item>
 				    <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
@@ -134,11 +134,9 @@
 							userdialogVisible:{
 								 get(){
 									  var self = this;
-									  self.$axios.get('/roles/all').then(function(res){
+										self.$axios.get('/roles/all').then(function(res){
 											self.ruleForm.role = res.data;
 											self.$store.commit("addUserSelectVal",res.data)
-											
-											
 										});
 										return store.state.userDialog;
 								 },
@@ -156,6 +154,10 @@
 											this.passwordFlag = true;
 											// 角色的默认选项
 											this.roleValue = "";
+											this.ruleForm.name = "";
+											this.ruleForm.contactName = "";
+											this.ruleForm.email = "";
+
 										  return this.ruleForm;
 									}else{
 										  this.passwordFlag = false;
@@ -167,8 +169,12 @@
 												  // this.roleValue = store.state.updateId;
 													this.disabled = false;
 													this.roleValue = store.state.readUser.roleName;
-													console.log(store.state);
-													return store.state.readUser;
+													// 解决下拉框的下拉选项没用值的问题
+													this.ruleForm.name = store.state.readUser.name;
+													this.ruleForm.contactName = store.state.readUser.contactName;
+													this.ruleForm.email = store.state.readUser.email;
+
+													return this.ruleForm;
 											}else{
 													this.disabled = false;
 													return this.ruleForm;
@@ -226,16 +232,10 @@
 							}else if(store.state.userDialogNum==2){
 										self.$store.commit("userDialog",{userDialogNum:2,flag:false});
 							}else if(store.state.userDialogNum==3){
-								    console.log(self.roleValue);
-								    var result1 = self.ruleForm.role.filter(function(item1,index1){
-														return  self.roleValue == item1.name;
-										});
-										console.log(result1,11111111111111111);
-										
 										self.$axios.put(`/users/${store.state.updateId}`,{
 											        name:store.state.readUser.name,
 															email:store.state.readUser.email,
-															roleId:result1[0].id || 1,
+															roleId:self.roleValue,
 															contactName:store.state.readUser.contactName,
 										}).then(function(res){
 											if(res.status == 200){
@@ -275,7 +275,6 @@
 						// 	url =  `/users/checkName/${store.state.updateId}/${self.ruleForms.name}`
 						// }
 						self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
-								console.log(res);
 								if(!res.data){
 										self.$message({
 											message: '用户已存在，请重新输入！',

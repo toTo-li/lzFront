@@ -59,6 +59,7 @@ const router = new Router({
                 //     path: '/drag',
                 //     component: resolve => require(['../components/page/DragList.vue'], resolve)    // 拖拽列表组件
                 // },
+
                 {
                     path: '/basetable',
                     component: resolve => require(['../components/page/TaskManage/TaskManage.vue'], resolve)    // 任务管理组件
@@ -72,8 +73,20 @@ const router = new Router({
                     component: resolve => require(['../components/page/TaskList/TaskCheckList.vue'], resolve)    // 任务审核组件
                 },
                 {
-                    path: '/drag',
-                    component: resolve => require(['../components/page/ReportTable/ReportTable.vue'], resolve)    // 报表组件
+                    path: '/taskcheckread',
+                    component: resolve => require(['../components/page/TaskList/taskCheckRead.vue'], resolve)    // 任务审核查看组件
+                },
+                // {
+                //     path: '/drag',
+                //     component: resolve => require(['../components/page/ReportTable/ReportTable.vue'], resolve)    // 报表组件
+                // },
+                {
+                    path: '/tasktable',
+                    component: resolve => require(['../components/page/ReportTable/TaskList.vue'], resolve)    // 任务报表组件
+                },
+                {
+                    path: '/groupstable',
+                    component: resolve => require(['../components/page/ReportTable/CommunityList.vue'], resolve)    // 任务报表组件
                 },
                 {
                     path: '/manage',
@@ -82,6 +95,11 @@ const router = new Router({
                 {
                     path: '/addtask',
                     component: resolve => require(['../components/page/TaskManage/NewTaskPictures.vue'], resolve)    // 新建投放任务组件
+                }
+                ,
+                {
+                    path: '/updatetask',
+                    component: resolve => require(['../components/page/TaskManage/TaskManageUpdate.vue'], resolve)    // 修改投放任务组件
                 }
             ]
         },

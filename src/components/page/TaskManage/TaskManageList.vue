@@ -11,7 +11,7 @@
                     </el-select>
                 </div>
                 <div>
-                    <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                    <el-input v-model="select_word" placeholder="请输入用户名称" class="handle-input mr10"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </div>
             </div>
@@ -221,7 +221,6 @@
         },
         filters:{
             timesTran:function(val){
-                
                 if(val != "undefined"){
                     if(typeof val == "string"){
                         val = JSON.parse(val)
@@ -233,7 +232,6 @@
                 }else{
                     return false;
                 }
-                
             }
         },
         methods: {
@@ -255,10 +253,9 @@
                 this.taskRead = {};
             },
             // 修改
-            handleEdit(index, row) {
-                this.dialogVisible = true;
-                console.log(index);
-                this.$message('编辑第'+(index+1)+'行');
+            handleUpdate(index, row) {
+                this.$store.commit('getTaskUpdateId',row.id);
+                this.$router.push("/updatetask");
             },
             // 删除
             handleDelete(index, row) {
@@ -287,6 +284,7 @@
                     }
                 });
             },
+            // 取消发布
             handleUnPush(index,row){
                 let self = this;
                 self.$axios.put(`/tasks/unpush/${row.id}`).then(function(res){
@@ -331,11 +329,10 @@
                 console.log(val);
                 this.multipleSelection = val;
             },
-            //添加用户的保存事件
+            //可用社群的确定按钮事件
             submitForm(formName){
                 //将弹出框关闭
                 this.dialogVisible = false;
-                //关闭后将数据提交
 
             },
             //弹出框关闭前的确认

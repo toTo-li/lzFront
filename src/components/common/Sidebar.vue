@@ -3,7 +3,7 @@
         <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="dark" unique-opened router>
             <template v-for="item in items">
                 <template v-if="item.subs">
-                    <el-submenu :index="item.index">
+                    <el-submenu :index="item.index" >
                         <template slot="title"><i :class="item.icon"></i>{{ item.title }}</template>
                         <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.index">{{ subItem.title }}
                         </el-menu-item>
@@ -77,7 +77,17 @@
                     {
                         icon: 'el-icon-upload2',
                         index: 'drag',
-                        title: '报表'
+                        title: '报表',
+                        subs: [
+                            {
+                                index: 'tasktable',
+                                title: '任务报表'
+                            },
+                            {
+                                index: 'groupstable',
+                                title: '社群报表'
+                            }
+                        ]
                     },
                     {
                         icon: 'el-icon-menu',
