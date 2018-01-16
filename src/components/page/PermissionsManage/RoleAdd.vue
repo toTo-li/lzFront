@@ -17,12 +17,12 @@
 			  	prop="name"		表单控件相对应的验证规则
 			  -->
 			<el-form :model="ruleForms" :rules="rules" ref="ruleForms" label-width="100px">
-				  <el-form-item label="用户名" prop="name">
+				  <el-form-item label="角色名" prop="name">
 				    <el-input v-model="ruleForms.name" :readonly="disabled"></el-input>
 				  </el-form-item>
-				  <el-form-item label="角色" prop="role">
-				    <el-checkbox-group v-model="menus">
-				      <el-checkbox v-for="permi in permissions" :label="permi.id"  :key="permi.id" :disabled="disabled">{{permi.name}}</el-checkbox></br>
+				  <el-form-item label="角色权限">
+				    <el-checkbox-group v-model="ruleForm.menus">
+				      <el-checkbox v-for="permi in ruleForm.permissions" :label="permi.id"  :key="permi.id" :disabled="disabled">{{permi.name}}</el-checkbox></br>
 				    </el-checkbox-group>
 				  </el-form-item>
 			</el-form>
@@ -42,37 +42,42 @@
 	export default {
 		data(){
 			return {
-					  //是否显示弹出框
-	        	dialogVisible: false,
-					  //表单数据
-		        ruleForm: {
+					//是否显示弹出框
+					dialogVisible: false,
+					//表单数据
+					ruleForm: {
 							name: '',
-							rescs: []
-		        },
-		        //表单控件验证规则
-		        rules: {
-		          name: [
-		            { required: true, message: '请输入角色名称', trigger: 'blur' }
-		          ]
-		        },
-		        //多选数据
-        		menus: [],
-        		permissions:[],
-						isIndeterminate: true,
-						// 只读
-						disabled:false,
-			  }
-				},
+							rescs: [],
+							//多选数据
+							menus: [],
+							// 存放所有权限
+							permissions:[],
+		      },
+					//表单控件验证规则
+					rules: {
+						name: [
+							{ required: true, message: '请输入角色名称', trigger: 'blur' }
+				  	],
+						menus:[
+							{ type: 'array', required: true, message: '请至少选择一个角色权限', trigger: 'change'}
+						]
+		      },
+					isIndeterminate: true,
+					// 只读
+					disabled:false,
+				}
+		},
 				computed:{
 					    // 由用户添加按钮和查看按钮触发弹出框
 							roledialogVisible:{
 								 get(){
 										var self = this;
+										// 获取所有权限
 										self.$axios.get('/roles/menus').then(function(res){
 											if(res.status == 200){
-													self.permissions = res.data;
+												self.ruleForm.permissions = res.data;
 											}else{
-												  return false;
+												return false;
 											}
 										});
 										return store.state.roleDialog;
@@ -86,16 +91,16 @@
 								get(){
 									if(store.state.roleDialogNum==1){
 											this.disabled = false;
-											this.menus = [];
+											this.ruleForm.menus = [];
 										  return this.ruleForm;
 									}else if(store.state.roleDialogNum==2){
-											this.menus = this.permis;
+											this.ruleForm.menus = this.permis;
 											this.disabled = true;
 											return store.state.readRole;
 									}else if(store.state.roleDialogNum==3){
 											// this.roleValue = store.state.updateId;
 											this.disabled = false;
-											this.menus = this.permis;
+											this.ruleForm.menus = this.permis;
 											return store.state.readRole;
 									}else{
 											this.disabled = false;
@@ -109,7 +114,7 @@
 							permis:{
 								get(){
 									var r = [];
-									this.permissions.forEach(function(item,index){
+									this.ruleForm.permissions.forEach(function(item,index){
                         var result1 = store.state.readRole.rescs.filter(function(item1,index1){
 														return item.id == item1.id;
 												});
@@ -121,12 +126,10 @@
 								},
 								set(){}
 							},
-
-
 							// 将权限的id数组转换为字符串格式 '1,3,4,6'
 							menuIds:{
 								get(){
-									return this.menus.join(",")
+									return this.ruleForm.menus.join(",")
 								},
 								set(){}
 							}
@@ -134,12 +137,9 @@
 		    methods:{
 				  //添加用户的保存事件
 			    submitForm(formName){
-						  
 							let users = this.ruleForm;
-							
 							var self = this;
 							if(store.state.roleDialogNum==1){
-									
 									self.$refs[formName].validate((valid)=>{
 											if(valid){
 													// 用户添加 
@@ -147,12 +147,12 @@
 															name:users.name,
 															menuIds:self.menuIds
 													}).then(function(res){
-
 														if(res.status == 200 || res.status==201){
 															self.$message({
 																message: '角色添加成功！',
 																type: 'success'
 															});
+															self.ruleForm = {};
 															self.$store.commit("roleDialog",{roleDialogNum:1,flag:false,fresh:store.state.fresh});
 														}else{
 															self.$message.error('角色添加失败！');

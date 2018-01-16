@@ -16,25 +16,21 @@
 
 			  	prop="name"		表单控件相对应的验证规则
 			  -->
-			  <el-form :model="ruleForms" :rules="rules" ref="ruleForms" label-width="100px">
+			  <el-form :model="ruleForms" :rules="rules"  ref="ruleForms" label-width="100px">
 				  <el-form-item label="用户名" prop="name">
-				    <el-input v-model="ruleForms.name" :disabled="disabled" @blur="checkName"></el-input>
+				    <el-input v-model="ruleForms.name" :disabled="disabled" @blur="checkName" ></el-input>
 				  </el-form-item>
 					<el-form-item label="密码" prop="password" v-if="passwordFlag">
 				    <el-input v-model="ruleForms.password" :disabled="disabled"></el-input>
 				  </el-form-item>
-				  <el-form-item label="角色" prop="roleValue">
-				    <el-select v-model="roleValue" placeholder="请选择角色权限" :disabled="disabled" >
+				  <el-form-item label="角色" prop="roleName">
+				    <el-select v-model="ruleForms.roleName" :disabled="disabled" @change="get">
 				      <el-option
 				      	v-for='item in ruleForms.role'
 				      	:key="item.id"
 				      	:label="item.name"
 				      	:value="item.id"
 				      	></el-option>
-							 <!-- <el-option label="系统管理员" value="1"></el-option>
-     					 <el-option label="任务管理" value="2"></el-option>
-     					 <el-option label="任务审核" value="3"></el-option> -->
-								
 				    </el-select>
 				  </el-form-item>
 				  <!--
@@ -57,10 +53,6 @@
 				  <el-form-item label="Email" prop="Email">
 				    <el-input  v-model="ruleForms.email" :disabled="disabled"></el-input>
 				  </el-form-item>
-				  <!--<el-form-item>
-				    <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
-				    <el-button @click="resetForm('ruleForm')">重置</el-button>
-				  </el-form-item>-->
 				</el-form>
 			  <!--弹出框的取消/保存部分-->
 			  <span slot="footer" class="dialog-footer">
@@ -79,27 +71,18 @@
 		data(){
 			return {
 				//是否显示弹出框
-	        	dialogVisible: false,
+						dialogVisible: false,
 				//表单数据
 		        ruleForm: {
 		          name: '',
 		          role: [],
-		          rAccount: [{
-									value: '选项1',
-									label: '黄金糕'
-								}, {
-									value: '选项2',
-									label: '双皮奶'
-								}, {
-									value: '选项3',
-									label: '蚵仔煎'
-							}],
 			        contactName:'',
 							email: '',
-							password:''
+							password:'',
+							roleName:"",
 		        },
 		        //角色的默认选项
-		        roleValue:1,
+		        roleName:"",
 		        //关联账号的默认选项，这里的value1要与下拉选项中v-model绑定，并且value1的值要与rAccount中的value值一样，记得value1不能放在ruleForm中，否则会找不到！
 		        accountValue:"",
 		        //表单控件验证规则
@@ -110,8 +93,8 @@
 							password: [
 		            { required: true, message: '请输入密码', trigger: 'blur' }
 		          ],
-		          roleValue: [
-		            {  message: '请选择角色权限', trigger: 'blur' }
+		          roleName: [
+		            { required: true, message: '请选择角色权限', trigger: 'blur' }
 		          ],
 		          rAccount: [
 		            { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
@@ -128,6 +111,9 @@
 						// 密码显示
 						passwordFlag:false
 			  }
+				},
+				created(){
+					this.$validator.localize('zh_CN');
 				},
 				computed:{
 					    // 由用户添加按钮和查看按钮触发弹出框
@@ -153,7 +139,7 @@
 											// 密码框的显示
 											this.passwordFlag = true;
 											// 角色的默认选项
-											this.roleValue = "";
+											this.roleName = "";
 											this.ruleForm.name = "";
 											this.ruleForm.contactName = "";
 											this.ruleForm.email = "";
@@ -162,13 +148,15 @@
 									}else{
 										  this.passwordFlag = false;
 											if(store.state.userDialogNum==2){
+												  console.log(store.state.readUser);
+													
 													this.disabled = true;
-													this.roleValue = store.state.readUser.roleName;
+													this.roleName = store.state.readUser.roleName;
 													return store.state.readUser;
 											}else if(store.state.userDialogNum==3){
-												  // this.roleValue = store.state.updateId;
+												  // this.roleName = store.state.updateId;
 													this.disabled = false;
-													this.roleValue = store.state.readUser.roleName;
+													this.roleName = store.state.readUser.roleName;
 													// 解决下拉框的下拉选项没用值的问题
 													this.ruleForm.name = store.state.readUser.name;
 													this.ruleForm.contactName = store.state.readUser.contactName;
@@ -209,11 +197,10 @@
 															name:users.name,
 															password:users.password,
 															email:users.email,
-															roleId:self.roleValue || 1,
+															roleId:self.roleName,
 															contactName:users.contactName,
 															status:0
 													}).then(function(res){
-
 														if(res.status == 200 || res.status==201){
 															self.$message({
 																message: '用户添加成功！',
@@ -235,7 +222,7 @@
 										self.$axios.put(`/users/${store.state.updateId}`,{
 											        name:store.state.readUser.name,
 															email:store.state.readUser.email,
-															roleId:self.roleValue,
+															roleId:self.roleName,
 															contactName:store.state.readUser.contactName,
 										}).then(function(res){
 											if(res.status == 200){
@@ -274,6 +261,7 @@
 						// }else if(store.state.userDialogNum==3){
 						// 	url =  `/users/checkName/${store.state.updateId}/${self.ruleForms.name}`
 						// }
+
 						self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
 								if(!res.data){
 										self.$message({
@@ -283,6 +271,9 @@
 								}
 						})
 						
+					},
+					get(){
+						console.log(this.ruleForms.roleName);
 					}
 
 		  }
