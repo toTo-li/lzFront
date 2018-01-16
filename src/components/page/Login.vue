@@ -56,7 +56,8 @@
                                 password:self.ruleForm.password
 							}).then(function(res){
                                 if(res.data.token){
-                                    console.log(res.data);
+                                    console.log(res);
+                                    localStorage.setItem("ms_username",res.data.user.name);
                                     // 将拿到的token存放到状态管理对象里面
                                     self.$store.commit(types.LOGIN,res.data);
                                     // 然后跳转页面，需要做用户验证
@@ -69,7 +70,7 @@
                                 }
 						    },function(err){
                                 self.$message({
-                                        message: "服务器未响应！",
+                                        message: "用户名或密码错误，请重新输入！",
                                         type: 'warning'
                                     });                               
                             }).catch(function(error){

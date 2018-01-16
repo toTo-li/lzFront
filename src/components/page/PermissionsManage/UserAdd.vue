@@ -24,7 +24,7 @@
 				    <el-input v-model="ruleForms.password" :disabled="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色" prop="roleName">
-				    <el-select v-model="ruleForms.roleName" :disabled="disabled" @change="get">
+				    <el-select v-model="roleName" :disabled="disabled" @change="get">
 				      <el-option
 				      	v-for='item in ruleForms.role'
 				      	:key="item.id"
@@ -139,7 +139,7 @@
 											// 密码框的显示
 											this.passwordFlag = true;
 											// 角色的默认选项
-											this.roleName = "";
+											this.roleName = this.ruleForm.role[0].name;
 											this.ruleForm.name = "";
 											this.ruleForm.contactName = "";
 											this.ruleForm.email = "";
@@ -149,7 +149,6 @@
 										  this.passwordFlag = false;
 											if(store.state.userDialogNum==2){
 												  console.log(store.state.readUser);
-													
 													this.disabled = true;
 													this.roleName = store.state.readUser.roleName;
 													return store.state.readUser;
@@ -219,20 +218,33 @@
 							}else if(store.state.userDialogNum==2){
 										self.$store.commit("userDialog",{userDialogNum:2,flag:false});
 							}else if(store.state.userDialogNum==3){
-										self.$axios.put(`/users/${store.state.updateId}`,{
-											        name:store.state.readUser.name,
-															email:store.state.readUser.email,
-															roleId:self.roleName,
-															contactName:store.state.readUser.contactName,
-										}).then(function(res){
-											if(res.status == 200){
-													self.$message({
-														message: '用户修改成功！',
-														type: 'success'
-													});
-													self.$store.commit("userDialog",{userDialogNum:3,flag:false,fresh:store.state.fresh});
-											}
-										})
+										
+										this.$confirm('确定修改该用户?', '提示', {
+												confirmButtonText: '确定',
+												cancelButtonText: '取消',
+												type: 'warning',
+												center: true
+										}).then(() => {
+											self.$axios.put(`/users/${store.state.updateId}`,{
+																name:store.state.readUser.name,
+																email:store.state.readUser.email,
+																roleId:self.roleName,
+																contactName:store.state.readUser.contactName,
+											}).then(function(res){
+												if(res.status == 200){
+														self.$message({
+															message: '用户修改成功！',
+															type: 'success'
+														});
+														self.$store.commit("userDialog",{userDialogNum:3,flag:false,fresh:store.state.fresh});
+												}
+											});
+										}).catch(() => {
+												this.$message({
+														type: 'info',
+														message: '已取消用户修改'
+												});
+										});
 							}
 
 					},

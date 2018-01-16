@@ -16,12 +16,12 @@
                 </div>
             </div>
             <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-                <el-table-column prop="id" label="任务ID" width="80"></el-table-column>  <!-- type="selection" -->
+                <el-table-column prop="id" label="任务ID" width="80" sortable></el-table-column>  <!-- type="selection" -->
                 <el-table-column prop="name" label="任务名称" sortable width="150">
                 </el-table-column>
                 <!-- <el-table-column prop="userPermi" label="投放类型" width="120">
                 </el-table-column> -->
-                <el-table-column prop="times" label="发送时间点" width="500">
+                <el-table-column prop="times" label="发送时间点" width="512">
                     <template slot-scope="scope">
                         <span>{{scope.row.times | timesTran}}</span>
                     </template>
@@ -46,7 +46,7 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column label="操作" prop="opertion">
+                <el-table-column label="操作" prop="opertion" width="400">
                     <template slot-scope="scope">
                         <el-button size="small"
                                    @click="handleRead(scope.$index, scope.row)" >查看</el-button>
@@ -60,7 +60,7 @@
                                    @click="handleUnPush(scope.$index, scope.row)" :disabled="scope.row.pushStatus==0?true:false" >取消发布</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column label="可用社群列表" width="120">
+                <el-table-column label="可用社群列表" width="130">
                     <template slot-scope="scope">
                         <el-button size="small"
                                    @click="handleEdit(scope, scope.row)" >查看</el-button>
@@ -261,41 +261,74 @@
             handleDelete(index, row) {
                 let self = this;
                 console.log(row.id);
-                self.$axios.delete(`/tasks/${row.id}`).then(function(res){
-                    if(res.status==204){
-                        self.$message({
-                            message: '任务删除成功！',
-                            type: 'success'
-                        });
-                        self.getData();
-                    }
-                })
+                this.$confirm('确定删除该任务?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    self.$axios.delete(`/tasks/${row.id}`).then(function(res){
+                        if(res.status==204){
+                            self.$message({
+                                message: '任务删除成功！',
+                                type: 'success'
+                            });
+                            self.getData();
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消任务删除'
+                    });
+                });
             },
             // 提交任务
             handleSubmit(index,row){
                 let self = this;
+                console.log(row.id);
                 self.$axios.put(`/tasks/commit/${row.id}`).then(function(res){
-                    if(res.status==200){
+                    console.log(res);
+                    if(res.status==200&&res.data.success){
                         self.$message({
                             message: '任务提交成功！',
                             type: 'success'
                         });
                         self.getData();
+                    }else{
+                        self.$message({
+                            message: '任务提交失败！',
+                            type: 'error'
+                        });
                     }
                 });
             },
             // 取消发布
             handleUnPush(index,row){
                 let self = this;
-                self.$axios.put(`/tasks/unpush/${row.id}`).then(function(res){
-                    console.log(res);
-                    if(res.status == 200){
-                        self.$message({
-                            message: `${res.data.msg}`,
-                            type: 'success'
-                        });
-                        self.getData();
-                    }
+                
+                this.$confirm('确定取消发布?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    self.$axios.put(`/tasks/unpush/${row.id}`).then(function(res){
+                        console.log(res);
+                        
+                        if(res.status == 200){
+                            self.$message({
+                                message: "取消发布成功",
+                                type: 'success'
+                            });
+                            self.getData();
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消'
+                    });
                 });
             },
 //          每页显示条数事件
@@ -317,7 +350,7 @@
             getData(){
                 let self = this;
                 self.$axios.get(`/tasks?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
-                    console.log(res);
+                    console.log(res,11111111111111);
                     self.total = res.data.pagination.total;
                     self.tableData = res.data.data;
 

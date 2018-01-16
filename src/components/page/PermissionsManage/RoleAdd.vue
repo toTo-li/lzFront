@@ -167,19 +167,31 @@
 										self.$store.commit("roleDialog",{roleDialogNum:2,flag:false});
 							}else if(store.state.roleDialogNum==3){
 										
-										self.$axios.put(`/roles/${store.state.updateRoleId}`,{
-											       name:store.state.readRole.name,
-														 menuIds:self.menuIds
-										}).then(function(res){
-											
-											if(res.status == 200){
+										this.$confirm('确定修改该角色?', '提示', {
+											confirmButtonText: '确定',
+											cancelButtonText: '取消',
+											type: 'warning',
+											center: true
+										}).then(() => {
+											self.$axios.put(`/roles/${store.state.updateRoleId}`,{
+											        name:store.state.readRole.name,
+												    menuIds:self.menuIds
+											}).then(function(res){
+												if(res.status == 200){
 													self.$message({
-														message: '用户修改成功！',
+														message: '角色修改成功！',
 														type: 'success'
 													});
 													self.$store.commit("roleDialog",{roleDialogNum:3,flag:false,fresh:store.state.fresh});
-											}
-										})
+												}
+											});
+										}).catch(() => {
+											this.$message({
+												type: 'info',
+												message: '已取消角色修改'
+											});
+										});
+
 							}
 							
 					},

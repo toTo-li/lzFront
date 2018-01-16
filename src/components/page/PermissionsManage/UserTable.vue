@@ -19,7 +19,7 @@
                 </div>
         </div>
         <el-table :data="data" border style="width: 100%" ref="multipleTable" >
-            <el-table-column prop="id" label="用户ID" width="80"></el-table-column>  <!-- type="selection" -->
+            <el-table-column prop="id" label="用户ID" width="80" sortable></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="name" label="用户名" sortable width="150">
             </el-table-column>
             <el-table-column prop="roleName" label="角色权限" >
@@ -202,22 +202,35 @@
                         return false;
                     }
                 });
+                
             },
             // 删除
             handleDelete(index, row) {
                 let self = this;
-                this.$axios.delete(`/users/${row.id}`).then(function(res){
-                    if(res.status == 200 || res.status == 204){
-                        // self.$store.commit('readUsers',res.data);
-                        // self.$store.commit("userDialog",{userDialogNum:3,flag:true});
-                        self.$message({
-                            message: '删除用户成功！',
-                            type: 'success'
+                this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                        center: true
+                    }).then(() => {
+                        self.$axios.delete(`/users/${row.id}`).then(function(res){
+                            if(res.status == 200 || res.status == 204){
+                                // self.$store.commit('readUsers',res.data);
+                                // self.$store.commit("userDialog",{userDialogNum:3,flag:true});
+                                self.$message({
+                                    message: '删除用户成功！',
+                                    type: 'success'
+                                });
+                                self.getData();
+                            }else{
+                                return false;
+                            }
                         });
-                        self.getData();
-                    }else{
-                        return false;
-                    }
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });
                 });
             },
             // 冻结
@@ -228,21 +241,57 @@
                         /users/frozen/{id}
                     */ 
                     var self = this;
-                    self.$axios.put(`/users/frozen/${row.id}`).then(function(res){
-                        if(res.status==200){
-                            self.getData();
-                        }
-                        
-                    })
+                    self.$confirm('确定冻结该用户?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                        center: true
+                    }).then(() => {
+                        self.$axios.put(`/users/frozen/${row.id}`).then(function(res){
+                            if(res.status==200){
+                                self.getData();
+                                self.$message({
+                                    type: 'success',
+                                    message: '冻结成功!'
+                                });
+                            }
+                        });
+                    }).catch(() => {
+                        self.$message({
+                            type: 'info',
+                            message: '已取消冻结'
+                        });
+                    });
                 }else{
                     /*
                         冻结，未启用状态，调用解除冻结接口
                         /users/unfroze/{id}
                     */
                     var self = this;
-                    self.$axios.put(`/users/unfrozen/${row.id}`).then(function(res){
-                        self.getData();
-                    })
+                    this.$confirm('是否启用该用户?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                        center: true
+                    }).then(() => {
+                        self.$axios.put(`/users/unfrozen/${row.id}`).then(function(res){
+                            if(res.status==200){
+                                self.getData();
+                                self.$message({
+                                    type: 'success',
+                                    message: '启用成功!'
+                                });
+                            }
+                            
+                        });
+                        
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消解除冻结'
+                        });
+                    });
+
                 }
             },
         }
