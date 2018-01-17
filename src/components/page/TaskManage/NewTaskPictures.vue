@@ -96,7 +96,7 @@
                                             </el-form-item>
                                             <el-form-item  label="图片URl:">
                                                 <p :style="{'width':'350px','word-wrap':'break-word'}">{{i.filePath}}</p>
-                                            </el-form-item> 
+                                            </el-form-item>
                                      </div>
                                 </template>
                                 <el-form-item>
@@ -150,9 +150,9 @@
                                             </el-form-item>
                                             <el-form-item  label="图片URl:">
                                                 <p :style="{'width':'350px','word-wrap':'break-word'}">{{i.filePath}}</p>
-                                            </el-form-item> 
+                                            </el-form-item>
                                      </div>
-                                   
+
                                 </template>
                                 <el-form-item label="落地页:">
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.landingPage"></el-input>
@@ -173,7 +173,7 @@
                                         </div>
                                     </el-card>
                                 </el-form-item>
-                               
+
                                 <!-- <el-form-item label="预览:">
                                     <img src="http://element-cn.eleme.io/static/hamburger.50e4091.png" alt="">
                                 </el-form-item> -->
@@ -216,7 +216,7 @@
                                             </el-form-item>
                                             <el-form-item  label="图片URl:">
                                                 <p :style="{'width':'350px','word-wrap':'break-word'}">{{i.filePath}}</p>
-                                            </el-form-item> 
+                                            </el-form-item>
                                      </div>
                                 </template>
                             </template>
@@ -265,12 +265,12 @@
                             1：链接物料
                             2：小程序物料
                             3：图片物料
-                        //之前的物料 
+                        //之前的物料
                         {label:'文字图片',value:'wordPic'},
                         {label:'卡片式链接',value:'cardLink'},
                         {label:'小程序',value:'app'}
-                    
-                    */ 
+
+                    */
                     options:[
                             {label:'文字',value:0},
                             {label:'卡片式链接',value:1},
@@ -371,7 +371,7 @@
 
             }
         },
-        
+
         methods:{
             submitForm(){
                 let self = this;
@@ -415,7 +415,7 @@
                          wl.push({type:3,files:p});
                     }
                 });
-                
+
                 // 日期格式转化
                 this.timeFormat();
                 self.$axios.post("/tasks",{
@@ -444,9 +444,9 @@
                     str = str.replace(/yyyy|YYYY/,this.getFullYear());
                     str = str.replace(/MM/,(this.getMonth()+1)>9?(this.getMonth()+1).toString():'0'+(this.getMonth()+1));
                     str = str.replace(/DD/,this.getDate()>9?this.getDate().toString():'0'+this.getDate());
-                    str = str.replace(/hh|HH/,this.getHours()>9?this.getHours().toString():'0' + this.getHours());  
-                    str = str.replace(/mm/,this.getMinutes()>9?this.getMinutes().toString():'0' + this.getMinutes()); 
-                    str = str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds()); 
+                    str = str.replace(/hh|HH/,this.getHours()>9?this.getHours().toString():'0' + this.getHours());
+                    str = str.replace(/mm/,this.getMinutes()>9?this.getMinutes().toString():'0' + this.getMinutes());
+                    str = str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds());
                     return str;
                 }
                 self.timeFormated =  this.ruleForm.times.map(function(item){
@@ -463,7 +463,7 @@
             previewCardLink(item){
                 console.log(item);
                 item.cardLinkPre = true;
-                
+
             },
             // 图片预览
             handleRemove(file, fileList0) {
@@ -517,7 +517,7 @@
             // 获取描述文件上传后的地址
             handleAppDescFile(response,item,index){
                 console.log(response);
-                this.fileBtnBool = response.ok;    
+                this.fileBtnBool = response.ok;
                 let fileUrl = response.map.material.url;
                 this.ruleForm.materials[index].app.pics.push({filePath:response.map.material.url,fileType:item.app.fileType});
                 console.log(this.ruleForm.materials[index].app.pics);
@@ -582,7 +582,7 @@
                 console.log(this.ruleForm.times);
                 if(this.ruleForm.times.length<3){
                     this.ruleForm.times.push({time:""});
-                    
+
                 }else{
                     return false;
                 }
@@ -644,10 +644,10 @@
     }
     .preview .item .last{
         width:35%;
-    } 
+    }
     .preview .item .first{
         width:65%;
-    } 
+    }
     .preview .item .first h2,.preview .item .first p{
         overflow: hidden;
         white-space: nowrap;
@@ -667,7 +667,7 @@
     }
     /* .preview .item1 .last{
         width:35%;
-    } 
+    }
     .preview .item1 .first{
         width:65%;
     }  */
