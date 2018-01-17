@@ -33,7 +33,11 @@ axios.interceptors.response.use(
                     // 401 清除token信息并跳转到登录页面
                     store.commit(types.LOGOUT);
                     router.replace({
+<<<<<<< HEAD
                         
+=======
+
+>>>>>>> 93f5791764f38feda4e52ad0a3827aab6a8bea64
                         path: 'login',
                         query: {redirect: router.currentRoute.fullPath}
                     })
@@ -42,5 +46,4 @@ axios.interceptors.response.use(
         // console.log(JSON.stringify(error));//console : Error: Request failed with status code 402
         return Promise.reject(error.response.data)
     });
-
 export default axios;
