@@ -9,7 +9,7 @@
                 </div>
 
                 <div>
-                    <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                    <el-input v-model="select_word" placeholder="请输入角色名" class="handle-input mr10"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </div>
 

@@ -179,11 +179,16 @@
                                 </el-form-item> -->
                             </template>
                             <template v-else-if="item.type==0">
-                                <el-form-item label="落地页:">
-                                    <el-input  placeholder="请输入内容" v-model="item.word.landingPage"></el-input>
-                                </el-form-item>
+                                
                                 <el-form-item label="文字:">
-                                    <el-input  placeholder="请输入内容" v-model="item.word.landingPageDesc"></el-input>
+                                    <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="item.word.landingPageDesc"></el-input>
+                                </el-form-item>
+                                <el-form-item  
+                                    v-for="(landpage,index) in item.word.landingPage" 
+                                    :label="'落地页' + (index+1)" 
+                                    :key="index"
+                                    >
+                                    <el-input  placeholder="请输入内容" v-model="landpage.value"></el-input> <el-button @click="addLandPage(item.word)">+</el-button>
                                 </el-form-item>
                             </template>
                             <template v-else>
@@ -297,7 +302,9 @@
                             cardLinkPre:false
                         },
                         word:{
-                            landingPage:"",
+                            landingPage:[{
+                                value:""
+                            }],
                             landingPageDesc:""
                         },
                         pic:{
@@ -307,7 +314,7 @@
                         }
                     }],
 //                    是否全部投放
-                    all:"是",
+                    all:"否",
 //                    期望曝光人数
                     hope:1,
 
@@ -373,7 +380,7 @@
                 let wl = [];
                 Task.materials.map(function(item,index){
                     if(item.type==0){
-                        let content = `${item.word.landingPageDesc}<!URL>${item.word.landingPage}`+"?groupId=${groupId}</URL>";
+                        let content = `${item.word.landingPageDesc}<URL>`+"http://y051.ad99.cc:9002/e.gif?ri=y051_21745_1516087852_3&im=0ae5c051b9c74de7b0f1a6591ed1da2c&dl=478240&ui=&fi=&it=1&os=&ps=23507&cp=727&sp=942&tg=&ta=1&at=1516087852289&dt=0&od=&ae=201&te=&mi=2235&ip=114.253.97.106&rp=&dx=114.253.97.106&fn=0&ux=1&ei=32&di=2&groupid=${groupId}&o="+`${item.word.landingPage}</URL>详细查看`;
                         wl.push({type:0,content:content});
                     }else if(item.type==1){
                         let p = item.cardLink.pics.map(function(item){
@@ -394,7 +401,6 @@
                         let app = {
                             type:2,
                             title:item.app.title,
-                            /*-------------------------待改-------------------------*/ 
                             // 描述文件的名字（标题）
                             content:item.app.content,
                             // 页面路径
@@ -516,6 +522,12 @@
                 this.ruleForm.materials[index].app.pics.push({filePath:response.map.material.url,fileType:item.app.fileType});
                 console.log(this.ruleForm.materials[index].app.pics);
             },
+            // 添加落地页
+            addLandPage(item){
+                item.landingPage.push({
+                    value:""
+                });
+            },
 //            添加物料
             addWuLiao(){
                 let a = this.indexs+1;
@@ -551,7 +563,9 @@
 //                    文字
                     word:{
 //                      落地页
-                        landingPage:"",
+                        landingPage:[{
+                            value:""
+                        }],
 //                      落地页描述
                         landingPageDesc:""
                     },
@@ -566,7 +580,6 @@
             // 添加时间
             addTimes(){
                 console.log(this.ruleForm.times);
-                
                 if(this.ruleForm.times.length<3){
                     this.ruleForm.times.push({time:""});
                     
@@ -666,5 +679,8 @@
     .preview .item1 img{
         width:100%;
         height:100%;
+    }
+    .el-input{
+        width:80%;
     }
 </style>

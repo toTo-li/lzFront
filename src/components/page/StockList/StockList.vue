@@ -48,7 +48,9 @@
             <el-table
                 :data="tableData3"
                 height="250"
-                style="width: 100%">
+                style="width: 100%"
+                :row-class-name="tableRowClassName"
+                >
                 <el-table-column
                     prop="date"
                     label="日期"
@@ -145,12 +147,26 @@
 
 //          查看
             handleEdit(index,row){
-                this.dialogVisible = true;
                 let self = this;
                 self.currentId = row.id;
                 self.$axios.get(`/groups/times?gid=${row.id}`).then((res) => {
-                    self.tableData3 = res.data;
+                    console.log(res);
+                    if(res.status==200){
+                        this.dialogVisible = true;
+                        self.tableData3 = res.data;
+                    }
+                    
                 })
+            },
+            tableRowClassName(row,rowIndex){
+                console.log(row);
+                if(row.mark === 1){
+                    console.log(1111111111);
+                    return "usedTime";
+                }else{
+                    console.log(222222222);
+                    return "red";
+                }
             },
 //          弹出框确定事件
             submitForm(){
@@ -158,11 +174,7 @@
             },
 //          弹出框关闭前的确认
             handleClose(done) {
-                this.$confirm('确认关闭？')
-                    .then(_ => {
-                        done();
-                    })
-                    .catch(_ => {});
+                done();
             }
 
         }
@@ -195,5 +207,11 @@
     }
     .butMargin{
         margin:5px 0px;
+    }
+   .el-table .usedTime{
+        background-color: darkgray;
+    }
+   .el-table .red{
+        background-color: red;
     }
 </style>

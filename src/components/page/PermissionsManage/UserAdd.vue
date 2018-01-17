@@ -255,11 +255,7 @@
 					},
 			    //弹出框关闭前的确认
 			    handleClose(done) {
-			        this.$confirm('确认关闭？')
-			          .then(_ => {
 									this.$store.commit("userDialog",{userDialogNum:1,flag:false});
-			          })
-			          .catch(_ => {});
 					},
 					openUserDialog(){
 						 this.$store.commit("userDialog",{userDialogNum:1,flag:true});

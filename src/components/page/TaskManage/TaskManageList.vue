@@ -16,12 +16,12 @@
                 </div>
             </div>
             <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-                <el-table-column prop="id" label="任务ID" width="80" sortable></el-table-column>  <!-- type="selection" -->
-                <el-table-column prop="name" label="任务名称" sortable width="150">
+                <el-table-column prop="id" label="任务ID" width="100" sortable></el-table-column>  <!-- type="selection" -->
+                <el-table-column prop="name" label="任务名称"  width="150">
                 </el-table-column>
                 <!-- <el-table-column prop="userPermi" label="投放类型" width="120">
                 </el-table-column> -->
-                <el-table-column prop="times" label="发送时间点" width="512">
+                <el-table-column prop="times" label="发送时间点" width="472">
                     <template slot-scope="scope">
                         <span>{{scope.row.times | timesTran}}</span>
                     </template>
@@ -60,10 +60,10 @@
                                    @click="handleUnPush(scope.$index, scope.row)" :disabled="scope.row.pushStatus==0?true:false" >取消发布</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column label="可用社群列表" width="130">
+                <el-table-column label="占用的社群列表" width="150">
                     <template slot-scope="scope">
                         <el-button size="small"
-                                   @click="handleEdit(scope, scope.row)" >查看</el-button>
+                                   @click="handleUsed(scope, scope.row)" >查看</el-button>
                     </template>
                 </el-table-column>
 
@@ -120,29 +120,38 @@
             <el-dialog
                 :visible.sync="dialogVisible"
                 width="20%"
-                :before-close="handleClose">
-                <h3>任务1可发送社群及时间点: </h3>
+                :before-close="handleClose"
+                >
+                <h3>任务{{usedId}}占用社群及时间点: </h3>
                 <el-table
                     :data="tableData3"
                     height="250"
-                    style="width: 100%">
+                    style="width: 100%"
+                    v-if="usedFlag"
+                    >
                     <el-table-column
-                        prop="date"
+                        prop="groupId"
                         label="群ID"
                         width="380">
                     </el-table-column>
                     <el-table-column
-                        prop="date"
+                        prop="execTime"
                         label="日期"
                         width="380">
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="mark"
                         label="发布状态"
                     >
+                        <template slot-scope="scope">
+                                <span v-if="scope.row.mark==1">已发布</span>
+                                <span v-else>未发布</span>
+                        </template>
+                        
                     </el-table-column>
 
                 </el-table>
+                <h1 v-else :class="{usedGroupNo:true}">尚未占用社群</h1>
                 <!--弹出框的取消/保存部分-->
                 <span slot="footer" class="dialog-footer">
 			    <el-button type="primary" @click="submitForm()">确定</el-button>
@@ -169,35 +178,12 @@
                 select_word: '',
                 is_search: false,
                 page_sizes:[10,15,20,25,30],
-                tableData3: [{
-                    date: '2016-05-03',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-02',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-04',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-01',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-08',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-06',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-07',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }],
+                // 占用的社群的数据
+                tableData3: [],
+                // 占用的社群ID
+                usedId:"",
+                // 是否有占用社群
+                usedFlag:true,
                 // 任务查看数据
                 taskRead:{}
 
@@ -289,7 +275,7 @@
                 console.log(row.id);
                 self.$axios.put(`/tasks/commit/${row.id}`).then(function(res){
                     console.log(res);
-                    if(res.status==200&&res.data.success){
+                    if(res.status==200){
                         self.$message({
                             message: '任务提交成功！',
                             type: 'success'
@@ -331,6 +317,23 @@
                     });
                 });
             },
+            // 占用的社群列表
+            handleUsed(index,row){
+                let self = this;
+                self.usedId = row.id;
+                self.$axios.get(`/tasks/used/${row.id}`).then(function(res){
+                    console.log(res);
+                    if(res.status==200){
+                        self.dialogVisible = true;
+                        if(res.data.length==0){
+                            self.usedFlag = false;
+                        }else{
+                            self.usedFlag = true;
+                            self.tableData3 = res.data;
+                        }
+                    }
+                });
+            },
 //          每页显示条数事件
             selectChange(val){
                 this.pageSizeChange(val);
@@ -370,11 +373,7 @@
             },
             //弹出框关闭前的确认
             handleClose(done) {
-                this.$confirm('确认关闭？')
-                    .then(_ => {
                         done();
-                    })
-                    .catch(_ => {});
             },
 //            新建投放任务
             addTask(){
@@ -410,5 +409,9 @@
     }
     .readElForm{
         margin-top:30px;
+    }
+    .usedGroupNo{
+        text-align: center;
+        color:red;
     }
 </style>

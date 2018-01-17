@@ -236,11 +236,7 @@
             },
             //弹出框关闭前的确认
             handleClose(done) {
-                this.$confirm('确认关闭？')
-                .then(_ => {
-                    done();
-                })
-                .catch(_ => {});
+                
             }
 
         }

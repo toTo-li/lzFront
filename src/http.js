@@ -5,7 +5,9 @@ import router from './router'
 
 // axios 配置
 axios.defaults.timeout = 5000;
-axios.defaults.baseURL = 'http://test.lz.thextrader.cn/api/V1';
+// axios.defaults.baseURL = 'http://test.lz.thextrader.cn/api/V1';
+axios.defaults.baseURL = 'http://192.168.3.39:8084/api/V1';
+
 
 // http request 拦截器
 axios.interceptors.request.use(
@@ -31,6 +33,7 @@ axios.interceptors.response.use(
                     // 401 清除token信息并跳转到登录页面
                     store.commit(types.LOGOUT);
                     router.replace({
+                        
                         path: 'login',
                         query: {redirect: router.currentRoute.fullPath}
                     })

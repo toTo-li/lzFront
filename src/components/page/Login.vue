@@ -50,6 +50,9 @@
             submitForm(formName) {
                 const self = this;
                 self.$refs[formName].validate((valid) => {
+                    console.log(self.$refs);
+                    console.log(valid);
+                    
                     if (valid) {
 						this.$axios.post("/users/login",{
 								username:self.ruleForm.username,
@@ -69,6 +72,8 @@
                                     });
                                 }
 						    },function(err){
+                                console.log(err);
+                                new Error('用户名错误');
                                 self.$message({
                                         message: "用户名或密码错误，请重新输入！",
                                         type: 'warning'

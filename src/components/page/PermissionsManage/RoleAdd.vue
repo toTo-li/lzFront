@@ -202,16 +202,12 @@
 					},
 			    //弹出框关闭前的确认
 			    handleClose(done) {
-			        this.$confirm('确认关闭？')
-			          .then(_ => {
-			            this.$store.commit("roleDialog",{roleDialogNum:1,flag:false});
-			          })
-			          .catch(_ => {});
-					},
-					// 弹出框
-					openRoleDialog(){
-						 this.$store.commit("roleDialog",{roleDialogNum:1,flag:true});
-					}
+					  this.$store.commit("roleDialog",{roleDialogNum:1,flag:false});
+				},
+				// 弹出框
+				openRoleDialog(){
+						this.$store.commit("roleDialog",{roleDialogNum:1,flag:true});
+				}
 		    }
 		
 	}
