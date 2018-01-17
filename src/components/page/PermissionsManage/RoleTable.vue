@@ -15,7 +15,7 @@
 
         </div>
         <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-            <el-table-column prop="id" label="角色ID" width="80"></el-table-column>  <!-- type="selection" -->
+            <el-table-column prop="id" label="角色ID" width="80" sortable></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="name" label="角色名称" sortable width="150">
             </el-table-column>
             <el-table-column prop="menus" label="角色权限" >
@@ -157,29 +157,31 @@
             // 删除
             handleDelete(index, row) {
                 let self = this;
-                this.$axios.delete(`/roles/${row.id}`).then(function(res){
-                    if(res.status == 200 || res.status == 204){
-                        self.$message({
-                            message: '删除用户成功！',
-                            type: 'success'
-                        });
-                        self.getData();
-                    }else{
-                        return false;
-                    }
+                this.$confirm('确定删除该角色?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    self.$axios.delete(`/roles/${row.id}`).then(function(res){
+                        if(res.status == 200 || res.status == 204){
+                            self.$message({
+                                message: '删除角色成功！',
+                                type: 'success'
+                            });
+                            self.getData();
+                        }else{
+                            return false;
+                        }
+                    });
+                    
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消角色删除'
+                    });
                 });
             },
-            // delAll(){
-            //     const self = this,
-            //         length = self.multipleSelection.length;
-            //     let str = '';
-            //     self.del_list = self.del_list.concat(self.multipleSelection);
-            //     for (let i = 0; i < length; i++) {
-            //         str += self.multipleSelection[i].name + ' ';
-            //     }
-            //     self.$message.error('删除了'+str);
-            //     self.multipleSelection = [];
-            // },
 //          选择项发生变化时会触发该事件
             handleSelectionChange(val) {
                 console.log(val);

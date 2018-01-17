@@ -20,12 +20,12 @@
             </el-table-column>
             <el-table-column prop="name" label="任务名称" width="240">
             </el-table-column>
-            <el-table-column prop="times" label="发送时间点" >
+            <el-table-column prop="times" label="发送时间点" width="812">
                 <template slot-scope="scope">
                     <span>{{scope.row.times | timesTran}}</span>
                 </template>
             </el-table-column>
-            <el-table-column  label="操作" width="360">
+            <el-table-column  label="操作" width="280">
                 <template slot-scope="scope">
                     <el-button size="small"
                                @click="handleRead(scope.index, scope.row)" >查看</el-button>
@@ -35,7 +35,7 @@
                                @click="handleNoAudit(scope.$index, scope.row)">审核拒绝</el-button> -->
                 </template>
             </el-table-column>
-            <el-table-column prop="auditStatus" label="状态" width="120">
+            <el-table-column prop="auditStatus" label="状态" width="140">
                 <template slot-scope="scope">
                         <span v-if="scope.row.auditStatus==0">未审核</span>
                         <span v-else-if="scope.row.auditStatus==1">审核通过</span>
@@ -206,15 +206,28 @@
             // 审核通过并发布 
             handleAuditAndPush(index,row){
                 let self = this;
-                self.$axios.put(`/tasks/audit/${row.id}`).then(function(res){
-                    console.log(res);
-                    if(res.status == 200){
-                        self.$message({
-                            message: `${res.data.msg}`,
-                            type: 'success'
-                        });
-                        self.getData();
-                    }
+                
+                this.$confirm('确定审核通过并发布?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    self.$axios.put(`/tasks/audit/${row.id}`).then(function(res){
+                        console.log(res);
+                        if(res.status == 200){
+                            self.$message({
+                                message: "审核通过并发布",
+                                type: 'success'
+                            });
+                            self.getData();
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消'
+                    });
                 });
             },
 //          弹出框确定事件
