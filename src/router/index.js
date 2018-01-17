@@ -12,7 +12,7 @@ const router = new Router({
             redirect: '/login'
         },
         {
-            path: '/home', 
+            path: '/home',
             // 使用meta属性来设置页面是否需要登录权限
             meta:{
                 requireAuth:true,
@@ -101,6 +101,11 @@ const router = new Router({
                     path: '/updatetask',
                     component: resolve => require(['../components/page/TaskManage/TaskManageUpdate.vue'], resolve)    // 修改投放任务组件
                 }
+                ,
+                {
+                    path: '/changepass',
+                    component: resolve => require(['../components/page/ChangePass.vue'], resolve)    // 修改投放任务组件
+                }
             ]
         },
         {
@@ -109,7 +114,7 @@ const router = new Router({
         }
     ]
 });
-// 
+//
 if(window.localStorage.getItem('token')){
     store.commit(types.LOGIN,{token:window.localStorage.getItem('token')});
 }
@@ -126,7 +131,7 @@ router.beforeEach((to,from,next)=>{
     }else{
         next();
     }
-    
+
 });
 
 
