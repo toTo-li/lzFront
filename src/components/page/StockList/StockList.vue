@@ -155,13 +155,12 @@
                         this.dialogVisible = true;
                         self.tableData3 = res.data;
                     }
-                    
                 })
             },
             tableRowClassName(row,rowIndex){
                 console.log(row);
                 if(row.mark === 1){
-                    console.log(1111111111);
+                    console.log(111111111);
                     return "usedTime";
                 }else{
                     console.log(222222222);
@@ -209,9 +208,9 @@
         margin:5px 0px;
     }
    .el-table .usedTime{
-        background-color: darkgray;
+        background: darkgray;
     }
    .el-table .red{
-        background-color: red;
+        background: red;
     }
 </style>

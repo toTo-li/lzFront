@@ -24,8 +24,8 @@
         },
         computed:{
             username(){
-                let username = localStorage.getItem('ms_username');
-                return username ? username : this.name;
+                // let username = localStorage.getItem('ms_username');
+                // return username ? username : this.name;
             }
         },
         methods:{

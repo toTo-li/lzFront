@@ -188,7 +188,7 @@
                                     :label="'落地页' + (index+1)" 
                                     :key="index"
                                     >
-                                    <el-input  placeholder="请输入内容" v-model="landpage.value"></el-input> <el-button @click="addLandPage(item.word)">+</el-button>
+                                    <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value"></el-input> <el-button @click="addLandPage(item.word)">+</el-button>
                                 </el-form-item>
                             </template>
                             <template v-else>
@@ -680,7 +680,7 @@
         width:100%;
         height:100%;
     }
-    .el-input{
+    .landPageW{
         width:80%;
     }
 </style>
