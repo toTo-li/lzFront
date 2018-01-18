@@ -226,16 +226,12 @@
         },
         filters:{
             timesTran:function(val){
-                if(val != "undefined"){
-                    if(typeof val == "string"){
-                        val = JSON.parse(val)
-                    }
-                    if(typeof val != "undefined"){
-                        return val.join(";  ");
-                    }
-
-                }else{
-                    return false;
+                if(val && val.length!=0){
+                    console.log(val);
+                    let t = val.filter(function(item){
+                        return item!="NaN-0NaN-0NaN 0NaN:0NaN:0NaN";  
+                    });
+                    return t.join('; ');
                 }
             }
         },

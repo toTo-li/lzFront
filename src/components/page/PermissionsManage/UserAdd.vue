@@ -94,7 +94,7 @@
 		            { required: true, message: '请输入密码', trigger: 'blur' }
 		          ],
 		          roleName: [
-		            { required: true, message: '请选择角色权限', trigger: 'blur' }
+		            { type:'string',required: true, message: '请选择角色权限', trigger: 'blur' }
 		          ],
 		          rAccount: [
 		            { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
@@ -187,6 +187,8 @@
 							
 							let users = this.ruleForm;
 							var self = this;
+							console.log(self);
+							
 							if(store.state.userDialogNum==1){
 									self.$refs[formName].validate((valid)=>{
 											if(valid){
