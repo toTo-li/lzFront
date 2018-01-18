@@ -2,7 +2,7 @@
     <div>
         <el-form  label-width="110px" :rules="rules" :model="ruleForm" ref="ruleForm" >
             <el-form-item label="任务名称:" prop="name">
-                <el-input  placeholder="请输入内容" v-model="ruleForm.name"></el-input>
+                <el-input  placeholder="请输入内容" v-model="ruleForm.name" @blur="checkName"></el-input>
             </el-form-item>
             <el-form-item label="描述:" prop="desc">
                 <el-input
@@ -179,16 +179,16 @@
                                 </el-form-item> -->
                             </template>
                             <template v-else-if="item.type==0">
-                                
                                 <el-form-item label="文字:">
-                                    <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="item.word.landingPageDesc"></el-input>
+                                    <el-input  row="2" type="textarea" placeholder="请输入内容" v-model="item.word.landingPageDesc"></el-input>
                                 </el-form-item>
                                 <el-form-item  
                                     v-for="(landpage,index) in item.word.landingPage" 
                                     :label="'落地页' + (index+1)" 
                                     :key="index"
                                     >
-                                    <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value"></el-input> <el-button @click="addLandPage(item.word)">+</el-button>
+                                    <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value"></el-input> 
+                                    <el-button @click="addLandPage(item.word)">+</el-button>
                                 </el-form-item>
                             </template>
                             <template v-else>
@@ -236,7 +236,7 @@
                 <el-input  placeholder="请输入内容" v-model="ruleForm.hope"></el-input>
             </el-form-item>
             <el-form-item  >
-                <el-button type="primary" @click="submitForm()">确定</el-button>
+                <el-button type="primary" @click="submitForm('ruleForm')">确定</el-button>
             </el-form-item>
         </el-form>
 
@@ -373,7 +373,7 @@
         },
 
         methods:{
-            submitForm(){
+            submitForm(formName){
                 let self = this;
                 let Task = self.ruleForm;
                 // 物料字段过滤
@@ -418,23 +418,31 @@
 
                 // 日期格式转化
                 this.timeFormat();
-                self.$axios.post("/tasks",{
-                    name:Task.name,
-                    desc:Task.desc,
-                    tags:Task.tags,
-                    times:self.timeFormated,
-                    all:Task.all,
-                    hope:Task.hope,
-                    materials:JSON.stringify(wl)
-                }).then(function(res){
-                    if(res.status==201){
-                        self.$message({
-                            message: '任务新建成功！',
-                            type: 'success'
-                        });
+                self.$refs[formName].validate((valid) => {
+                    if(valid){
+                        self.$axios.post("/tasks",{
+                            name:Task.name,
+                            desc:Task.desc,
+                            tags:Task.tags,
+                            times:self.timeFormated,
+                            all:Task.all,
+                            hope:Task.hope,
+                            materials:JSON.stringify(wl)
+                        }).then(function(res){
+                            if(res.status==201){
+                                self.$message({
+                                    message: '任务新建成功！',
+                                    type: 'success'
+                                });
+                            }
+                        })
+                    }else{
+                        return false;
                     }
-                    console.log(res);
-                })
+                    
+
+                });
+                
             },
             // 时间格式转化
             timeFormat(){
@@ -528,6 +536,20 @@
                     value:""
                 });
             },
+            checkName(){
+                var self = this;
+                self.$axios.get(`/tasks/checkName/${self.ruleForm.name}`).then(function(res){
+                        console.log(res);
+                        
+                        if(!res.data){
+                                self.$message({
+                                    message: '用户已存在，请重新输入！',
+                                    type: 'error'
+                                }); 
+                        }
+                })
+						
+			},
 //            添加物料
             addWuLiao(){
                 let a = this.indexs+1;
@@ -597,13 +619,10 @@
     }
 </script>
 
-<style>
+<style scoped>
     .text {
         font-size: 14px;
     }
-    /* .item {
-        margin-bottom: 18px;
-    } */
     .clearfix:before,
     .clearfix:after {
         display: table;
@@ -630,7 +649,6 @@
     .el-form-item .el-form-item .el-form-item__content{
         margin-left:110px !important;
     }
-
 
     .preview .box-card{
         width:100%;

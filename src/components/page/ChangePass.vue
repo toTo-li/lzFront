@@ -69,8 +69,8 @@
                     if (valid) {
 						this.$axios.put("/users/changePassword",{
 								name:localStorage.getItem("ms_username"),
-                            oldPass:self.passForm.pass,
-                            newPass:self.passForm.newpass1,
+                                oldPass:self.passForm.pass,
+                                newPass:self.passForm.newpass1,
 							}).then(function(res){
                              // 然后跳转页面，需要做用户验证
                              self.$router.push('/home');
@@ -97,7 +97,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     .text {
         font-size: 14px;
     }
