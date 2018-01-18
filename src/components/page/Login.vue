@@ -75,7 +75,6 @@
                                     
                                 }
 						    },function(err){
-                                console.log(err);
                                 self.errorFlag = true;
                                 switch(err.code){
                                     case 1:
