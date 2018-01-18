@@ -11,6 +11,19 @@
                     </el-select>
                 </div>
                 <div>
+                    <span>提交状态：</span>
+                    <el-select v-model="opertion_state" class="handle-select mr10" @change="operStaChange">
+                        <el-option v-for="(item,index) in opertion_states"  :key="index" :label="item" :value="index-1">{{item}}</el-option>
+                    </el-select>
+                    <span>审核状态：</span>
+                    <el-select v-model="audit_state" class="handle-select mr10" @change="auditStaChange">
+                        <el-option v-for="(item,index) in audit_states"  :key="index" :label="item" :value="index-1">{{item}}</el-option>
+                    </el-select>
+                    <span>发布状态：</span>
+                    <el-select v-model="publish_state" class="handle-select mr10" @change="pubStaChange">
+                        <el-option v-for="(item,index) in publish_states"  :key="index" :label="item" :value="index-1">{{item}}</el-option>
+                    </el-select>
+
                     <el-input v-model="select_word" placeholder="请输入用户名称" class="handle-input mr10"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </div>
@@ -26,12 +39,12 @@
                         <span>{{scope.row.times | timesTran}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="commitStatus" label="操作状态" width="100" >
-                    
+                <el-table-column prop="commitStatus" label="提交状态" width="100" >
+
                     <template slot-scope="scope">
                         <span>{{scope.row.commitStatus==0?"未提交":"已提交"}}</span>
                     </template>
-                    
+
                 </el-table-column>
                 <el-table-column prop="auditStatus" label="审核状态" width="100">
                     <template slot-scope="scope">
@@ -98,7 +111,7 @@
                                 <span>{{taskRead.times | timesTran}}</span>
                             </template>
                         </el-form-item>
-                        <el-form-item label="操作状态:" prop="commitStatus">
+                        <el-form-item label="提交状态:" prop="commitStatus">
                             <span>{{taskRead.commitStatus==0?"未提交":"已提交"}}</span>
                         </el-form-item>
                         <el-form-item label="审核状态:" prop="auditStatus">
@@ -147,7 +160,7 @@
                                 <span v-if="scope.row.mark==1">已发布</span>
                                 <span v-else>未发布</span>
                         </template>
-                        
+
                     </el-table-column>
 
                 </el-table>
@@ -178,6 +191,12 @@
                 select_word: '',
                 is_search: false,
                 page_sizes:[10,15,20,25,30],
+                opertion_states:["全部","未提交","已提交"],
+                opertion_state:-1,
+                audit_states:["全部","未审核","审核通过"],
+                audit_state:-1,
+                publish_states:["全部","未发布","已发布"],
+                publish_state:-1,
                 // 占用的社群的数据
                 tableData3: [],
                 // 占用的社群ID
@@ -214,7 +233,7 @@
                     if(typeof val != "undefined"){
                         return val.join(";  ");
                     }
-                    
+
                 }else{
                     return false;
                 }
@@ -292,7 +311,7 @@
             // 取消发布
             handleUnPush(index,row){
                 let self = this;
-                
+
                 this.$confirm('确定取消发布?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -301,7 +320,7 @@
                 }).then(() => {
                     self.$axios.put(`/tasks/unpush/${row.id}`).then(function(res){
                         console.log(res);
-                        
+
                         if(res.status == 200){
                             self.$message({
                                 message: "取消发布成功",
@@ -338,6 +357,20 @@
             selectChange(val){
                 this.pageSizeChange(val);
             },
+
+
+            operStaChange(val){
+                this.getData();
+            },
+            auditStaChange(val){
+                this.getData();
+            },
+            pubStaChange(val){
+                this.getData();
+            },
+
+
+
 //          每页显示条数
             pageSizeChange(val){
                 this.select_per = val;
@@ -352,7 +385,8 @@
 //          获取数据
             getData(){
                 let self = this;
-                self.$axios.get(`/tasks?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
+
+                self.$axios.get(`/tasks?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}&commit=${this.opertion_state}&push=${this.publish_state}&audit=${this.audit_state}`).then((res) => {
                     console.log(res,11111111111111);
                     self.total = res.data.pagination.total;
                     self.tableData = res.data.data;
