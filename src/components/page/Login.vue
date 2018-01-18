@@ -24,11 +24,18 @@
         data: function(){
         	 var checkName = (rule, value, callback)=>{
         		if(value === ''){
-        			callback(new Error("用户名错误!"));
+        			callback(new Error("用户名不能为空!"));
         		}else{
         			callback();
         		}
-        	}
+            };
+            var checkPass = (rule, value, callback)=>{
+                if(value === ''){
+        			callback(new Error("密码不能为空!"));
+        		}else{
+        			callback();
+        		}
+            }
             return {
                 ruleForm: {
                     username: '',
@@ -39,7 +46,7 @@
                         { validator:checkName,trigger: 'blur'}
                     ],
                     password: [
-                        { required: true, message: '请输入密码', trigger: 'blur' }
+                        { validator:checkPass, trigger: 'blur' }
                     ]
                 }
             }
@@ -66,6 +73,7 @@
                                     // 然后跳转页面，需要做用户验证
                                     self.$router.push('/home');
                                 }else{
+
                                     self.$message({
                                         message: res.message,
                                         type: 'warning'
@@ -73,11 +81,10 @@
                                 }
 						    },function(err){
                                 console.log(err);
-                                new Error('用户名错误');
                                 self.$message({
                                         message: "用户名或密码错误，请重新输入！",
                                         type: 'warning'
-                                    });                               
+                                });                               
                             }).catch(function(error){
                                 console.log(error);
                             });

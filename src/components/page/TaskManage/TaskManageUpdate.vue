@@ -414,12 +414,12 @@
                     console.log(res);
                     if(res.status==200){
                         self.ruleForm = res.data;
-                        self.ruleForm.materials = self.transfer(JSON.parse(res.data.materials));
+                        // self.ruleForm.materials = self.transfer(JSON.parse(res.data.materials));
+                        console.log(self.transfer(JSON.parse(res.data.materials)),12121212);
                         
                         let a = JSON.parse(res.data.times).map(function(item){
                             return {time:new Date(item).getTime()};
                         })
-                        console.log(self.ruleForm.materials,11111111111111);
                         self.ruleForm.times = a;
                     }
                 })
@@ -572,7 +572,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     .text {
         font-size: 14px;
     }

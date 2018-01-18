@@ -213,7 +213,7 @@
 	}
 </script>
 
-<style>
+<style scoped>
 	.el-checkbox{
 		display: block;
 	}

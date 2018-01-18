@@ -35,7 +35,7 @@
             </el-form-item>
 
             <el-form-item >
-                    <el-card class="box-card"  v-for="(item,index) in ruleForm.materials" :key="item.key"  >
+                    <el-card class="box-card"  v-for="(item,index) in ruleForm.materials" :key="index"  >
                         <div slot="header" class="clearfix">
                             <span>物料{{index+1}}</span>
                             <el-button style="float: right; padding: 3px 0" type="text" @click="close(index)" :disabled="true">X</el-button>
@@ -44,7 +44,7 @@
                             <el-form-item label="投放类型:">
                                 <el-select v-model="item.type" placeholder="请选择" :disabled="true">
                                     <el-option
-                                        v-for="iType in item.options"
+                                        v-for="iType in ruleForm.options"
                                         :key="iType.value"
                                         :label="iType.label"
                                         :value="iType.value">
@@ -52,13 +52,14 @@
                                 </el-select>
                             </el-form-item>
 
-                            <template v-if="item.type=='app'">
-                                <el-form-item label="页面路径:">
-                                    <el-input  placeholder="请输入内容" v-model="item.app.pagePath" :disabled="true"></el-input>
-                                </el-form-item>
+                            <template v-if="item.type==2">
                                 <el-form-item label="标题:">
                                     <el-input  placeholder="请输入内容" v-model="item.app.title" :disabled="true"></el-input>
                                 </el-form-item>
+                                <el-form-item label="页面路径:">
+                                    <el-input  placeholder="请输入内容" v-model="item.app.pagePath" :disabled="true"></el-input>
+                                </el-form-item>
+                                
                                 <el-form-item label="描述文件:">
                                     <el-button :disabled="true">上传</el-button>
                                 </el-form-item>
@@ -73,19 +74,19 @@
                                         list-type="picture"
                                         :show-file-list="false"
                                         name="file"
-                                        :disabled="true"
+                                        
                                        >
                                         <el-button size="small" type="primary" :disabled="true">点击上传</el-button>
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                     </el-upload>
                                 </el-form-item>
-                                <template v-for="i in item.app.pics" >
-                                    <div :key="i">
+                                <template  >
+                                    <div v-for="(i,index) in item.app.pics" :key="index" v-if="i.fileType != 'text'">
                                             <el-form-item label="图片预览:">
-                                                <img :src="i" alt="" :style="{width:'200px'}">
+                                                <img :src="i.filePath" alt="" :style="{width:'200px'}" >
                                             </el-form-item>
                                             <el-form-item  label="图片URl:">
-                                                <p :style="{'width':'350px','word-wrap':'break-word'}">{{i}}</p>
+                                                <p :style="{'width':'350px','word-wrap':'break-word'}">{{i.filePath}}</p>
                                             </el-form-item> 
                                      </div>
                                 </template>
@@ -93,14 +94,14 @@
                                     <el-button @click="previewApp(item.app)" :disabled="true">预览</el-button>
                                 </el-form-item>
                                 <el-form-item class="preview" v-if="item.app.appPre">
-                                    <el-card class="box-card" v-for="o in item.app.pics" :key="o">
+                                    <el-card class="box-card" v-for="(o,index) in item.app.pics" :key="index">
                                         <div class="text item1" >
                                             <div class="first">
                                                 <h2 style="width:100%">{{item.app.title}}</h2>
                                                 <!-- <p style="width:100%">{{item.app.content}}</p> -->
                                             </div>
                                             <div class="last">
-                                                <img :src="o" alt="">
+                                                <img :src="o.filePath" alt="">
                                             </div>
                                         </div>
                                     </el-card>
@@ -109,7 +110,7 @@
                                     <img src="http://element-cn.eleme.io/static/hamburger.50e4091.png" alt="">
                                 </el-form-item> -->
                             </template>
-                            <template v-else-if="item.type=='cardLink'">
+                            <template v-else-if="item.type==1">
                                 <el-form-item label="标题:">
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.title" :disabled="true"></el-input>
                                 </el-form-item>
@@ -127,19 +128,18 @@
                                         list-type="picture"
                                         :show-file-list="false"
                                         name="file"
-                                        :disabled="true"
                                         >
-                                        <el-button size="small" type="primary">点击上传</el-button>
+                                        <el-button size="small" type="primary" :disabled="true">点击上传</el-button>
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                     </el-upload>
                                 </el-form-item>
-                               <template v-for="i in item.cardLink.pics" >
-                                    <div :key="i">
+                               <template  >
+                                    <div v-for="(i,index) in item.cardLink.pics" :key="index" v-if="i.fileType != 'text'">
                                             <el-form-item label="图片预览:">
-                                                <img :src="i" alt="" :style="{width:'200px'}">
+                                                <img :src="i.filePath" alt="" :style="{width:'200px'}">
                                             </el-form-item>
                                             <el-form-item  label="图片URl:">
-                                                <p :style="{'width':'350px','word-wrap':'break-word'}">{{i}}</p>
+                                                <p :style="{'width':'350px','word-wrap':'break-word'}">{{i.filePath}}</p>
                                             </el-form-item> 
                                      </div>
                                    
@@ -151,14 +151,14 @@
                                     <el-button @click="previewCardLink(item.cardLink)" :disabled="true">预览</el-button>
                                 </el-form-item>
                                 <el-form-item class="preview" v-if="item.cardLink.cardLinkPre">
-                                    <el-card class="box-card" v-for="o in item.cardLink.pics" :key="o">
+                                    <el-card class="box-card" v-for="(o,index) in item.cardLink.pics" :key="index">
                                         <div class="text item">
                                             <div class="first">
                                                 <h2 style="width:100%">{{item.cardLink.title}}</h2>
                                                 <p style="width:100%">{{item.cardLink.content}}</p>
                                             </div>
                                             <div class="last">
-                                                <img :src="o" alt="">
+                                                <img :src="o.filePath" alt="">
                                             </div>
                                         </div>
                                     </el-card>
@@ -168,13 +168,15 @@
                                     <img src="http://element-cn.eleme.io/static/hamburger.50e4091.png" alt="">
                                 </el-form-item> -->
                             </template>
-                            <template v-else>
+                             <template v-else-if="item.type==0">
                                 <el-form-item label="落地页:">
-                                    <el-input  placeholder="请输入内容" v-model="item.wordPic.landingPage" :disabled="true"></el-input>
+                                    <el-input  placeholder="请输入内容" v-model="item.word.landingPage" :disabled="true"></el-input>
                                 </el-form-item>
                                 <el-form-item label="文字:">
-                                    <el-input  placeholder="请输入内容" v-model="item.wordPic.landingPageDesc" :disabled="true"></el-input>
+                                    <el-input  placeholder="请输入内容" v-model="item.word.landingPageDesc" :disabled="true"></el-input>
                                 </el-form-item>
+                            </template>
+                            <template v-else>
                                 <el-form-item label="上传图片:">
                                    <el-upload
                                         class="upload-demo"
@@ -186,36 +188,21 @@
                                         list-type="picture"
                                         name="file"
                                         :show-file-list="false"
-                                        :disabled="true"
                                         >
                                         <el-button size="small" type="primary" :disabled="true">点击上传</el-button>
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                     </el-upload>
                                 </el-form-item>
-                                <template v-for="i in item.wordPic.pics" >
-                                    <div :key="i">
+                                <template  >
+                                    <div v-for="(i,index) in item.pic.pics" :key="index">
                                             <el-form-item label="图片预览:">
-                                                <img :src="i" alt="" :style="{width:'200px'}">
+                                                <img :src="i.filePath" alt="" :style="{width:'200px'}">
                                             </el-form-item>
                                             <el-form-item  label="图片URl:">
-                                                <p :style="{'width':'350px','word-wrap':'break-word'}">{{i}}</p>
+                                                <p :style="{'width':'350px','word-wrap':'break-word'}">{{i.filePath}}</p>
                                             </el-form-item> 
                                      </div>
-                                   
                                 </template>
-                                <!-- <el-form-item>
-                                    <el-button>添加图片</el-button>
-                                </el-form-item> -->
-                                <el-form-item label="发送顺序:">
-                                    <el-select v-model="item.wordPic.order" placeholder="请选择" :disabled="true">
-                                        <el-option
-                                            v-for="iType in item.wordPic.orderBy"
-                                            :key="iType.value"
-                                            :label="iType.label"
-                                            :value="iType.value">
-                                        </el-option>
-                                    </el-select>
-                                </el-form-item>
                             </template>
                         </div>
                     </el-card>
@@ -232,9 +219,9 @@
             <el-form-item label="期望曝光人数:" prop="hope">
                 <el-input  placeholder="请输入内容" v-model="ruleForm.hope" :disabled="true"></el-input>
             </el-form-item>
-            <el-form-item  >
-                <el-button type="primary" @click="submitForm()" :disabled="true">确定</el-button>
-            </el-form-item>
+            <!-- <el-form-item  >
+                <el-button type="primary" @click="submitForm()">确定</el-button>
+            </el-form-item> -->
         </el-form>
 
     </div>
@@ -256,18 +243,21 @@
                     times:[{
                         time:Date.now()
                     }],
+                    options:[
+                            {label:'文字',value:0},
+                            {label:'卡片式链接',value:1},
+                            {label:'小程序',value:2},
+                            {label:'图片',value:3}
+                    ],
 //                    添加物料
                     materials:[{
-                        type:"wordPic",
-                        options:[
-                            {label:'文字图片',value:'wordPic'},
-                            {label:'卡片式链接',value:'cardLink'},
-                            {label:'小程序',value:'app'}
-                        ],
+                        type:0,
                         key:Date.now(),
                         app:{
                             pagePath:"",
+                            content:"",
                             title:"",
+                            fileType:"",
                             desFile:"",
                             pics:[],
                             appPre:false
@@ -275,26 +265,24 @@
                         cardLink:{
                             title:"",
                             content:"",
+                            fileType:"",
                             pics:[],
                             landingPage:"",
                             cardLinkPre:false
                         },
-                        wordPic:{
+                        word:{
                             landingPage:"",
-                            landingPageDesc:"",
-                            pics:[],
-                            order:"",
-                            orderBy:[
-                                {label:'文字优先',value:'文字优先'},
-                                {label:'图片优先',value:'图片优先'}
-                            ]
+                            landingPageDesc:""
                         },
+                        pic:{
+                            fileType:"",
+                            pics:[]
+                        }
                     }],
 //                    是否全部投放
                     all:"",
 //                    期望曝光人数
                     hope:1,
-
                 },
                 // 小程序
                 fileList1:[],
@@ -302,8 +290,7 @@
                 fileList2:[],
                 // 文字图片
                 fileList3:[],
-//                默认投放类型
-                seleType:"文字图片",
+                // 时间格式化
                 timeFormated:[],
                 // 默认有一个物料
                 wl:{},
@@ -387,7 +374,6 @@
                     return str;
                 }
                 self.timeFormated =  this.ruleForm.times.map(function(item){
-
                     return new Date(item.time).Format('YYYY-MM-DD HH:mm:SS');
                 });
                 console.log(self.timeFormated);
@@ -414,52 +400,121 @@
             // 图片上传成功后将图片的信息传入对应的图片列表中
             handleSuccess(response,item,index){
                 var imgUrl = response.map.material.url;
-                if(item.type=="wordPic"){
-                    this.ruleForm.materials[index].wordPic.pics.push(imgUrl)
-                }else if(item.type=="cardLink"){
+                if(item.type==0){
+                    this.ruleForm.materials[index].word.pics.push(imgUrl)
+                }else if(item.type==1){
                     this.ruleForm.materials[index].cardLink.pics.push(imgUrl)
-                }else{
+                }else if(item.type==2){
                     this.ruleForm.materials[index].app.pics.push(imgUrl)
+                }else{
+                    this.ruleForm.materials[index].pic.pics.push(imgUrl)
                 }
             },
             getData(){
                 let self = this;
                 let taskId =  self.$store.state.taskUpdateId;
-                console.log(taskId);
-                
                 self.$axios.get(`/tasks/${taskId}`).then(function(res){
                     console.log(res);
                     if(res.status==200){
                         self.ruleForm = res.data;
-                        self.ruleForm.materials = JSON.parse(res.data.materials);
+                        self.ruleForm.materials = self.transfer(JSON.parse(res.data.materials));
+                        
                         let a = JSON.parse(res.data.times).map(function(item){
-                            return {time:new Date(item)};
+                            return {time:new Date(item).getTime()};
                         })
+                        console.log(self.ruleForm.materials,11111111111111);
                         self.ruleForm.times = a;
-                        console.log(self.ruleForm);
                     }
-                    
-                    
-                    // self.taskRead = res.data;
                 })
+            },
+            // 获取到的物料字段转换
+            transfer(mater){
+                let wl = [];
+                console.log(mater);
+                mater.map(function(item){
+                    var w = {
+                        type:0,
+                        key:Date.now(),
+                        app:{
+                            pagePath:"",
+                            content:"",
+                            title:"",
+                            desFile:"",
+                            pics:[],
+                            appPre:false
+                        },
+                        cardLink:{
+                            title:"",
+                            content:"",
+                            pics:[],
+                            landingPage:"",
+                            cardLinkPre:false
+                        },
+                        word:{
+                            landingPage:"",
+                            landingPageDesc:""
+                        },
+                        pic:{
+                            pics:[],
+                        }
+                    }
+                    /*
+                            {label:'文字',value:0},
+                            {label:'卡片式链接',value:1},
+                            {label:'小程序',value:2},
+                            {label:'图片',value:3}
+                    */ 
+                    if(item.type==0){
+                        w.type="文字";
+                        let a = item.content.split('<!URL>');
+                        w.word.landingPageDesc = a[0];
+                        let b = a[1].split('?groupId');
+                        w.word.landingPage = b[0];
+                        wl.push(w);
+                    }else if(item.type==1){
+                        w.type="卡片式链接";
+                        w.cardLink.title = item.title;
+                        w.cardLink.content = item.content;
+                        let p = item.files.map(function(item){
+                            return item.filePath;
+                        });
+                        w.cardLink.pics = p;
+                        w.cardLink.landingPage = item.uri.split('?groupId')[0];
+                        wl.push(w);
+                    }else if(item.type==2){
+                        w.type="小程序";
+                        w.app.pagePath = item.uri;
+                        w.app.content = item.content;
+                        w.app.title = item.title;
+                        w.app.desFile = item.uri;
+                        let p = item.files.map(function(item){
+                            return item.filePath;
+                        });
+                        w.app.pics = p;
+                        wl.push(w);
+                    }else{
+                        w.type="图片";
+                        let p = item.files.map(function(item){
+                            return item.filePath;
+                        });
+                        w.pic.pics = p;
+                        wl.push(w);
+                    }
+                });
+                return wl;
             },
 //            添加物料
             addWuLiao(){
                 var w = {
 //                    默认投放类型
-                    type:"wordPic",
-//                    投放类型
-                    options:[
-                        {label:'文字图片',value:'wordPic'},
-                        {label:'卡片式链接',value:'cardLink'},
-                        {label:'小程序',value:'app'}
-                    ],
+                    type:0,
 //                     key值
                     key:Date.now(),
 //                    小程序
                     app:{
-//                      页面路径
                         pagePath:"",
+//                      页面路径
+                        content:"",
 //                      标题
                         title:"",
 //                      描述文件
@@ -467,7 +522,6 @@
 //                      缩略图
                         pics:[],
                         appPre:false
-
                     },
 //                    卡片式链接
                     cardLink:{
@@ -481,22 +535,18 @@
                         landingPage:"",
                         cardLinkPre:false
                     },
-//                    文字图片
-                    wordPic:{
+//                  文字
+                    word:{
 //                      落地页
                         landingPage:"",
 //                      落地页描述
-                        landingPageDesc:"",
-//                      图片
-                        pics:[],
-//                      默认发送方式
-                        order:"",
-//                      发送顺序
-                        orderBy:[
-                            {label:'文字优先',value:'文字优先'},
-                            {label:'图片优先',value:'图片优先'}
-                        ]
+                        landingPageDesc:""
                     },
+//                  图片
+                    pic:{
+//                  图片
+                        pics:[],
+                    }
                 }
                 this.ruleForm.materials.push(w);
             },
@@ -525,7 +575,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     .text {
         font-size: 14px;
     }

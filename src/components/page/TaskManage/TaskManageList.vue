@@ -34,7 +34,7 @@
                 </el-table-column>
                 <!-- <el-table-column prop="userPermi" label="投放类型" width="120">
                 </el-table-column> -->
-                <el-table-column prop="times" label="发送时间点" width="472">
+                <el-table-column prop="times" label="发送时间点" >
                     <template slot-scope="scope">
                         <span>{{scope.row.times | timesTran}}</span>
                     </template>
