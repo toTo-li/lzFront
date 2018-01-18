@@ -5,8 +5,8 @@ import router from './router'
 
 // axios 配置
 axios.defaults.timeout = 5000;
-axios.defaults.baseURL = 'http://test.lz.thextrader.cn/api/V1';
-// axios.defaults.baseURL = 'http://192.168.3.39:8084/api/V1';
+// axios.defaults.baseURL = 'http://test.lz.thextrader.cn/api/V1';
+axios.defaults.baseURL = 'http://192.168.3.39:8084/api/V1';
 
 
 // http request 拦截器

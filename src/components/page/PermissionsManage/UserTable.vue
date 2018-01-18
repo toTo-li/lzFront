@@ -19,7 +19,7 @@
                 </div>
         </div>
         <el-table :data="data" border style="width: 100%" ref="multipleTable" >
-            <el-table-column prop="id" label="用户ID" width="80" sortable></el-table-column>  <!-- type="selection" -->
+            <el-table-column prop="id" label="用户ID" width="100" sortable></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="name" label="用户名" sortable width="150">
             </el-table-column>
             <el-table-column prop="roleName" label="角色权限" >

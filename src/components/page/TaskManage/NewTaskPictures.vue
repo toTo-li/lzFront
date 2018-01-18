@@ -422,9 +422,8 @@
                          wl.push({type:3,files:p});
                     }
                 });
-
+                self.timeFormat();
                 // 日期格式转化
-                this.timeFormat();
                 self.$refs[formName].validate((valid) => {
                     if(valid){
                         console.log(Task.all);
@@ -450,8 +449,6 @@
                     }else{
                         return false;
                     }
-                    
-
                 });
                 
             },
@@ -468,10 +465,13 @@
                     str = str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds());
                     return str;
                 }
-                self.timeFormated =  this.ruleForm.times.map(function(item){
-                    return new Date(item.time).Format('YYYY-MM-DD HH:mm:SS');
+                self.timeFormated =  self.ruleForm.times.map(function(item){
+                         return new Date(item.time).Format('YYYY-MM-DD HH:mm:SS');
                 });
-                console.log(self.timeFormated);
+                self.timeFormated = self.timeFormated.filter(function(item){
+                    return item != 'NaN-0NaN-0NaN 0NaN:0NaN:0NaN';
+                });
+                
             },
             // 小程序预览
             previewApp(item){
@@ -613,9 +613,9 @@
             // 添加时间
             addTimes(){
                 console.log(this.ruleForm.times);
+                
                 if(this.ruleForm.times.length<3){
                     this.ruleForm.times.push({time:""});
-
                 }else{
                     return false;
                 }

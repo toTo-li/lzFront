@@ -52,7 +52,7 @@
 							menus: [],
 							// 存放所有权限
 							permissions:[],
-		      },
+		            },
 					//表单控件验证规则
 					rules: {
 						name: [
@@ -152,7 +152,7 @@
 																message: '角色添加成功！',
 																type: 'success'
 															});
-															self.ruleForm = {};
+															self.ruleForm = {name: '',rescs: [],menus: [],permissions:[],};
 															self.$store.commit("roleDialog",{roleDialogNum:1,flag:false,fresh:store.state.fresh});
 														}else{
 															self.$message.error('角色添加失败！');

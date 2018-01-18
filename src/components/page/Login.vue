@@ -2,9 +2,9 @@
     <div class="login-wrap">
         <div class="ms-title">Gemii任务系统</div>
         <div class="ms-login">
-            <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
+            <el-form :model="ruleForm"  ref="ruleForm" label-width="0px" class="demo-ruleForm">
                 <el-form-item prop="username">
-                    <el-input v-model="ruleForm.username" placeholder="请输入用户名" error="true"></el-input>
+                    <el-input v-model="ruleForm.username" placeholder="请输入用户名" ></el-input>
                 </el-form-item>
                 <el-form-item prop="password">
                     <el-input type="password" placeholder="请输入密码" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
@@ -12,7 +12,7 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
                 </div>
-                <!-- <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名和密码随便填!</p> -->
+                <p style="font-size:14px;line-height:30px;color:red;" v-if="errorFlag">{{errorMsg}}</p>
             </el-form>
         </div>
     </div>
@@ -41,6 +41,8 @@
                     username: '',
                     password: ''
                 },
+                errorMsg:"",
+                errorFlag:false,
                 rules: {
                     username: [
                         { validator:checkName,trigger: 'blur'}
@@ -55,45 +57,49 @@
         },
         methods: {
             submitForm(formName) {
-                const self = this;
-                self.$refs[formName].validate((valid) => {
-                    console.log(self.$refs);
-                    console.log(valid);
-                    
-                    if (valid) {
+                        const self = this;
+                // self.$refs[formName].validate((valid) => {
+                //     if (valid) {
 						this.$axios.post("/users/login",{
 								username:self.ruleForm.username,
                                 password:self.ruleForm.password
 							}).then(function(res){
                                 if(res.data.token){
-                                    console.log(res);
+                                    self.errorFlag = false;
                                     localStorage.setItem("ms_username",res.data.user.name);
                                     // 将拿到的token存放到状态管理对象里面
                                     self.$store.commit(types.LOGIN,res.data);
                                     // 然后跳转页面，需要做用户验证
-                                    self.$router.push('/home');
+                                    self.$router.replace('/home');
                                 }else{
-
-                                    self.$message({
-                                        message: res.message,
-                                        type: 'warning'
-                                    });
+                                    
                                 }
 						    },function(err){
                                 console.log(err);
-                                self.$message({
-                                        message: "用户名或密码错误，请重新输入！",
-                                        type: 'warning'
-                                });                               
+                                self.errorFlag = true;
+                                switch(err.code){
+                                    case 1:
+                                        self.errorMsg = err.msg;
+                                        break;
+                                    case 2:
+                                        self.errorMsg = err.msg;
+                                        break;
+                                    case 3:
+                                        self.errorMsg = err.msg;
+                                        break;
+                                    case 4:
+                                        self.errorMsg = err.msg;
+                                        break;
+                                }
                             }).catch(function(error){
                                 console.log(error);
                             });
 
-                    } else {
-                        console.log('error submit!!');
-                        return false;
-                    }
-                });
+                //     } else {
+                //         console.log('error submit!!');
+                //         return false;
+                //     }
+                // });
             }
         }
     }

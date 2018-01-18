@@ -241,7 +241,11 @@
             // 修改
             handleUpdate(index, row) {
                 this.$store.commit('getTaskUpdateId',row.id);
-                this.$router.push("/updatetask");
+                // this.$router.push("/updatetask");
+                this.$router.replace({
+                        path: 'updatetask',
+                        query: {redirect: this.$router.currentRoute.fullPath}
+                    })
             },
             // 删除
             handleDelete(index, row) {

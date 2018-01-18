@@ -21,7 +21,7 @@
 				    <el-input v-model="ruleForms.name" :disabled="disabled" @blur="checkName" ></el-input>
 				  </el-form-item>
 					<el-form-item label="密码" prop="password" v-if="passwordFlag">
-				    <el-input v-model="ruleForms.password" :disabled="disabled"></el-input>
+				    <el-input type="password" v-model="ruleForms.password" :disabled="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色" prop="roleName">
 				    <el-select v-model="roleName" :disabled="disabled" @change="get">
@@ -143,7 +143,6 @@
 											this.ruleForm.name = "";
 											this.ruleForm.contactName = "";
 											this.ruleForm.email = "";
-
 										  return this.ruleForm;
 									}else{
 										  this.passwordFlag = false;
@@ -269,7 +268,6 @@
 						// }else if(store.state.userDialogNum==3){
 						// 	url =  `/users/checkName/${store.state.updateId}/${self.ruleForms.name}`
 						// }
-
 						self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
 								if(!res.data){
 										self.$message({
