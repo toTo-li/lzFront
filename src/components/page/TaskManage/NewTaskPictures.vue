@@ -185,12 +185,12 @@
                                 <el-form-item label="文字:">
                                     <el-input  row="2" type="textarea" placeholder="请输入内容" v-model="item.word.landingPageDesc"></el-input>
                                 </el-form-item>
-                                <el-form-item  
-                                    v-for="(landpage,index) in item.word.landingPage" 
-                                    :label="'落地页' + (index+1)" 
+                                <el-form-item
+                                    v-for="(landpage,index) in item.word.landingPage"
+                                    :label="'落地页' + (index+1)"
                                     :key="index"
                                     >
-                                    <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value"></el-input> 
+                                    <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value"></el-input>
                                     <el-button @click="addLandPage(item.word)">+</el-button>
                                 </el-form-item>
                             </template>
@@ -387,8 +387,12 @@
                 let wl = [];
                 Task.materials.map(function(item,index){
                     if(item.type==0){
-                        let content = `${item.word.landingPageDesc}<URL>`+"http://y051.ad99.cc:9002/e.gif?ri=y051_21745_1516087852_3&im=0ae5c051b9c74de7b0f1a6591ed1da2c&dl=478240&ui=&fi=&it=1&os=&ps=23507&cp=727&sp=942&tg=&ta=1&at=1516087852289&dt=0&od=&ae=201&te=&mi=2235&ip=114.253.97.106&rp=&dx=114.253.97.106&fn=0&ux=1&ei=32&di=2&groupid=${groupId}&o="+`${item.word.landingPage}</URL>详细查看`;
-                        wl.push({type:0,content:item.word});
+                        let landings=[];
+                         item.word.landingPage.map(function(langdingItem,langdingIdex){
+                             landings.push(langdingItem.value);
+                         });
+                        let content = `${item.word.landingPageDesc}`;
+                        wl.push({type:0,content:content,langdings:landings});
                     }else if(item.type==1){
                         let p = item.cardLink.pics.map(function(item){
                             return {filePath:item.filePath,fileType:item.fileType};
@@ -428,7 +432,7 @@
                 self.$refs[formName].validate((valid) => {
                     if(valid){
                         console.log(Task.all);
-                        
+
                         self.$axios.post("/tasks",{
                             name:Task.name,
                             desc:Task.desc,
@@ -439,7 +443,7 @@
                             materials:JSON.stringify(wl)
                         }).then(function(res){
                             console.log(res);
-                            
+
                             if(res.status==201){
                                 self.$message({
                                     message: '任务新建成功！',
@@ -450,10 +454,10 @@
                     }else{
                         return false;
                     }
-                    
+
 
                 });
-                
+
             },
             // 时间格式转化
             timeFormat(){
@@ -551,15 +555,15 @@
                 var self = this;
                 self.$axios.get(`/tasks/checkName/${self.ruleForm.name}`).then(function(res){
                         console.log(res);
-                        
+
                         if(!res.data){
                                 self.$message({
                                     message: '用户已存在，请重新输入！',
                                     type: 'error'
-                                }); 
+                                });
                         }
                 })
-						
+
 			},
 //            添加物料
             addWuLiao(){

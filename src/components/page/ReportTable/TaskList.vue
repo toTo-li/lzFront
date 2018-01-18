@@ -21,8 +21,6 @@
             <el-table-column prop="taskId" label="任务ID" width="120" sortable></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="taskName" label="任务名称"  >
             </el-table-column>
-            <el-table-column prop="dispatchCount" label="发布次数" width="120">
-            </el-table-column>
             <el-table-column prop="pm" label="曝光数" width="120">
             </el-table-column>
             <el-table-column prop="cm" label="点击数" width="120">

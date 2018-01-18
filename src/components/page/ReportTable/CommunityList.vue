@@ -25,8 +25,6 @@
             </el-table-column>
             <el-table-column prop="groupCount" label="群人数"  width="120">
             </el-table-column>
-            <el-table-column prop="dispatchCount" label="发布次数" width="120">
-            </el-table-column>
             <el-table-column prop="pm" label="曝光数" width="120">
             </el-table-column>
             <el-table-column prop="cm" label="点击数" width="120">
