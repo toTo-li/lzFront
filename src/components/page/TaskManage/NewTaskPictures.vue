@@ -25,6 +25,9 @@
                         placeholder="选择日期时间"
                         :key="index"
                         :name="index"
+                        :picker-options="{
+                            start:start
+                        }"
                         >
                     </el-date-picker>
                 </template>
@@ -371,7 +374,11 @@
 
             }
         },
-
+        computed:{
+            start:function(){
+                return Date.now();
+            }
+        },
         methods:{
             submitForm(formName){
                 let self = this;
@@ -381,7 +388,7 @@
                 Task.materials.map(function(item,index){
                     if(item.type==0){
                         let content = `${item.word.landingPageDesc}<URL>`+"http://y051.ad99.cc:9002/e.gif?ri=y051_21745_1516087852_3&im=0ae5c051b9c74de7b0f1a6591ed1da2c&dl=478240&ui=&fi=&it=1&os=&ps=23507&cp=727&sp=942&tg=&ta=1&at=1516087852289&dt=0&od=&ae=201&te=&mi=2235&ip=114.253.97.106&rp=&dx=114.253.97.106&fn=0&ux=1&ei=32&di=2&groupid=${groupId}&o="+`${item.word.landingPage}</URL>详细查看`;
-                        wl.push({type:0,content:content});
+                        wl.push({type:0,content:item.word});
                     }else if(item.type==1){
                         let p = item.cardLink.pics.map(function(item){
                             return {filePath:item.filePath,fileType:item.fileType};
@@ -420,15 +427,19 @@
                 this.timeFormat();
                 self.$refs[formName].validate((valid) => {
                     if(valid){
+                        console.log(Task.all);
+                        
                         self.$axios.post("/tasks",{
                             name:Task.name,
                             desc:Task.desc,
                             tags:Task.tags,
                             times:self.timeFormated,
-                            all:Task.all,
+                            all:Task.all=='否'?2:Task.all,
                             hope:Task.hope,
                             materials:JSON.stringify(wl)
                         }).then(function(res){
+                            console.log(res);
+                            
                             if(res.status==201){
                                 self.$message({
                                     message: '任务新建成功！',
