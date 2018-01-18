@@ -66,14 +66,16 @@
                 self.$refs[formName].validate((valid) => {
                     console.log(self.$refs);
                     console.log(valid);
+
                     if (valid) {
 						this.$axios.put("/users/changePassword",{
 								name:localStorage.getItem("ms_username"),
                             oldPass:self.passForm.pass,
                             newPass:self.passForm.newpass1,
 							}).then(function(res){
-                             // 然后跳转页面，需要做用户验证
-                             self.$router.push('/home');
+                                    console.log(res);
+                                    // 然后跳转页面，需要做用户验证
+                                    self.$router.push('/home');
 						    },function(err){
                                 console.log(err);
                                 new Error('修改密码失败');
