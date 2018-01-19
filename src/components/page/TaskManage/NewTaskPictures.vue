@@ -236,7 +236,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="期望曝光人数:" prop="hope">
-                <el-input  placeholder="请输入内容" v-model="ruleForm.hope"></el-input>
+                <el-input  placeholder="请输入内容" v-model.number="ruleForm.hope"></el-input>
             </el-form-item>
             <el-form-item  >
                 <el-button type="primary" @click="submitForm('ruleForm')">确定</el-button>
@@ -368,7 +368,7 @@
                         { required: true, message: '不能为空', trigger: 'blur' }
                     ],
                     hope:[
-                        { required: true, message: '请填写曝光数', trigger: 'blur' }
+                        {type:'number',required: true, message: '请填写曝光数', trigger: 'blur' }
                     ]
                 },
 

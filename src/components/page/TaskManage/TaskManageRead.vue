@@ -343,7 +343,6 @@
             submitForm(formName){
                 let self = this;
                 let Task = self.ruleForm;
-                console.log(Task.materials);
                 let taskId =  self.$store.state.taskUpdateId;
                 // 物料字段过滤
                 let wl = [];
@@ -392,7 +391,6 @@
                 // 日期格式转化
                 self.$refs[formName].validate((valid) => {
                     if(valid){
-                        console.log(Task.all);
                         self.$axios.put(`/tasks/${taskId}`,{
                             name:Task.name,
                             desc:Task.desc,
@@ -402,7 +400,6 @@
                             hope:Task.hope,
                             materials:JSON.stringify(wl)
                         }).then(function(res){
-                            console.log(res);
                             if(res.status==200){
                                 self.$message({
                                     message: '任务修改成功！',
@@ -434,16 +431,13 @@
                 self.timeFormated =  this.ruleForm.times.map(function(item){
                     return new Date(item.time).Format('YYYY-MM-DD HH:mm:SS');
                 });
-                console.log(self.timeFormated);
             },
             // 小程序预览
             previewApp(item){
-                console.log(item);
                 item.appPre = true;
             },
             // 卡片式链接
             previewCardLink(item){
-                console.log(item);
                 item.cardLinkPre = true;
                 
             },
@@ -478,7 +472,6 @@
                 let self = this;
                 let taskId =  self.$store.state.taskReadId;
                 self.$axios.get(`/tasks/${taskId}`).then(function(res){
-                    console.log(res);
                     if(res.status==200){
                         self.ruleForm = res.data;
                         self.ruleForm.all = res.data.all==1?"否":"是"
@@ -495,7 +488,6 @@
             // 获取到的物料字段转换
             transfer(mater){
                 let wl = [];
-                console.log(mater);
                 mater.map(function(item){
                     var w = {
                         type:0,
@@ -619,11 +611,8 @@
             },
             // 添加时间
             addTimes(){
-                console.log(this.ruleForm.times);
-                
                 if(this.ruleForm.times.length<3){
                     this.ruleForm.times.push({time:""});
-                    
                 }else{
                     return false;
                 }

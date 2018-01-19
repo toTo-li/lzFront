@@ -14,7 +14,7 @@
                     </el-select>
                 </div>
                 <div>
-                    <el-input v-model="select_word" placeholder="请输入用户名" class="handle-input mr10"></el-input>
+                    <el-input v-model="select_word" placeholder="按用户名搜索" class="handle-input mr10"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </div>
         </div>
@@ -89,11 +89,11 @@
 //
                 select_cate: '',
                 total:1000,
-                select_per:5,
+                select_per:10,
                 select_word: '',
                 del_list: [],
                 is_search: false,
-                page_sizes:[5,15,20,25,30]
+                page_sizes:[5,10,15,20,50]
 
             }
         },

@@ -47,10 +47,10 @@
 				    </el-select>
 				  </el-form-item>
 
-				  <el-form-item label="联系人" prop="contact">
+				  <el-form-item label="联系人" prop="contactName">
 				    <el-input  v-model="ruleForms.contactName" :disabled="disabled"></el-input>
 				  </el-form-item>
-				  <el-form-item label="Email" prop="Email">
+				  <el-form-item label="Email" prop="email">
 				    <el-input  v-model="ruleForms.email" :disabled="disabled"></el-input>
 				  </el-form-item>
 				</el-form>
@@ -69,6 +69,44 @@
   import store from "../../../store/store";
 	export default {
 		data(){
+			var validName = function(rule,value,callback){
+				  if(!value){
+						callback(new Error('请输入用户名'));
+					}else{
+						if(value.length<4||value.length>15){
+								callback(new Error('请输入4-15位'));
+						}else if(/^[a-zA-Z0-9_]{4,15}$/.test(value)==false){
+								callback(new Error('只能填写字母、数字、下划线'))
+						}else{
+							callback();
+						}
+					}
+			};
+			var validPass = function(rule,value,callback){
+				  if(!value){
+						callback(new Error('请输入密码'));
+					}else{
+						if(value.length<6||value.length>16){
+								callback(new Error('请输入6-16位'));
+						}else if(/^[a-zA-Z0-9_]{6,16}$/.test(value)==false){
+								callback(new Error('只能填写字母、数字、下划线'))
+						}else{
+							callback();
+						}
+					}
+			}
+			var validEmail = function(rule,value,callback){
+				  if(value){
+						if(/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value)==false){
+							callback(new Error('请输入正确的Email'));
+						}else{
+							callback();
+						}
+					}else{
+						callback();
+					}
+				  
+			}
 			return {
 				//是否显示弹出框
 						dialogVisible: false,
@@ -88,22 +126,22 @@
 		        //表单控件验证规则
 		        rules: {
 		          name: [
-		            { required: true, message: '请输入用户名', trigger: 'blur' }
+		            {required: true, trigger: 'blur' ,validator:validName}
 							],
 							password: [
-		            { required: true, message: '请输入密码', trigger: 'blur' }
+		            { required: true,  trigger: 'blur' ,validator:validPass}
 		          ],
 		          roleName: [
-		            { type:'string',required: true, message: '请选择角色权限', trigger: 'blur' }
+		            { required: true, message: '请选择角色权限', trigger: 'blur' }
 		          ],
 		          rAccount: [
 		            { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
 		          ],
 		          contactName:[
-		          	{required:true,message:'请填写联系人',trigger:'blur'}
+		          	{required:false,message:'请填写联系人',trigger:'blur'}
 		          ],
-		          Email: [
-		            { required: false, message: '请填写Email地址', trigger: 'blur' }
+		          email: [
+		            { required: false, trigger: 'blur',validator:validEmail }
 		          ]
 						},
 						// 只读
@@ -113,7 +151,7 @@
 			  }
 				},
 				created(){
-					this.$validator.localize('zh_CN');
+					// this.$validator.localize('zh_CN');
 				},
 				computed:{
 					    // 由用户添加按钮和查看按钮触发弹出框
@@ -140,6 +178,7 @@
 											this.passwordFlag = true;
 											// 角色的默认选项
 											this.roleName = this.ruleForm.role[0].name;
+											this.ruleForm.roleName = this.ruleForm.role[0].name;
 											this.ruleForm.name = "";
 											this.ruleForm.contactName = "";
 											this.ruleForm.email = "";

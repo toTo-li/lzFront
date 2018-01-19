@@ -30,7 +30,7 @@
             </div>
             <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
                 <el-table-column prop="id" label="任务ID" width="100" sortable></el-table-column>  <!-- type="selection" -->
-                <el-table-column prop="name" label="任务名称"  width="150">
+                <el-table-column prop="name" label="任务名称"  width="180">
                 </el-table-column>
                 <!-- <el-table-column prop="userPermi" label="投放类型" width="120">
                 </el-table-column> -->
@@ -68,7 +68,7 @@
                         <el-button size="small" type="danger"
                                    @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
                         <el-button size="small" type="danger"
-                                   @click="handleSubmit(scope.$index, scope.row)" >提交任务</el-button>
+                                   @click="handleSubmit(scope.$index, scope.row)" :disabled="scope.row.commitStatus==0?false:true">提交任务</el-button>
                         <el-button size="small" type="danger"
                                    @click="handleUnPush(scope.$index, scope.row)" :disabled="scope.row.pushStatus==0?true:false" >取消发布</el-button>
                     </template>

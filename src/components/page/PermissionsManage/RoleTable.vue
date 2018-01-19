@@ -9,13 +9,13 @@
                 </div>
 
                 <div>
-                    <el-input v-model="select_word" placeholder="请输入角色名" class="handle-input mr10"></el-input>
+                    <el-input v-model="select_word" placeholder="按角色名称搜索" class="handle-input mr10"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </div>
 
         </div>
         <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-            <el-table-column prop="id" label="角色ID" width="80" sortable></el-table-column>  <!-- type="selection" -->
+            <el-table-column prop="id" label="角色ID" width="120" sortable></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="name" label="角色名称" sortable width="150">
             </el-table-column>
             <el-table-column prop="menus" label="角色权限" >
@@ -69,7 +69,7 @@
                 select_word: '',
                 del_list: [],
                 is_search: false,
-                page_sizes:[5,10,20,25,30],
+                page_sizes:[5,10,15,20,50],
                 total:1
             }
         },
