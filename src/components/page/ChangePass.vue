@@ -75,7 +75,7 @@
 							}).then(function(res){
                                     console.log(res);
                                     // 然后跳转页面，需要做用户验证
-                                    self.$router.push('/home');
+                                    self.$router.replace('/home');
 						    },function(err){
                                 console.log(err);
                                 new Error('修改密码失败');

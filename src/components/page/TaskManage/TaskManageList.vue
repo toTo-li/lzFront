@@ -227,7 +227,6 @@
         filters:{
             timesTran:function(val){
                 if(val && val.length!=0){
-                    console.log(val);
                     let t = val.filter(function(item){
                         return item!="NaN-0NaN-0NaN 0NaN:0NaN:0NaN";  
                     });
@@ -243,10 +242,13 @@
             },
             // 查看
             handleRead(index,row){
-                this.dialogTaskVisible = true;
+                this.dialogTaskVisible = false;
                 let self = this;
-                self.$axios.get(`/tasks/${row.id}`).then(function(res){
-                    self.taskRead = res.data;
+                self.$store.commit('getTaskReadId',row.id);
+                // this.$router.replace("/updatetask");
+                self.$router.replace({
+                        path: 'readtask',
+                        query: {redirect: this.$router.currentRoute.fullPath}
                 })
             },
             readEnter(){
@@ -256,7 +258,7 @@
             // 修改
             handleUpdate(index, row) {
                 this.$store.commit('getTaskUpdateId',row.id);
-                // this.$router.push("/updatetask");
+                // this.$router.replace("/updatetask");
                 this.$router.replace({
                         path: 'updatetask',
                         query: {redirect: this.$router.currentRoute.fullPath}
@@ -411,7 +413,7 @@
             },
 //            新建投放任务
             addTask(){
-                this.$router.push("/addtask");
+                this.$router.replace("/addtask");
             }
         }
     }

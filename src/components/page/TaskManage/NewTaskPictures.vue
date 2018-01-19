@@ -105,8 +105,8 @@
                                 <el-form-item>
                                     <el-button @click="previewApp(item.app)">预览</el-button>
                                 </el-form-item>
-                                <el-form-item class="preview" v-if="item.app.appPre">
-                                    <el-card class="box-card" v-for="(o,index) in item.app.pics" :key="index">
+                                <el-form-item class="preview" v-if="item.app.appPre" >
+                                    <el-card class="box-card" v-for="(o,index) in item.app.pics" :key="index" v-if="o.fileType != 'text'">
                                         <div class="text item1" v-if="o.fileType == 'text'">
                                             <div class="first">
                                                 <h2 style="width:100%">{{item.app.title}}</h2>
@@ -431,7 +431,6 @@
                 self.$refs[formName].validate((valid) => {
                     if(valid){
                         console.log(Task.all);
-
                         self.$axios.post("/tasks",{
                             name:Task.name,
                             desc:Task.desc,
@@ -453,8 +452,6 @@
                     }else{
                         return false;
                     }
-
-
                 });
 
             },

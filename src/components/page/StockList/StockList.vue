@@ -159,13 +159,16 @@
             },
             tableRowClassName(row,rowIndex){
                 console.log(row);
-                if(row.mark === 1){
-                    console.log(111111111);
-                    return "usedTime";
-                }else{
-                    console.log(222222222);
-                    return "red";
-                }
+                console.log(rowIndex);
+                return "usedTime";
+                
+                // if(row.mark === 1){
+                //     console.log(111111111);
+                //     return "usedTime";
+                // }else{
+                //     console.log(222222222);
+                //     return "red";
+                // }
             },
 //          弹出框确定事件
             submitForm(){
@@ -209,6 +212,7 @@
     }
    .el-table .usedTime{
         background: darkgray;
+        color:red;
     }
    .el-table .red{
         background: red;

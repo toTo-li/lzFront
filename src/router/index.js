@@ -103,6 +103,11 @@ const router = new Router({
                 }
                 ,
                 {
+                    path: '/readtask',
+                    component: resolve => require(['../components/page/TaskManage/TaskManageRead.vue'], resolve)    // 查看投放任务组件
+                }
+                ,
+                {
                     path: '/changepass',
                     component: resolve => require(['../components/page/ChangePass.vue'], resolve)    // 修改投放任务组件
                 }

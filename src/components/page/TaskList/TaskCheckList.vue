@@ -201,7 +201,7 @@
 //          查看
             handleRead(index,row){
                this.$store.commit('getTaskUpdateId',row.id);
-               this.$router.push('/taskcheckread');
+               this.$router.replace('/taskcheckread');
             },
             // 审核通过并发布 
             handleAuditAndPush(index,row){

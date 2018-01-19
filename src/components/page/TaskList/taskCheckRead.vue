@@ -31,7 +31,7 @@
                     </el-date-picker>
                     
                 </template>
-                <el-button @click="addTimes" :disabled="true">添加时间</el-button>
+                <!-- <el-button @click="addTimes" :disabled="true">添加时间</el-button> -->
             </el-form-item>
 
             <el-form-item >
@@ -208,7 +208,7 @@
                     </el-card>
             </el-form-item>
             <el-form-item >
-                <el-button type="primary" @click="addWuLiao()" :disabled="true">添加物料</el-button>
+                <!-- <el-button type="primary" @click="addWuLiao()" :disabled="true">添加物料</el-button> -->
             </el-form-item>
             <el-form-item label="是否@ALL:" prop="all">
                 <el-select v-model="ruleForm.all" placeholder="请选择" :disabled="true">
@@ -417,6 +417,7 @@
                     console.log(res);
                     if(res.status==200){
                         self.ruleForm = res.data;
+                        self.ruleForm.all = res.data.all==1?"否":"是";
                         self.ruleForm.materials = self.transfer(JSON.parse(res.data.materials));
                         
                         let a = JSON.parse(res.data.times).map(function(item){
@@ -475,10 +476,10 @@
                         w.type="卡片式链接";
                         w.cardLink.title = item.title;
                         w.cardLink.content = item.content;
-                        let p = item.files.map(function(item){
-                            return item.filePath;
-                        });
-                        w.cardLink.pics = p;
+                        // let p = item.files.map(function(item){
+                        //     return item.filePath;
+                        // });
+                        w.cardLink.pics = item.files;
                         w.cardLink.landingPage = item.uri.split('?groupId')[0];
                         wl.push(w);
                     }else if(item.type==2){
@@ -487,17 +488,17 @@
                         w.app.content = item.content;
                         w.app.title = item.title;
                         w.app.desFile = item.uri;
-                        let p = item.files.map(function(item){
-                            return item.filePath;
-                        });
-                        w.app.pics = p;
+                        // let p = item.files.map(function(item){
+                        //     return item.filePath;
+                        // });
+                        w.app.pics = item.files;
                         wl.push(w);
                     }else{
                         w.type="图片";
-                        let p = item.files.map(function(item){
-                            return item.filePath;
-                        });
-                        w.pic.pics = p;
+                        // let p = item.files.map(function(item){
+                        //     return item.filePath;
+                        // });
+                        w.pic.pics = item.files;
                         wl.push(w);
                     }
                 });
@@ -569,7 +570,7 @@
             },
             // 
             back(){
-                this.$router.push("/basecharts");
+                this.$router.replace("/basecharts");
             }
         }
     }
