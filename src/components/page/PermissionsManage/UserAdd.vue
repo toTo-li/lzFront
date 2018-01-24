@@ -55,10 +55,14 @@
 				  </el-form-item>
 				</el-form>
 			  <!--弹出框的取消/保存部分-->
-			  <span slot="footer" class="dialog-footer">
+			  <span slot="footer" class="dialog-footer" v-if="this.$store.state.userDialogNum==1||this.$store.state.userDialogNum==3">
 			    <el-button @click="close('ruleForms')">取 消</el-button>
 			    <el-button type="primary" @click="submitForm('ruleForms')">保存</el-button>
 			  </span>
+				<span slot="footer" class="dialog-footer" v-else>
+			    <el-button @click="submitForm('ruleForms')">返 回</el-button>
+			    <!-- <el-button type="primary" @click="submitForm('ruleForms')">保存</el-button> -->
+				</span>
 
 			</el-dialog>
 	</div>
@@ -73,9 +77,7 @@
 				  if(!value){
 						callback(new Error('请输入用户名'));
 					}else{
-						if(value.length<4||value.length>15){
-								callback(new Error('请输入4-15位'));
-						}else if(/^[a-zA-Z0-9_]{4,15}$/.test(value)==false){
+						if(/^[a-zA-Z0-9_]{4,15}$/.test(value)==false){
 								callback(new Error('只能填写字母、数字、下划线'))
 						}else{
 							callback();
@@ -86,9 +88,7 @@
 				  if(!value){
 						callback(new Error('请输入密码'));
 					}else{
-						if(value.length<6||value.length>16){
-								callback(new Error('请输入6-16位'));
-						}else if(/^[a-zA-Z0-9_]{6,16}$/.test(value)==false){
+						if(/^[a-zA-Z0-9_]{6,16}$/.test(value)==false){
 								callback(new Error('只能填写字母、数字、下划线'))
 						}else{
 							callback();
@@ -186,7 +186,6 @@
 									}else{
 										  this.passwordFlag = false;
 											if(store.state.userDialogNum==2){
-												  console.log(store.state.readUser);
 													this.disabled = true;
 													this.roleName = store.state.readUser.roleName;
 													return store.state.readUser;
@@ -236,15 +235,18 @@
 															name:users.name,
 															password:users.password,
 															email:users.email,
-															roleId:self.roleName,
+															roleId:self.roleName==self.ruleForm.role[0].name?self.ruleForm.role[0].id:self.roleName,
 															contactName:users.contactName,
 															status:0
 													}).then(function(res){
+														console.log(res);
+														
 														if(res.status == 200 || res.status==201){
 															self.$message({
 																message: '用户添加成功！',
 																type: 'success'
 															});
+															self.ruleForm.password="";
 															self.$store.commit("userDialog",{userDialogNum:1,flag:false,fresh:store.state.fresh});
 														}else{
 															self.$message.error('用户添加失败！');
@@ -259,18 +261,21 @@
 										self.$store.commit("userDialog",{userDialogNum:2,flag:false});
 							}else if(store.state.userDialogNum==3){
 										
-										this.$confirm('确定修改该用户?', '提示', {
-												confirmButtonText: '确定',
-												cancelButtonText: '取消',
-												type: 'warning',
-												center: true
-										}).then(() => {
+										// this.$confirm('确定修改该用户?', '提示', {
+										// 		confirmButtonText: '确定',
+										// 		cancelButtonText: '取消',
+										// 		type: 'warning',
+										// 		center: true
+										// }).then(() => {
+											console.log(store.state.readUser);
+											
 											self.$axios.put(`/users/${store.state.updateId}`,{
 																name:store.state.readUser.name,
 																email:store.state.readUser.email,
-																roleId:self.roleName,
+																roleId:self.roleName==store.state.readUser.roleName?self.getRoleId(self.roleName)[0].id:self.roleName,
 																contactName:store.state.readUser.contactName,
 											}).then(function(res){
+												console.log(res);
 												if(res.status == 200){
 														self.$message({
 															message: '用户修改成功！',
@@ -279,14 +284,27 @@
 														self.$store.commit("userDialog",{userDialogNum:3,flag:false,fresh:store.state.fresh});
 												}
 											});
-										}).catch(() => {
-												this.$message({
-														type: 'info',
-														message: '已取消用户修改'
-												});
-										});
+										// })
+										// .catch(() => {
+										// 		this.$message({
+										// 				type: 'info',
+										// 				message: '已取消用户修改'
+										// 		});
+										// });
 							}
 
+					},
+					// 根据角色名获取角色id
+					getRoleId(roleName){
+						console.log(roleName,1111111);
+						let id =  store.state.readUser.role.filter(function(item,index){
+							if(item.name==roleName){
+								return item.id;
+							}
+						});
+						console.log(id);
+						
+						return id;
 					},
 					// 取消添加用户弹出框
 					close(formName){
@@ -309,14 +327,17 @@
 						// }else if(store.state.userDialogNum==3){
 						// 	url =  `/users/checkName/${store.state.updateId}/${self.ruleForms.name}`
 						// }
-						self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
+						if(store.state.userDialogNum!=3){
+							self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
 								if(!res.data){
 										self.$message({
 											message: '用户已存在，请重新输入！',
 											type: 'error'
 										}); 
 								}
-						})
+							})
+						}
+						
 						
 					},
 					get(){

@@ -11,7 +11,9 @@
                 <el-input  placeholder="再次输入新密码" v-model="passForm.newpass2"></el-input>
             </el-form-item>
             <el-form-item  >
-                <el-button type="primary" @click="submitForm('passForm')">确定</el-button>
+                <el-button type="primary" @click="submitForm('passForm')">确 定</el-button>
+                <el-button type="primary" @click="close('passForm')">取 消</el-button>
+                
             </el-form-item>
         </el-form>
 
@@ -75,7 +77,7 @@
 							}).then(function(res){
                                     console.log(res);
                                     // 然后跳转页面，需要做用户验证
-                                    self.$router.replace('/home');
+                                    self.$router.push('/home');
 						    },function(err){
                                 console.log(err);
                                 new Error('修改密码失败');
@@ -92,6 +94,11 @@
                         return false;
                     }
                 });
+            },
+            // 取消密码修改，返回上一级
+            close(){
+                const self = this;
+                self.$router.go(-1);
             }
 
 

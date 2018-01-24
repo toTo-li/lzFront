@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<el-button type="primary" @click="openRoleDialog">+添加角色</el-button>
+		<el-button type="primary" @click="openRoleDialog('ruleForms')">+添加角色</el-button>
     	<!--
     		添加用户的弹出框部分
     	-->
@@ -32,7 +32,7 @@
 			    <el-button type="primary" @click="submitForm('ruleForms')">保存</el-button>
 			</span>
 			<span slot="footer" class="dialog-footer" v-else>
-			    <el-button @click="close('ruleForms')">确 定</el-button>
+			    <el-button @click="submitForm('ruleForms')">返 回</el-button>
 			    <!-- <el-button type="primary" @click="submitForm('ruleForms')">保存</el-button> -->
 			</span>
 			  
@@ -49,9 +49,7 @@
 				    if(!value){
 						callback(new Error('请输入角色名'));
 					}else{
-						if(value.length<4||value.length>15){
-								callback(new Error('请输入4-15位'));
-						}else if(/^[a-zA-Z0-9_]{4,15}$/.test(value)==false){
+						if(/^[a-zA-Z0-9_]{4,15}$/.test(value)==false){
 								callback(new Error('只能填写字母、数字、下划线'))
 						}else{
 							callback();
@@ -108,6 +106,7 @@
 								get(){
 									if(store.state.roleDialogNum==1){
 											this.disabled = false;
+											this.ruleForm.name = "";
 											this.ruleForm.menus = [];
 										    return this.ruleForm;
 									}else if(store.state.roleDialogNum==2){
@@ -117,8 +116,8 @@
 											return this.ruleForm;
 									}else if(store.state.roleDialogNum==3){
 											this.ruleForm.name = store.state.readRole.name;
-											this.disabled = false;
 											this.ruleForm.menus = this.permis;
+											this.disabled = false;
 											return this.ruleForm;
 									}else{
 											this.disabled = false;
@@ -128,17 +127,20 @@
 								},
 								set(){}
 							},
-              // 点击查看和修改时，复选框的默认选项。将此角色已有的权限标记为选中状态。
+              				// 点击查看和修改时，复选框的默认选项。将此角色已有的权限标记为选中状态。
 							permis:{
 								get(){
 									var r = [];
 									this.ruleForm.permissions.forEach(function(item,index){
-                        						var result1 = store.state.readRole.rescs.filter(function(item1,index1){
+										    if(store.state.readRole){
+												var result1 = store.state.readRole.rescs.filter(function(item1,index1){
 														return item.id == item1.id;
 												});
 												if(result1.length != 0){
 														r.push(result1[0].id);
 												}
+											}
+											
 									});
 									return r;
 								},
@@ -158,10 +160,7 @@
 							let users = this.ruleForm;
 							var self = this;
 							if(store.state.roleDialogNum==1){
-									console.log(11111111111111);
-									console.log(self.$refs[formName]);
 									self.$refs[formName].validate((valid)=>{
-											console.log(valid);
 											if(valid){
 													// 用户添加 
 													self.$axios.post('/roles',{
@@ -187,12 +186,12 @@
 							}else if(store.state.roleDialogNum==2){
 										self.$store.commit("roleDialog",{roleDialogNum:2,flag:false});
 							}else if(store.state.roleDialogNum==3){
-										this.$confirm('确定修改该角色?', '提示', {
-											confirmButtonText: '确定',
-											cancelButtonText: '取消',
-											type: 'warning',
-											center: true
-										}).then(() => {
+										// this.$confirm('确定修改该角色?', '提示', {
+										// 	confirmButtonText: '确定',
+										// 	cancelButtonText: '取消',
+										// 	type: 'warning',
+										// 	center: true
+										// }).then(() => {
 											self.$axios.put(`/roles/${store.state.updateRoleId}`,{
 											        name:store.state.readRole.name,
 												    menuIds:self.menuIds
@@ -202,31 +201,35 @@
 														message: '角色修改成功！',
 														type: 'success'
 													});
+													self.ruleForm = {name:'',rescs: [],menus: [],permissions:[]};
 													self.$store.commit("roleDialog",{roleDialogNum:3,flag:false,fresh:store.state.fresh});
 												}
 											});
-										}).catch(() => {
-											this.$message({
-												type: 'info',
-												message: '已取消角色修改'
-											});
-										});
-
+										// }).catch(() => {
+										// 	this.$message({
+										// 		type: 'info',
+										// 		message: '已取消角色修改'
+										// 	});
+										// });
 							}
-							
 					},
 				// 取消添加用户弹出框
 				close(formName){
 					this.$store.commit("roleDialog",{roleDialogNum:1,flag:false});
 					this.$refs[formName].resetFields();
 				},
-			    //弹出框关闭前的确认
+			    //弹出框叉号关闭前的确认
 			    handleClose(done) {
-					  this.$store.commit("roleDialog",{roleDialogNum:1,flag:false});
+					this.$store.commit("roleDialog",{roleDialogNum:1,flag:false});
 				},
 				// 弹出框
-				openRoleDialog(){
+				openRoleDialog(formName){
 					this.$store.commit("roleDialog",{roleDialogNum:1,flag:true});
+					// 清空数据，以免上次数据的保留
+					this.ruleForm.name = "";
+					this.ruleForm.menus = [];
+					this.$refs[formName].resetFields();
+
 				}
 		    }
 		

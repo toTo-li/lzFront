@@ -570,7 +570,7 @@
             },
             // 
             back(){
-                this.$router.replace("/basecharts");
+                this.$router.push("/basecharts");
             }
         }
     }

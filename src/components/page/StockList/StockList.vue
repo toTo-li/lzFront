@@ -13,7 +13,7 @@
             </div>
         </div>
         <el-table :data="data" border style="width: 100%" ref="multipleTable" >
-            <el-table-column prop="id" label="社群ID" sortable width="320">
+            <el-table-column prop="id" label="社群ID"  width="320">
             </el-table-column>
             <el-table-column prop="name" label="社群名称" >
             </el-table-column>

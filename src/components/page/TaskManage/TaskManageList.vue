@@ -29,7 +29,7 @@
                 </div>
             </div>
             <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-                <el-table-column prop="id" label="任务ID" width="100" sortable></el-table-column>  <!-- type="selection" -->
+                <el-table-column prop="id" label="任务ID" width="100" ></el-table-column>  <!-- type="selection" -->
                 <el-table-column prop="name" label="任务名称"  width="180">
                 </el-table-column>
                 <!-- <el-table-column prop="userPermi" label="投放类型" width="120">
@@ -186,7 +186,7 @@
                 tableData: [],
 //              当前显示第几页
                 cur_page: 1,
-                total:1000,
+                total:1,
                 select_per:10,
                 select_word: '',
                 is_search: false,
@@ -245,8 +245,8 @@
                 this.dialogTaskVisible = false;
                 let self = this;
                 self.$store.commit('getTaskReadId',row.id);
-                // this.$router.replace("/updatetask");
-                self.$router.replace({
+                // this.$router.push("/updatetask");
+                self.$router.push({
                         path: 'readtask',
                         query: {redirect: this.$router.currentRoute.fullPath}
                 })
@@ -258,8 +258,8 @@
             // 修改
             handleUpdate(index, row) {
                 this.$store.commit('getTaskUpdateId',row.id);
-                // this.$router.replace("/updatetask");
-                this.$router.replace({
+                // this.$router.push("/updatetask");
+                this.$router.push({
                         path: 'updatetask',
                         query: {redirect: this.$router.currentRoute.fullPath}
                     })
@@ -413,7 +413,7 @@
             },
 //            新建投放任务
             addTask(){
-                this.$router.replace("/addtask");
+                this.$router.push("/addtask");
             }
         }
     }

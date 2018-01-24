@@ -1,6 +1,7 @@
 <template xmlns="">
     <div>
         <el-form  label-width="110px" :rules="rules" :model="ruleForm" ref="ruleForm" >
+
             <el-form-item label="任务名称:" prop="name">
                 <el-input  placeholder="请输入内容" v-model="ruleForm.name" @blur="checkName"></el-input>
             </el-form-item>
@@ -18,18 +19,27 @@
             </el-form-item>
             <el-form-item label="发送时间:"  >
                 <template  >
-                    <el-date-picker
+                    <!-- <el-date-picker
                         v-for="(item,index) in ruleForm.times"
                         v-model="item.time"
                         type="datetime"
                         placeholder="选择日期时间"
                         :key="index"
                         :name="index"
-                        :picker-options="{
-                            start:start
-                        }"
                         >
-                    </el-date-picker>
+                    </el-date-picker> -->
+                    <datepicker 
+                        :disabled="disabled" 
+                        :format="showTimeFormat" 
+                        language="zh" 
+                        :wrapper-class="'el-date-editor el-input el-date-editor--datetime'" 
+                        :input-class="'el-input__inner'"
+                        v-for="(item,index) in ruleForm.times"
+                        v-model="item.time"
+                        :key="index"
+                        :value="item.time"
+                        placeholder="请选择发送时间"
+                        ></datepicker>
                 </template>
                 <el-button @click="addTimes">添加时间</el-button>
             </el-form-item>
@@ -247,6 +257,17 @@
 </template>
 
 <script>
+    import datepicker from 'vuejs-datepicker';
+    Date.prototype.Format = function(formatStr){
+                    let str = formatStr;
+                    str = str.replace(/yyyy|YYYY/,this.getFullYear());
+                    str = str.replace(/MM/,(this.getMonth()+1)>9?(this.getMonth()+1).toString():'0'+(this.getMonth()+1));
+                    str = str.replace(/DD/,this.getDate()>9?this.getDate().toString():'0'+this.getDate());
+                    str = str.replace(/hh|HH/,this.getHours()>9?this.getHours().toString():'0' + this.getHours());
+                    str = str.replace(/mm/,this.getMinutes()>9?this.getMinutes().toString():'0' + this.getMinutes());
+                    str = str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds());
+                    return str;
+    }
     export default {
         data(){
             return{
@@ -259,7 +280,7 @@
                     tags:"",
 //                    时间
                     times:[{
-                        time:Date.now()
+                        time:new Date()
                     }],
 //                    添加物料
                     /*
@@ -332,6 +353,10 @@
                 fileList3:[],
                 indexs:1,
                 timeFormated:[],
+                disabled:{
+                    to:new Date()
+                },
+                time1111:new Date(),
                 // 默认有一个物料
                 wl:{},
 //                校验规则
@@ -373,6 +398,9 @@
                 },
 
             }
+        },
+        components:{
+            datepicker
         },
         computed:{
             start:function(){
@@ -426,12 +454,20 @@
                          wl.push({type:3,files:p});
                     }
                 });
-                self.timeFormat();
                 // 日期格式转化
+                self.timeFormat();
+                // 获取当前用户的id
+                let userId = "";
+                if(localStorage){
+                    userId =  localStorage.getItem('user_id');
+                }
+                console.log(userId);
+                
                 self.$refs[formName].validate((valid) => {
                     if(valid){
                         console.log(Task.all);
                         self.$axios.post("/tasks",{
+                            userId:userId,
                             name:Task.name,
                             desc:Task.desc,
                             tags:Task.tags,
@@ -458,16 +494,6 @@
             // 时间格式转化
             timeFormat(){
                 var self = this;
-                Date.prototype.Format = function(formatStr){
-                    let str = formatStr;
-                    str = str.replace(/yyyy|YYYY/,this.getFullYear());
-                    str = str.replace(/MM/,(this.getMonth()+1)>9?(this.getMonth()+1).toString():'0'+(this.getMonth()+1));
-                    str = str.replace(/DD/,this.getDate()>9?this.getDate().toString():'0'+this.getDate());
-                    str = str.replace(/hh|HH/,this.getHours()>9?this.getHours().toString():'0' + this.getHours());
-                    str = str.replace(/mm/,this.getMinutes()>9?this.getMinutes().toString():'0' + this.getMinutes());
-                    str = str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds());
-                    return str;
-                }
                 self.timeFormated =  self.ruleForm.times.map(function(item){
                          return new Date(item.time).Format('YYYY-MM-DD HH:mm:SS');
                 });
@@ -475,6 +501,10 @@
                     return item != 'NaN-0NaN-0NaN 0NaN:0NaN:0NaN';
                 });
                 
+            },
+            // 时间显示格式
+            showTimeFormat(date){
+                return new Date(date).Format('YYYY-MM-DD HH:mm:SS')
             },
             // 小程序预览
             previewApp(item){
@@ -616,7 +646,6 @@
             // 添加时间
             addTimes(){
                 console.log(this.ruleForm.times);
-                
                 if(this.ruleForm.times.length<3){
                     this.ruleForm.times.push({time:""});
                 }else{
@@ -714,5 +743,25 @@
     }
     .landPageW{
         width:80%;
+    }
+    /* 日期组件显示格式 */
+    .datapicker1{
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-color: #fff;
+        background-image: none;
+        border-radius: 4px;
+        border: 1px solid #bfcbd9;
+        box-sizing: border-box;
+        color: #1f2d3d;
+        display: block;
+        font-size: inherit;
+        height: 36px;
+        line-height: 1;
+        outline: 0;
+        padding: 3px 10px;
+        transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+        width: 100%;
     }
 </style>

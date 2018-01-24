@@ -15,8 +15,8 @@
 
         </div>
         <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-            <el-table-column prop="id" label="角色ID" width="120" sortable></el-table-column>  <!-- type="selection" -->
-            <el-table-column prop="name" label="角色名称" sortable width="150">
+            <el-table-column prop="id" label="角色ID" width="120" ></el-table-column>  <!-- type="selection" -->
+            <el-table-column prop="name" label="角色名称"  width="150">
             </el-table-column>
             <el-table-column prop="menus" label="角色权限" >
             </el-table-column>
@@ -69,7 +69,7 @@
                 select_word: '',
                 del_list: [],
                 is_search: false,
-                page_sizes:[5,10,15,20,50],
+                page_sizes:[5,10,15,20,30],
                 total:1
             }
         },
@@ -132,10 +132,9 @@
             handleEdit(index, row) {
                 let self = this;
                 this.$axios.get(`/roles/${row.id}`).then(function(res){
-                    console.log(res.data);
                     if(res.status == 200){
-                        self.$store.commit('readRoles',res.data);
                         self.$store.commit("roleDialog",{roleDialogNum:2,flag:true});
+                        self.$store.commit('readRoles',res.data);
                     }else{
                         return false;
                     }
@@ -145,7 +144,6 @@
             handleUpdate(index, row){
                 let self = this;
                 this.$axios.get(`/roles/${row.id}`).then(function(res){
-                    console.log(res.data);
                     if(res.status == 200){
                         self.$store.commit('readRoles',res.data);
                         self.$store.commit("roleDialog",{roleDialogNum:3,flag:true,updateRoleId:row.id});
@@ -184,7 +182,6 @@
             },
 //          选择项发生变化时会触发该事件
             handleSelectionChange(val) {
-                console.log(val);
                 this.multipleSelection = val;
             }
         }

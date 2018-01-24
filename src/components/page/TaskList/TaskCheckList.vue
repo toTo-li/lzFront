@@ -16,7 +16,7 @@
 
         </div>
         <el-table :data="data" border style="width: 100%" ref="multipleTable" >
-            <el-table-column prop="id" label="任务ID" sortable width="100">
+            <el-table-column prop="id" label="任务ID"  width="100">
             </el-table-column>
             <el-table-column prop="name" label="任务名称" width="240">
             </el-table-column>
@@ -130,7 +130,7 @@
                 is_search: false,
 //              设置每页显示的条数
                 page_sizes:[5,10,15,20,25,30],
-                total:0
+                total:1
             }
         },
         created(){
@@ -201,7 +201,7 @@
 //          查看
             handleRead(index,row){
                this.$store.commit('getTaskUpdateId',row.id);
-               this.$router.replace('/taskcheckread');
+               this.$router.push('/taskcheckread');
             },
             // 审核通过并发布 
             handleAuditAndPush(index,row){

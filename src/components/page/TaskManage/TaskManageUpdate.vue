@@ -405,7 +405,7 @@
                                     message: '任务修改成功！',
                                     type: 'success'
                                 });
-                                self.$router.replace('/basetable');
+                                self.$router.push('/basetable');
                             }
                         });
                     }else{
@@ -634,7 +634,7 @@
             },
             // 
             back(){
-                this.$router.replace("/basetable");
+                this.$router.push("/basetable");
             }
         }
     }

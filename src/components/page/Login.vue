@@ -64,13 +64,16 @@
 								username:self.ruleForm.username,
                                 password:self.ruleForm.password
 							}).then(function(res){
+                                console.log(res);
+                                
                                 if(res.data.token){
                                     self.errorFlag = false;
+                                    localStorage.setItem('user_id',res.data.user.id);
                                     localStorage.setItem("ms_username",res.data.user.name);
                                     // 将拿到的token存放到状态管理对象里面
                                     self.$store.commit(types.LOGIN,res.data);
                                     // 然后跳转页面，需要做用户验证
-                                    self.$router.replace('/home');
+                                    self.$router.push('/home');
                                 }else{
                                     
                                 }

@@ -34,9 +34,9 @@
 
                 if(command == 'loginout'){
                     this.$store.commit(types.LOGOUT);
-                    this.$router.replace('/login');
+                    this.$router.push('/login');
                 }else if(command == 'changepass'){
-                    this.$router.replace('/changepass');
+                    this.$router.push('/changepass');
                 }
             }
         }

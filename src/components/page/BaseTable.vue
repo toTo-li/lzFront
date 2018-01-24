@@ -17,7 +17,7 @@
         </div>
         <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="date" label="日期" sortable width="150">
+            <el-table-column prop="date" label="日期"  width="150">
             </el-table-column>
             <el-table-column prop="name" label="姓名" width="120">
             </el-table-column>

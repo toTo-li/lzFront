@@ -16,7 +16,7 @@
 
         </div>
         <el-table :data="data" border style="width: 100%" ref="multipleTable" >
-            <el-table-column prop="taskId" label="任务ID" width="120" sortable></el-table-column>  <!-- type="selection" -->
+            <el-table-column prop="taskId" label="任务ID" width="120" ></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="taskName" label="任务名称"  >
             </el-table-column>
             <el-table-column prop="groupId" label="社群ID"  width="120">
