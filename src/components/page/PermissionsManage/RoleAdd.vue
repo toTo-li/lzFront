@@ -18,7 +18,7 @@
 			  -->
 			<el-form :model="ruleForms" :rules="rules" ref="ruleForms" label-width="100px">
 				  <el-form-item label="角色名" prop="name">
-				    <el-input v-model="ruleForms.name" :readonly="disabled"></el-input>
+				    <el-input v-model="ruleForms.name" :readonly="disabled" @blur="checkName"></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色权限" prop="menus">
 				    <el-checkbox-group v-model="ruleForm.menus">
@@ -49,7 +49,7 @@
 				    if(!value){
 						callback(new Error('请输入角色名'));
 					}else{
-						if(/^[a-zA-Z0-9_]{4,15}$/.test(value)==false){
+						if(/^[a-zA-Z0-9_]{1,}$/.test(value)==false){
 								callback(new Error('只能填写字母、数字、下划线'))
 						}else{
 							callback();
@@ -186,14 +186,10 @@
 							}else if(store.state.roleDialogNum==2){
 										self.$store.commit("roleDialog",{roleDialogNum:2,flag:false});
 							}else if(store.state.roleDialogNum==3){
-										// this.$confirm('确定修改该角色?', '提示', {
-										// 	confirmButtonText: '确定',
-										// 	cancelButtonText: '取消',
-										// 	type: 'warning',
-										// 	center: true
-										// }).then(() => {
+											console.log(store.state.updateRoleId);
+											console.log(self.ruleForm.name);
 											self.$axios.put(`/roles/${store.state.updateRoleId}`,{
-											        name:store.state.readRole.name,
+											        name:self.ruleForm.name,
 												    menuIds:self.menuIds
 											}).then(function(res){
 												if(res.status == 200){
@@ -205,12 +201,6 @@
 													self.$store.commit("roleDialog",{roleDialogNum:3,flag:false,fresh:store.state.fresh});
 												}
 											});
-										// }).catch(() => {
-										// 	this.$message({
-										// 		type: 'info',
-										// 		message: '已取消角色修改'
-										// 	});
-										// });
 							}
 					},
 				// 取消添加用户弹出框
@@ -230,6 +220,20 @@
 					this.ruleForm.menus = [];
 					this.$refs[formName].resetFields();
 
+				},
+				// 角色名重复验证
+				checkName(){
+					var self = this;
+					if(store.state.roleDialogNum!=3){
+						self.$axios.get(`/roles/checkName/${self.ruleForms.name}`).then(function(res){
+							if(!res.data){
+									self.$message({
+										message: '角色已存在，请重新输入！',
+										type: 'error'
+									}); 
+							}
+						})
+					}
 				}
 		    }
 		
