@@ -24,7 +24,10 @@
             </el-table-column>
             <el-table-column prop="roleName" label="角色权限" >
             </el-table-column>
-            <el-table-column prop="contactName" label="关联账号"  width="450">
+            <el-table-column prop="linked" label="关联账号"  width="450">
+                <template slot-scope="scope">
+                    <span>{{scope.row.linked |  rAccountf}}</span>
+                </template>
             </el-table-column>
             <el-table-column label="操作" prop="opertion" width="320">
                 <template slot-scope="scope">
@@ -72,29 +75,164 @@
             目前还没有想到更好的方式，先这样实现功能把！
          -->
         <div v-show="false">{{refresh}}</div>
+        <!-- 修改的dialog -->
+        <el-dialog
+			  :visible.sync="userUpdatedialogVisible"
+			  width="20%"
+			  :before-close="handleClose">
+			  <el-form :model="ruleForms" :rules="rules"  ref="ruleForms" label-width="100px">
+				  <el-form-item label="用户名:" prop="name">
+				    <el-input v-model="ruleForms.name"  @blur="checkName" ></el-input>
+				  </el-form-item>
+				  <el-form-item label="密码:" prop="password" v-if="false">
+				    <el-input type="password" v-model="ruleForms.password" ></el-input>
+				  </el-form-item>
+				  <el-form-item label="角色:" prop="roleName">
+				    <el-select v-model="roleName"  @change="get">
+				      <el-option
+				      	v-for='item in ruleForms.role'
+				      	:key="item.id"
+				      	:label="item.name"
+				      	:value="item.id"
+				      	></el-option>
+				    </el-select>
+				  </el-form-item>
+				  <!--
+				  	关联账号这个控件需要根据后台返回的数据进行显示，目前先不显示出来
+				  -->
+				  <el-form-item label="关联账号:" prop="rAccount" v-if="rAccountFlag">
+				    <el-select v-model="rAccount" placeholder="请选择关联账号（可多选）" multiple>
+				      <el-option
+				      	v-for="item in ruleForms.rAccount"
+				      	:key="item.id"
+				      	:label="item.name"
+				      	:value="item.id"
+				      	></el-option>
+				    </el-select>
+				  </el-form-item>
+				  <el-form-item label="联系人:" prop="contactName">
+				    <el-input  v-model="ruleForms.contactName" ></el-input>
+				  </el-form-item>
+				  <el-form-item label="Email:" prop="email">
+				    <el-input  v-model="ruleForms.email" ></el-input>
+				  </el-form-item>
+				</el-form>
+			  <!--弹出框的取消/保存部分-->
+			  <span slot="footer" class="dialog-footer">
+			    <el-button @click="close('ruleForms')">取 消</el-button>
+			    <el-button type="primary" @click="submitForm('ruleForms')">保 存</el-button>
+			  </span>
+			</el-dialog>
     </div>
 </template>
 
 <script>
+// 这里引入状态管理模块
+  import store from "../../../store/store";
     export default {
+        
         data() {
+            var validName = function(rule,value,callback){
+				  if(!value){
+						callback(new Error('请输入用户名'));
+					}else{
+                        if(value.length>50){
+                            callback(new Error('长度不能超过50'))
+                        }else{
+                            if(/^[a-zA-Z0-9_]+$/.test(value)==false){
+                                callback(new Error('只能填写字母、数字、下划线'))
+                            }else{
+                                callback();
+                            }
+                        }
+						
+					}
+			};
+			var validPass = function(rule,value,callback){
+				  if(!value){
+						callback(new Error('请输入密码'));
+					}else{
+                        if(value.length>6&&value.length<16){
+                            if(/^[a-zA-Z0-9_]+$/.test(value)==false){
+								callback(new Error('只能填写字母、数字、下划线'))
+                            }else{
+                                callback();
+                            }
+                        }else{
+                            callback(new Error('请输入6-16位'))
+                        }
+						
+					}
+			}
+			var validEmail = function(rule,value,callback){
+				  if(value){
+						if(/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value)==false){
+							callback(new Error('请输入正确的Email'));
+						}else{
+							callback();
+						}
+					}else{
+						callback();
+					}
+				  
+			}
+			var validrAccount = function(rule,value,callback){
+				if(!value){
+						callback(new Error('请选择关联账号（可多选）'));
+				}else{
+						callback();
+				}
+				
+			}
             return {
-                url: './static/vuetable.json',
 //              存放数据
                 tableData: [],
 //              当前显示第几页
                 cur_page: 1,
-//              多选
-                multipleSelection: [],
-//
-                select_cate: '',
                 total:1,
                 select_per:10,
                 select_word: '',
-                del_list: [],
+               
                 is_search: false,
-                page_sizes:[5,10,15,20,50]
+                page_sizes:[5,10,15,20,50],
 
+                userUpdatedialogVisible:false,
+                ruleForms:{
+                    name: '',
+		            role: [],
+			        contactName:'',
+                    email: '',
+                    password:'',
+                    roleName:"",
+                    rAccount:[]
+                },
+                // 角色的默认值
+                roleName:"",
+                // 是否显示关联账号
+                rAccountFlag:false,
+                // 关联账号的值
+                rAccount:[],
+                updateId:"",
+                rules: {
+		          name: [
+		            {required: true, trigger: 'blur' ,validator:validName}
+							],
+							password: [
+		            { required: true,  trigger: 'blur' ,validator:validPass}
+		          ],
+		          roleName: [
+		            { required: true, message: '请选择角色权限', trigger: 'blur' }
+		          ],
+		          rAccount: [
+		            { type: 'array', required: true, trigger: 'change',validator:validrAccount }
+		          ],
+		          contactName:[
+		          	{required:false,message:'请填写联系人',trigger:'blur'}
+		          ],
+		          email: [
+		            { required: false, trigger: 'blur',validator:validEmail }
+		          ]
+				},
             }
         },
         watch:{
@@ -105,24 +243,19 @@
         created(){
             this.getData();
         },
+        filters:{
+            rAccountf(value){
+                let a = value.map(function(item,index){
+                    return item.name;
+                });
+                return a.join(',');
+            }
+        },
         computed: {
 //          数据更新
             data(){
                 const self = this;
-                return self.tableData.filter(function(d){
-                    let is_del = false;
-                    for (let i = 0; i < self.del_list.length; i++) {
-                        if(d.name === self.del_list[i].name){
-                            is_del = true;
-                            break;
-                        }
-                    }
-                    if(!is_del){
-                        if(self.select_word==""||d.name.indexOf(self.select_word) > -1){
-                            return d;
-                        }
-                    }
-                })
+                return self.tableData;
             },
             // 添加修改后表格的刷新
             refresh(){
@@ -152,18 +285,10 @@
                 if(process.env.NODE_ENV === 'development'){
                     self.url = '/static/vuetable.json';
                 };
-                /*
-
-                contactName: "栗子云"
-                email: "admin@thextrader.cn"
-                id: 1
-                name: "admin"
-                remarks: "管理员用户"
-                roleName: "栗子云管理员"
-                status: 0
-                
-                */ 
                 if(self.$store.state.token){
+                    self.$axios.get('/roles/all').then(function(res){
+                            self.ruleForms.role = res.data;
+                    });
                     self.$axios.get(`/users?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
                         self.total = res.data.pagination.total;
                         self.tableData = res.data.data;
@@ -171,7 +296,6 @@
                 }else{
                     return false;
                 }
-                
             },
 //          搜索
             search(){
@@ -180,7 +304,6 @@
             },
             // 查看用户信息
             handleEdit(index, row) {
-                
                 let self = this;
                 this.$axios.get(`/users/${row.id}`).then(function(res){
                     if(res.status == 200){
@@ -194,15 +317,87 @@
             // 修改信息
             handleUpdate(index, row){
                 let self = this;
-                this.$axios.get(`/users/${row.id}`).then(function(res){
+                self.userUpdatedialogVisible = true;
+                self.updateId = row.id;
+                // 关联账号的默认选项
+                function rAccountDefault(linked){
+                    let arr = linked.map(function(item){
+                        return item.name;
+                    });
+                    return arr;
+                };
+                // 获取修改用户的信息
+                self.$axios.get(`/users/${row.id}`).then(function(res){
+                    console.log(res);
                     if(res.status == 200){
+                        let user = res.data;
                         self.$store.commit('readUsers',res.data);
-                        self.$store.commit("userDialog",{userDialogNum:3,flag:true,updateId:row.id});
+                        // self.$store.commit("userDialog",{userDialogNum:4,flag:true,updateId:row.id});
+                        self.ruleForms.name = user.name;
+                        self.roleName = user.roleName;
+                        // 根据角色的id来判断此角色是否有任务审核的权限
+                        self.$axios.get(`/roles/${user.roleId}`).then(function(res){
+							if(/任务审核/g.test(res.data.menus)){
+									self.rAccountFlag = true;
+									self.$axios.get(`/users/linked`).then(function(res){
+										console.log(res);
+										self.ruleForms.rAccount = res.data;
+									});
+							}else{
+									self.rAccountFlag = false;
+							}
+                        });
+                        
+                        self.rAccount = rAccountDefault(user.linked);
+                        self.ruleForms.contactName = user.contactName;
+                        self.ruleForms.email = user.email;
                     }else{
                         return false;
                     }
                 });
                 
+            },
+            submitForm(formName){
+                let self = this;
+                var rAccounts = self.rAccount.join(',') || "";
+
+                console.log(self.updateId);
+                console.log(rAccounts);
+                console.log(self.ruleForms);
+
+                // self.$axios.put(`/users/${self.updateId}`,{
+                //     name:self.ruleForms.name,
+                //     roleId:self.roleName==store.state.readUser.roleName?self.getRoleId(self.roleName)[0].id:self.roleName,
+                //     linkIds:rAccounts,
+                //     contactName:self.ruleForms.contactName,
+                //     email:self.ruleForms.email
+                // }).then(function(res){
+                //     console.log(res,111111);
+                //     if(res.status == 200){
+                //         self.$message({
+                //             message: '用户修改成功！',
+                //             type: 'success'
+                //         });
+
+                //         // self.ruleForms.name = "";
+                //         // self.ruleForms.contactName = "";
+                //         // self.ruleForms.email = "";
+                //         // self.rAccount = "";
+
+                //         self.userUpdatedialogVisible = false;
+                //         self.getData();
+                //         // self.$store.commit("userDialog",{userDialogNum:3,flag:false,fresh:store.state.fresh});
+                //     }
+                // });
+            },
+            // 根据角色名获取角色id
+            getRoleId(roleName){
+                let id =  this.ruleForms.role.filter(function(item,index){
+                    if(item.name==roleName){
+                        return item.id;
+                    }
+                });
+                return id;
             },
             // 删除
             handleDelete(index, row) {
@@ -294,6 +489,55 @@
 
                 }
             },
+            handleClose(){
+                this.userUpdatedialogVisible = false;
+            },
+            // 取消添加用户弹出框
+            close(formName){
+                        // this.$store.commit("userDialog",{userDialogNum:1,flag:false});
+                        this.userUpdatedialogVisible = false;
+						this.$refs[formName].resetFields();
+
+						this.ruleForms.name = "";
+						this.ruleForms.contactName = "";
+						this.ruleForms.email = "";
+						this.rAccount = "";
+            },
+            // 检查用户名是否存在
+					checkName(){
+						var self = this;
+						// var url = "";
+						// if(store.state.userDialogNum==1){
+						// 	url =  `/users/checkName/${self.ruleForms.name}`;
+						// }else if(store.state.userDialogNum==3){
+						// 	url =  `/users/checkName/${store.state.updateId}/${self.ruleForms.name}`
+						// }
+						if(store.state.userDialogNum!=3){
+							self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
+								if(!res.data){
+										self.$message({
+											message: '用户已存在，请重新输入！',
+											type: 'error'
+										}); 
+								}
+							})
+						}
+						
+                    },
+                    get(){
+						let self = this;
+						self.$axios.get(`/roles/${this.roleName}`).then(function(res){
+							if(/任务审核/g.test(res.data.menus)){
+									self.rAccountFlag = true;
+									self.$axios.get(`/users/linked`).then(function(res){
+										console.log(res);
+										self.ruleForms.rAccount = res.data;
+									});
+							}else{
+									self.rAccountFlag = false;
+							}
+						});
+					}
         }
     }
 </script>

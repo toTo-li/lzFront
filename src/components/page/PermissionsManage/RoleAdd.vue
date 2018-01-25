@@ -89,6 +89,8 @@
 										var self = this;
 										// 获取所有权限
 										self.$axios.get('/roles/menus').then(function(res){
+											console.log(res);
+											
 											if(res.status == 200){
 												self.ruleForm.permissions = res.data;
 											}else{
@@ -163,22 +165,32 @@
 									self.$refs[formName].validate((valid)=>{
 											if(valid){
 													// 用户添加 
-													self.$axios.post('/roles',{
-															name:users.name,
-															menuIds:self.menuIds
-													}).then(function(res){
-														if(res.status == 200 || res.status==201){
-															self.$message({
-																message: '角色添加成功！',
-																type: 'success'
-															});
-															self.ruleForm = {name: '',rescs: [],menus: [],permissions:[],};
-															self.$store.commit("roleDialog",{roleDialogNum:1,flag:false,fresh:store.state.fresh});
+													self.$axios.get(`/roles/checkName/${self.ruleForms.name}`).then(function(res){
+														if(!res.data){
+																self.$message({
+																	message: '角色已存在，请重新输入！',
+																	type: 'error'
+																}); 
 														}else{
-															self.$message.error('角色添加失败！');
-														}
+															self.$axios.post('/roles',{
+																	name:users.name,
+																	menuIds:self.menuIds
+															}).then(function(res){
+																if(res.status == 200 || res.status==201){
+																	self.$message({
+																		message: '角色添加成功！',
+																		type: 'success'
+																	});
+																	self.ruleForm = {name: '',rescs: [],menus: [],permissions:[],};
+																	self.$store.commit("roleDialog",{roleDialogNum:1,flag:false,fresh:store.state.fresh});
+																}else{
+																	self.$message.error('角色添加失败！');
+																}
 
-													});
+															});
+														}
+													})
+													
 											}else{
 												return false;
 											}
@@ -188,19 +200,55 @@
 							}else if(store.state.roleDialogNum==3){
 											console.log(store.state.updateRoleId);
 											console.log(self.ruleForm.name);
-											self.$axios.put(`/roles/${store.state.updateRoleId}`,{
-											        name:self.ruleForm.name,
-												    menuIds:self.menuIds
-											}).then(function(res){
-												if(res.status == 200){
-													self.$message({
-														message: '角色修改成功！',
-														type: 'success'
-													});
-													self.ruleForm = {name:'',rescs: [],menus: [],permissions:[]};
-													self.$store.commit("roleDialog",{roleDialogNum:3,flag:false,fresh:store.state.fresh});
+											self.$axios.get(`/roles/${store.state.updateRoleId}`).then(function(res){
+												console.log(res,11111111);
+												console.log(self.ruleForm.name);
+												if(self.ruleForm.name==res.data.name){
+															self.$axios.put(`/roles/${store.state.updateRoleId}`,{
+																	name:self.ruleForm.name,
+																	menuIds:self.menuIds
+															}).then(function(res){
+																if(res.status == 200){
+																	self.$message({
+																		message: '角色修改成功！',
+																		type: 'success'
+																	});
+																	self.ruleForm = {name:'',rescs: [],menus: [],permissions:[]};
+																	self.$store.commit("roleDialog",{roleDialogNum:3,flag:false,fresh:store.state.fresh});
+																}
+															});
+												}else{
+													console.log(self.ruleForm.name);
+													
+													self.$axios.get(`/roles/checkName/${self.ruleForm.name}`).then(function(res){
+														console.log(res);
+														if(!res.data){
+																self.$message({
+																	message: '角色已存在，请重新输入！',
+																	type: 'error'
+																}); 
+														}else{
+															self.$axios.put(`/roles/${store.state.updateRoleId}`,{
+																	name:self.ruleForm.name,
+																	menuIds:self.menuIds
+															}).then(function(res){
+																if(res.status == 200){
+																	self.$message({
+																		message: '角色修改成功！',
+																		type: 'success'
+																	});
+																	self.ruleForm = {name:'',rescs: [],menus: [],permissions:[]};
+																	self.$store.commit("roleDialog",{roleDialogNum:3,flag:false,fresh:store.state.fresh});
+																}
+															});
+														}
+													})
 												}
 											});
+
+
+											
+											
 							}
 					},
 				// 取消添加用户弹出框
@@ -218,14 +266,18 @@
 					// 清空数据，以免上次数据的保留
 					this.ruleForm.name = "";
 					this.ruleForm.menus = [];
-					this.$refs[formName].resetFields();
+					console.log(this.$refs[formName]);
+					if(this.$refs[formName]){
+						this.$refs[formName].resetFields();
+					}
 
 				},
 				// 角色名重复验证
 				checkName(){
 					var self = this;
-					if(store.state.roleDialogNum!=3){
+					if(store.state.roleDialogNum==1){
 						self.$axios.get(`/roles/checkName/${self.ruleForms.name}`).then(function(res){
+							console.log(res);
 							if(!res.data){
 									self.$message({
 										message: '角色已存在，请重新输入！',

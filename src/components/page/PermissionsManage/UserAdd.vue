@@ -17,13 +17,13 @@
 			  	prop="name"		表单控件相对应的验证规则
 			  -->
 			  <el-form :model="ruleForms" :rules="rules"  ref="ruleForms" label-width="100px">
-				  <el-form-item label="用户名" prop="name">
+				  <el-form-item label="用户名:" prop="name">
 				    <el-input v-model="ruleForms.name" :disabled="disabled" @blur="checkName" ></el-input>
 				  </el-form-item>
-					<el-form-item label="密码" prop="password" v-if="passwordFlag">
+					<el-form-item label="密码:" prop="password" v-if="passwordFlag">
 				    <el-input type="password" v-model="ruleForms.password" :disabled="disabled"></el-input>
 				  </el-form-item>
-				  <el-form-item label="角色" prop="roleName">
+				  <el-form-item label="角色:" prop="roleName">
 				    <el-select v-model="roleName" :disabled="disabled" @change="get">
 				      <el-option
 				      	v-for='item in ruleForms.role'
@@ -36,26 +36,31 @@
 				  <!--
 				  	关联账号这个控件需要根据后台返回的数据进行显示，目前先不显示出来
 				  -->
-				  <el-form-item label="关联账号" prop="rAccount" v-if="false">
-				    <el-select v-model="accountValue" placeholder="请选择关联账号（可多选）">
+				  <el-form-item label="关联账号:" prop="rAccount" v-if="rAccountFlag">
+				    <el-select v-model="rAccount" placeholder="请选择关联账号（可多选）" multiple>
 				      <el-option
 				      	v-for="item in ruleForm.rAccount"
-				      	:key="item.value"
-				      	:label="item.label"
-				      	:value="item.value"
+				      	:key="item.id"
+				      	:label="item.name"
+				      	:value="item.id"
 				      	></el-option>
 				    </el-select>
 				  </el-form-item>
+					<el-form-item label="关联账号:"  v-if="this.$store.state.userDialogNum==2">
+							<div v-for="(item,index) in ruleForms.linked" :key="index">
+								{{item.name}}
+							</div>
+				  </el-form-item>
 
-				  <el-form-item label="联系人" prop="contactName">
+				  <el-form-item label="联系人:" prop="contactName">
 				    <el-input  v-model="ruleForms.contactName" :disabled="disabled"></el-input>
 				  </el-form-item>
-				  <el-form-item label="Email" prop="email">
+				  <el-form-item label="Email:" prop="email">
 				    <el-input  v-model="ruleForms.email" :disabled="disabled"></el-input>
 				  </el-form-item>
 				</el-form>
 			  <!--弹出框的取消/保存部分-->
-			  <span slot="footer" class="dialog-footer" v-if="this.$store.state.userDialogNum==1||this.$store.state.userDialogNum==3">
+			  <span slot="footer" class="dialog-footer" v-if="this.$store.state.userDialogNum==1">
 			    <el-button @click="close('ruleForms')">取 消</el-button>
 			    <el-button type="primary" @click="submitForm('ruleForms')">保存</el-button>
 			  </span>
@@ -77,10 +82,14 @@
 				  if(!value){
 						callback(new Error('请输入用户名'));
 					}else{
-						if(/^[a-zA-Z0-9_]{4,15}$/.test(value)==false){
-								callback(new Error('只能填写字母、数字、下划线'))
+						if(value.length<50){
+							if(/^[a-zA-Z0-9_]+$/.test(value)==false){
+									callback(new Error('只能填写字母、数字、下划线'))
+							}else{
+								callback();
+							}
 						}else{
-							callback();
+							callback(new Error('长度不能超过50'));
 						}
 					}
 			};
@@ -88,7 +97,7 @@
 				  if(!value){
 						callback(new Error('请输入密码'));
 					}else{
-						if(/^[a-zA-Z0-9_]{6,16}$/.test(value)==false){
+						if(/^[a-zA-Z0-9_]+$/.test(value)==false){
 								callback(new Error('只能填写字母、数字、下划线'))
 						}else{
 							callback();
@@ -107,6 +116,14 @@
 					}
 				  
 			}
+			var validrAccount = function(rule,value,callback){
+				if(!value){
+						callback(new Error('请选择关联账号（可多选）'));
+				}else{
+						callback();
+				}
+				
+			}
 			return {
 				//是否显示弹出框
 						dialogVisible: false,
@@ -118,11 +135,13 @@
 							email: '',
 							password:'',
 							roleName:"",
+							rAccount:[]
 		        },
 		        //角色的默认选项
 		        roleName:"",
 		        //关联账号的默认选项，这里的value1要与下拉选项中v-model绑定，并且value1的值要与rAccount中的value值一样，记得value1不能放在ruleForm中，否则会找不到！
-		        accountValue:"",
+						rAccount:[],
+						rAccountFlag:false,
 		        //表单控件验证规则
 		        rules: {
 		          name: [
@@ -135,7 +154,7 @@
 		            { required: true, message: '请选择角色权限', trigger: 'blur' }
 		          ],
 		          rAccount: [
-		            { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
+		            { type: 'array', required: true, trigger: 'change',validator:validrAccount }
 		          ],
 		          contactName:[
 		          	{required:false,message:'请填写联系人',trigger:'blur'}
@@ -149,9 +168,6 @@
 						// 密码显示
 						passwordFlag:false
 			  }
-				},
-				created(){
-					// this.$validator.localize('zh_CN');
 				},
 				computed:{
 					    // 由用户添加按钮和查看按钮触发弹出框
@@ -179,26 +195,24 @@
 											// 角色的默认选项
 											this.roleName = this.ruleForm.role[0].name;
 											this.ruleForm.roleName = this.ruleForm.role[0].name;
-											this.ruleForm.name = "";
-											this.ruleForm.contactName = "";
-											this.ruleForm.email = "";
+											// this.ruleForm.name = "";
 										  return this.ruleForm;
 									}else{
 										  this.passwordFlag = false;
 											if(store.state.userDialogNum==2){
 													this.disabled = true;
 													this.roleName = store.state.readUser.roleName;
+													console.log(store.state.readUser);
 													return store.state.readUser;
 											}else if(store.state.userDialogNum==3){
-												  // this.roleName = store.state.updateId;
-													this.disabled = false;
-													this.roleName = store.state.readUser.roleName;
-													// 解决下拉框的下拉选项没用值的问题
-													this.ruleForm.name = store.state.readUser.name;
-													this.ruleForm.contactName = store.state.readUser.contactName;
-													this.ruleForm.email = store.state.readUser.email;
-
-													return this.ruleForm;
+												  // // this.roleName = store.state.updateId;
+													// this.disabled = false;
+													// this.roleName = store.state.readUser.roleName;
+													// // 解决下拉框的下拉选项没用值的问题
+													// this.ruleForm.name = store.state.readUser.name;
+													// this.ruleForm.contactName = store.state.readUser.contactName;
+													// this.ruleForm.email = store.state.readUser.email;
+													// return this.ruleForm;
 											}else{
 													this.disabled = false;
 													return this.ruleForm;
@@ -211,33 +225,22 @@
 		    methods:{
 				  //添加用户的保存事件
 			    submitForm(formName){
-								/*
-								  private int id;
-									private String name;
-									private String password;//密码
-									private String email;//email
-									private Integer roleId;
-									private Integer status;//0=未冻结，1=冻结
-									private String contactName;
-									private String remarks;
-								
-								*/ 
-							
 							let users = this.ruleForm;
 							var self = this;
-							console.log(self);
-							
 							if(store.state.userDialogNum==1){
+									var rAccounts = self.rAccount.join(',') || "";
 									self.$refs[formName].validate((valid)=>{
 											if(valid){
 													// 用户添加 
+													console.log(this.ruleForms,1111111111);
 													this.$axios.post('/users',{
 															name:users.name,
 															password:users.password,
 															email:users.email,
 															roleId:self.roleName==self.ruleForm.role[0].name?self.ruleForm.role[0].id:self.roleName,
 															contactName:users.contactName,
-															status:0
+															status:0,
+															linkIds:rAccounts
 													}).then(function(res){
 														console.log(res);
 														
@@ -246,7 +249,13 @@
 																message: '用户添加成功！',
 																type: 'success'
 															});
+															console.log(self.ruleForms,3232323);
+															
 															self.ruleForm.password="";
+															self.ruleForm.name = "";
+															self.ruleForm.contactName = "";
+															self.ruleForm.email = "";
+															self.rAccount = "";
 															self.$store.commit("userDialog",{userDialogNum:1,flag:false,fresh:store.state.fresh});
 														}else{
 															self.$message.error('用户添加失败！');
@@ -260,60 +269,52 @@
 							}else if(store.state.userDialogNum==2){
 										self.$store.commit("userDialog",{userDialogNum:2,flag:false});
 							}else if(store.state.userDialogNum==3){
-										
-										// this.$confirm('确定修改该用户?', '提示', {
-										// 		confirmButtonText: '确定',
-										// 		cancelButtonText: '取消',
-										// 		type: 'warning',
-										// 		center: true
-										// }).then(() => {
-											console.log(store.state.readUser);
-											
-											self.$axios.put(`/users/${store.state.updateId}`,{
-																name:store.state.readUser.name,
-																email:store.state.readUser.email,
-																roleId:self.roleName==store.state.readUser.roleName?self.getRoleId(self.roleName)[0].id:self.roleName,
-																contactName:store.state.readUser.contactName,
-											}).then(function(res){
-												console.log(res);
-												if(res.status == 200){
-														self.$message({
-															message: '用户修改成功！',
-															type: 'success'
-														});
-														self.$store.commit("userDialog",{userDialogNum:3,flag:false,fresh:store.state.fresh});
-												}
-											});
-										// })
-										// .catch(() => {
-										// 		this.$message({
-										// 				type: 'info',
-										// 				message: '已取消用户修改'
-										// 		});
-										// });
+											// self.$axios.put(`/users/${store.state.updateId}`,{
+											// 					name:store.state.readUser.name,
+											// 					email:store.state.readUser.email,
+											// 					roleId:self.roleName==store.state.readUser.roleName?self.getRoleId(self.roleName)[0].id:self.roleName,
+											// 					contactName:store.state.readUser.contactName,
+											// }).then(function(res){
+											// 	console.log(res);
+											// 	if(res.status == 200){
+											// 			self.$message({
+											// 				message: '用户修改成功！',
+											// 				type: 'success'
+											// 			});
+											// 			  self.ruleForm.password="";
+											// 				self.ruleForm.name = "";
+											// 				self.ruleForm.contactName = "";
+											// 				self.ruleForm.email = "";
+											// 				self.rAccount = "";
+											// 			self.$store.commit("userDialog",{userDialogNum:3,flag:false,fresh:store.state.fresh});
+											// 	}
+											// });
 							}
 
 					},
 					// 根据角色名获取角色id
 					getRoleId(roleName){
-						console.log(roleName,1111111);
 						let id =  store.state.readUser.role.filter(function(item,index){
 							if(item.name==roleName){
 								return item.id;
 							}
 						});
-						console.log(id);
-						
 						return id;
 					},
 					// 取消添加用户弹出框
 					close(formName){
 						this.$store.commit("userDialog",{userDialogNum:1,flag:false});
 						this.$refs[formName].resetFields();
+
+						this.ruleForm.password="";
+						this.ruleForm.name = "";
+						this.ruleForm.contactName = "";
+						this.ruleForm.email = "";
+						this.rAccount = "";
 					},
 			    //弹出框关闭前的确认
 			    handleClose(done) {
-									this.$store.commit("userDialog",{userDialogNum:1,flag:false});
+						this.$store.commit("userDialog",{userDialogNum:1,flag:false});
 					},
 					openUserDialog(){
 						 this.$store.commit("userDialog",{userDialogNum:1,flag:true});
@@ -321,12 +322,6 @@
 					// 检查用户名是否存在
 					checkName(){
 						var self = this;
-						// var url = "";
-						// if(store.state.userDialogNum==1){
-						// 	url =  `/users/checkName/${self.ruleForms.name}`;
-						// }else if(store.state.userDialogNum==3){
-						// 	url =  `/users/checkName/${store.state.updateId}/${self.ruleForms.name}`
-						// }
 						if(store.state.userDialogNum!=3){
 							self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
 								if(!res.data){
@@ -337,11 +332,20 @@
 								}
 							})
 						}
-						
-						
 					},
 					get(){
-						console.log(this.ruleForms.roleName);
+						let self = this;
+						self.$axios.get(`/roles/${this.roleName}`).then(function(res){
+							if(/任务审核/g.test(res.data.menus)){
+									self.rAccountFlag = true;
+									self.$axios.get(`/users/linked`).then(function(res){
+										console.log(res);
+										self.ruleForm.rAccount = res.data;
+									});
+							}else{
+									self.rAccountFlag = false;
+							}
+						});
 					}
 
 		  }
