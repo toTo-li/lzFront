@@ -198,11 +198,7 @@
 							}else if(store.state.roleDialogNum==2){
 										self.$store.commit("roleDialog",{roleDialogNum:2,flag:false});
 							}else if(store.state.roleDialogNum==3){
-											console.log(store.state.updateRoleId);
-											console.log(self.ruleForm.name);
 											self.$axios.get(`/roles/${store.state.updateRoleId}`).then(function(res){
-												console.log(res,11111111);
-												console.log(self.ruleForm.name);
 												if(self.ruleForm.name==res.data.name){
 															self.$axios.put(`/roles/${store.state.updateRoleId}`,{
 																	name:self.ruleForm.name,
@@ -219,7 +215,6 @@
 															});
 												}else{
 													console.log(self.ruleForm.name);
-													
 													self.$axios.get(`/roles/checkName/${self.ruleForm.name}`).then(function(res){
 														console.log(res);
 														if(!res.data){
@@ -245,10 +240,6 @@
 													})
 												}
 											});
-
-
-											
-											
 							}
 					},
 				// 取消添加用户弹出框

@@ -119,7 +119,7 @@
                 
                 */
                 self.$axios.get(`/roles?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
-                    console.log(res.data);
+                    console.log(res.data,11111111111111);
                     self.total = res.data.pagination.total;
                     self.tableData = res.data.data;
                 })

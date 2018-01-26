@@ -380,7 +380,7 @@
                             files:p
                         }
                         wl.push(app);
-                    }else{
+                    }else if(item.type==3||item.type=="图片"){
                         let p = item.pic.pics.map(function(item){
                             return {filePath:item.filePath,fileType:item.fileType};
                         });
@@ -458,7 +458,7 @@
                     this.ruleForm.materials[index].cardLink.pics.push(imgUrl)
                 }else if(item.type==2){
                     this.ruleForm.materials[index].app.pics.push(imgUrl)
-                }else{
+                }else if(item.type==3){
                     this.ruleForm.materials[index].pic.pics.push(imgUrl)
                 }
             },
@@ -472,12 +472,12 @@
                 let self = this;
                 let taskId =  self.$store.state.taskReadId;
                 self.$axios.get(`/tasks/${taskId}`).then(function(res){
+                    console.log(res,3434343434);
                     if(res.status==200){
                         self.ruleForm = res.data;
                         self.ruleForm.all = res.data.all==1?"否":"是"
                         self.ruleForm.materials = self.transfer(JSON.parse(res.data.materials));
                         // self.transfer(JSON.parse(res.data.materials));
-                        
                         let a = JSON.parse(res.data.times).map(function(item){
                             return {time:new Date(item).getTime()};
                         })
@@ -524,13 +524,17 @@
                             {label:'图片',value:3}
                     */ 
                     if(item.type==0){
+                        console.log("wenzi");
                         w.type="文字";
                         w.word.landingPageDesc = item.content;
                         w.word.landingPage = item.langdings.map(function(item){
                             return {value:item};
                         });
+                        console.log(w);
+                        
                         wl.push(w);
                     }else if(item.type==1){
+                         console.log("kapianshi");
                         w.type="卡片式链接";
                         w.cardLink.title = item.title;
                         w.cardLink.content = item.content;
@@ -551,7 +555,7 @@
                         });
                         w.app.pics = p;
                         wl.push(w);
-                    }else{
+                    }else if(item.type==3){
                         w.type="图片";
                         let p = item.files.map(function(item){
                             return {filePath:item.filePath,fileType:item.fileType};
