@@ -361,7 +361,7 @@
                 Task.materials.map(function(item,index){
                     if(item.type==0||item.type=="文字"){
                         let landings=[];
-                         item.word.landingPage.map(function(landingItem,langdingIdex){
+                         item.word.landingPage.map(function(landingItem,landingIdex){
                              landings.push(landingItem.value);
                          });
                         let content = `${item.word.landingPageDesc}`;
