@@ -46,7 +46,7 @@
 				      	></el-option>
 				    </el-select>
 				  </el-form-item>
-					<el-form-item label="关联账号:"  v-if="this.$store.state.userDialogNum==2">
+					<el-form-item label="关联账号:"  v-if="this.$store.state.userDialogNum==2&&ruleForms.linked.length>0">
 							<div v-for="(item,index) in ruleForms.linked" :key="index">
 								{{item.name}}
 							</div>
@@ -314,7 +314,14 @@
 					},
 			    //弹出框关闭前的确认
 			    handleClose(done) {
+						console.log(1111111111);
 						this.$store.commit("userDialog",{userDialogNum:1,flag:false});
+						this.$refs['ruleForms'].resetFields();
+						this.ruleForm.password="";
+						this.ruleForm.name = "";
+						this.ruleForm.contactName = "";
+						this.ruleForm.email = "";
+						this.rAccount = "";
 					},
 					openUserDialog(){
 						 this.$store.commit("userDialog",{userDialogNum:1,flag:true});

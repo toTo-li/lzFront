@@ -476,33 +476,42 @@
                     userId =  localStorage.getItem('user_id');
                 }
                 console.log(userId);
-
-                self.$refs[formName].validate((valid) => {
-                    if(valid){
-                        console.log(Task.all);
-                        self.$axios.post("/tasks",{
-                            userId:userId,
-                            name:Task.name,
-                            desc:Task.desc,
-                            tags:Task.tags,
-                            times:self.timeFormated,
-                            all:Task.all=='否'?2:Task.all,
-                            hope:Task.hope,
-                            materials:JSON.stringify(wl)
-                        }).then(function(res){
-                            console.log(res);
-
-                            if(res.status==201){
+                self.$axios.get(`/tasks/checkName/${self.ruleForm.name}`).then(function(res){
+                        console.log(res);
+                        if(!res.data){
                                 self.$message({
-                                    message: '任务新建成功！',
-                                    type: 'success'
+                                    message: '用户已存在，请重新输入！',
+                                    type: 'error'
                                 });
-                            }
-                        })
-                    }else{
-                        return false;
-                    }
-                });
+                        }else{
+                            self.$refs[formName].validate((valid) => {
+                                if(valid){
+                                    console.log(Task.all);
+                                    self.$axios.post("/tasks",{
+                                        userId:userId,
+                                        name:Task.name,
+                                        desc:Task.desc,
+                                        tags:Task.tags,
+                                        times:self.timeFormated,
+                                        all:Task.all=='否'?2:Task.all,
+                                        hope:Task.hope,
+                                        materials:JSON.stringify(wl)
+                                    }).then(function(res){
+                                        console.log(res);
+                                        if(res.status==201){
+                                            self.$message({
+                                                message: '任务新建成功！',
+                                                type: 'success'
+                                            });
+                                        }
+                                    })
+                                }else{
+                                    return false;
+                                }
+                            });
+                        }
+                })
+
 
             },
             // 时间格式转化
@@ -601,7 +610,6 @@
                 var self = this;
                 self.$axios.get(`/tasks/checkName/${self.ruleForm.name}`).then(function(res){
                         console.log(res);
-
                         if(!res.data){
                                 self.$message({
                                     message: '用户已存在，请重新输入！',
@@ -788,5 +796,10 @@
         padding: 3px 10px;
         transition: border-color .2s cubic-bezier(.645,.045,.355,1);
         width: 100%;
+    }
+    .vdp-datepicker__clear-button{
+        position: absolute !important;
+        right: 12px;
+        bottom: 0px;
     }
 </style>
