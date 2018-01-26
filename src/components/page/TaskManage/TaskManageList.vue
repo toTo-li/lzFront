@@ -42,7 +42,7 @@
                 <el-table-column prop="commitStatus" label="提交状态" width="100" >
 
                     <template slot-scope="scope">
-                        <span>{{scope.row.commitStatus==0?"未提交":"已提交"}}</span>
+                        <span>{{scope.row.commitStatus==0?"未提交":(scope.row.commitStatus==1?"已提交":"提交中")}}</span>
                     </template>
 
                 </el-table-column>
@@ -68,9 +68,9 @@
                         <el-button size="small" type="danger"
                                    @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
                         <el-button size="small" type="danger"
-                                   @click="handleSubmit(scope.$index, scope.row)" :disabled="scope.row.commitStatus==0?false:true">提交任务</el-button>
+                                   @click="handleSubmit(scope.$index, scope.row)" >{{scope.row.commitStatus==2?"任务提交中":"提交任务"}}</el-button>
                         <el-button size="small" type="danger"
-                                   @click="handleUnPush(scope.$index, scope.row)" :disabled="scope.row.pushStatus==0?true:false" >取消发布</el-button>
+                                   @click="handleUnPush(scope.$index, scope.row)"  >取消发布</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column label="占用的社群列表" width="150">
@@ -228,7 +228,7 @@
             timesTran:function(val){
                 if(val && val.length!=0){
                     let t = val.filter(function(item){
-                        return item!="NaN-0NaN-0NaN 0NaN:0NaN:0NaN";  
+                        return item!="NaN-0NaN-0NaN 0NaN:0NaN:0NaN";
                     });
                     return t.join('; ');
                 }
@@ -309,6 +309,8 @@
                         });
                     }
                 });
+
+
             },
             // 取消发布
             handleUnPush(index,row){

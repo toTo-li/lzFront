@@ -24,50 +24,15 @@
         data() {
             return {
                 items: [
-//                    {
-//                        icon: 'el-icon-setting',
-//                        index: 'readme',
-//                        title: '自述'
-//                    },
                     {
                         icon: 'el-icon-menu',
                         index: 'basetable',
                         title: '任务管理'
-//                        ,
-//                        subs: [
-//                            {
-//                                index: 'basetable',
-//                                title: '基础表格'
-//                            },
-//                            {
-//                                index: 'vuetable',
-//                                title: 'Vue表格组件'
-//                            }
-//                        ]
                     },
                     {
                         icon: 'el-icon-date',
                         index: 'baseform',
                         title: '库存查看'
-//                        ,
-//                        subs: [
-//                            {
-//                                index: 'baseform',
-//                                title: '基本表单'
-//                            },
-//                            {
-//                                index: 'vueeditor',
-//                                title: '编辑器'
-//                            },
-//                            {
-//                                index: 'markdown',
-//                                title: 'markdown'
-//                            },
-//                            {
-//                                index: 'upload',
-//                                title: '文件上传'
-//                            }
-//                        ]
                     },
                     {
                         icon: 'el-icon-star-on',
@@ -94,7 +59,79 @@
                         index: 'manage',
                         title: '权限管理'
                     }
-                ]
+                ],
+                created(){
+                    this.getMenus();
+                },
+                methods:{
+                    contains(arr, obj) {
+                        var i = arr.length;
+                        while (i--) {
+                            if (arr[i] === obj) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    },
+                    getMenus(){
+                        let self = this;
+                        let taskId =  self.$store.state.taskUpdateId;
+                        let menusStr = "";
+                        if(localStorage){
+                            menusStr =  localStorage.getItem('menus');
+                        }
+                        let menus =menusStr.split(",");
+                        if(contains(menus,"任务管理")){
+                            self.items.push({
+                                icon: 'el-icon-menu',
+                                index: 'basetable',
+                                title: '任务管理'
+                            })
+                        };
+                        if(contains(menus,"库存查看")){
+                            self.items.push({
+                                icon: 'el-icon-date',
+                                index: 'baseform',
+                                title: '库存查看'
+                            })
+                        };
+                        if(contains(menus,"任务审核")){
+                            self.items.push({
+                                icon: 'el-icon-star-on',
+                                index: 'basecharts',
+                                title: '任务审核'
+                            })
+                        };
+                        if(contains(menus,"报表")){
+                            self.items.push({
+                                icon: 'el-icon-upload2',
+                                index: 'drag',
+                                title: '报表',
+                                subs: [
+                                    {
+                                        index: 'tasktable',
+                                        title: '任务报表'
+                                    },
+                                    {
+                                        index: 'groupstable',
+                                        title: '社群报表'
+                                    }
+                                ]
+                            })
+                        };
+                        if(contains(menus,"权限管理")){
+                            self.items.push({
+                                icon: 'el-icon-menu',
+                                index: 'manage',
+                                title: '权限管理'
+                            })
+                        };
+                    }
+                }
+
+
+
+
             }
         },
         computed:{

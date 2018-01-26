@@ -19,27 +19,28 @@
             </el-form-item>
             <el-form-item label="发送时间:"  >
                 <template  >
-                    <!-- <el-date-picker
+                     <el-date-picker
                         v-for="(item,index) in ruleForm.times"
                         v-model="item.time"
-                        type="datetime"
+                        type="datetime" :picker-options="pickerOpt"
                         placeholder="选择日期时间"
                         :key="index"
                         :name="index"
                         >
-                    </el-date-picker> -->
-                    <datepicker 
-                        :disabled="disabled" 
-                        :format="showTimeFormat" 
-                        language="zh" 
-                        :wrapper-class="'el-date-editor el-input el-date-editor--datetime'" 
+                    </el-date-picker>
+                        <!-- <datepicker
+                        :disabled="disabled"
+                        :format="showTimeFormat"
+                        :minimum-view="hour"
+                        language="zh"
+                        :wrapper-class="'el-date-editor el-input el-date-editor--datetime'"
                         :input-class="'el-input__inner'"
                         v-for="(item,index) in ruleForm.times"
                         v-model="item.time"
                         :key="index"
                         :value="item.time"
                         placeholder="请选择发送时间"
-                        ></datepicker>
+                        ></datepicker>-->
                 </template>
                 <el-button @click="addTimes">添加时间</el-button>
             </el-form-item>
@@ -257,7 +258,9 @@
 </template>
 
 <script>
-    import datepicker from 'vuejs-datepicker';
+   // import datepicker from 'vuejs-datepicker';
+//import datetime from 'vue-datetimepicker';
+
     Date.prototype.Format = function(formatStr){
                     let str = formatStr;
                     str = str.replace(/yyyy|YYYY/,this.getFullYear());
@@ -400,14 +403,22 @@
             }
         },
         components:{
-            datepicker
+
         },
         computed:{
             start:function(){
                 return Date.now();
+            },
+             pickerOpt: function () {
+                return {
+                    disabledDate(time) {
+                        return time.getTime() < new Date() - 8.64e7;
+                    }
+                 }
             }
         },
         methods:{
+
             submitForm(formName){
                 let self = this;
                 let Task = self.ruleForm;
@@ -416,11 +427,11 @@
                 Task.materials.map(function(item,index){
                     if(item.type==0){
                         let landings=[];
-                         item.word.landingPage.map(function(langdingItem,langdingIdex){
-                             landings.push(langdingItem.value);
+                         item.word.landingPage.map(function(landingItem,landingIdex){
+                             landings.push(landingItem.value);
                          });
                         let content = `${item.word.landingPageDesc}`;
-                        wl.push({type:0,content:content,langdings:landings});
+                        wl.push({type:0,content:content,landings:landings});
                     }else if(item.type==1){
                         let p = item.cardLink.pics.map(function(item){
                             return {filePath:item.filePath,fileType:item.fileType};
@@ -462,7 +473,7 @@
                     userId =  localStorage.getItem('user_id');
                 }
                 console.log(userId);
-                
+
                 self.$refs[formName].validate((valid) => {
                     if(valid){
                         console.log(Task.all);
@@ -500,7 +511,7 @@
                 self.timeFormated = self.timeFormated.filter(function(item){
                     return item != 'NaN-0NaN-0NaN 0NaN:0NaN:0NaN';
                 });
-                
+
             },
             // 时间显示格式
             showTimeFormat(date){

@@ -30,7 +30,7 @@
                     <el-button size="small"
                                @click="handleRead(scope.index, scope.row)" >查看</el-button>
                     <el-button size="small" type="danger"
-                               @click="handleAuditAndPush(scope.$index, scope.row)">审核通过并发布</el-button>
+                               @click="handleAuditAndPush(scope.$index, scope.row)" :disabled="scope.row.auditStatus==0?false:true">审核通过并发布</el-button>
                     <!-- <el-button size="small" type="danger"
                                @click="handleNoAudit(scope.$index, scope.row)">审核拒绝</el-button> -->
                 </template>
@@ -146,7 +146,7 @@
         },
         filters:{
             timesTran:function(val){
-                
+
                 if(val != "undefined"){
                     if(typeof val == "string"){
                         val = JSON.parse(val)
@@ -154,11 +154,11 @@
                     if(typeof val != "undefined"){
                         return val.join(";  ");
                     }
-                    
+
                 }else{
                     return false;
                 }
-                
+
             }
         },
         watch:{
@@ -197,16 +197,16 @@
                 this.is_search = true;
                 this.getData();
             },
- 
+
 //          查看
             handleRead(index,row){
                this.$store.commit('getTaskUpdateId',row.id);
                this.$router.push('/taskcheckread');
             },
-            // 审核通过并发布 
+            // 审核通过并发布
             handleAuditAndPush(index,row){
                 let self = this;
-                
+
                 this.$confirm('确定审核通过并发布?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -236,7 +236,7 @@
             },
             //弹出框关闭前的确认
             handleClose(done) {
-                
+
             }
 
         }

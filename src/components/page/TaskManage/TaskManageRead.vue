@@ -29,7 +29,7 @@
                         :disabled="true"
                         >
                     </el-date-picker>
-                    
+
                 </template>
                 <el-button @click="addTimes" :disabled="true">添加时间</el-button>
             </el-form-item>
@@ -42,7 +42,7 @@
                         </div>
                         <div class="text item">
                             <el-form-item label="投放类型:">
-                                <el-select v-model="item.type" placeholder="请选择" :disabled="true"> 
+                                <el-select v-model="item.type" placeholder="请选择" :disabled="true">
                                     <el-option
                                         v-for="iType in options"
                                         :key="iType.value"
@@ -59,7 +59,7 @@
                                 <el-form-item label="页面路径:">
                                     <el-input  placeholder="请输入内容" v-model="item.app.pagePath" :disabled="true"></el-input>
                                 </el-form-item>
-                                
+
                                 <el-form-item label="描述文件:">
                                     <el-button>上传</el-button>
                                 </el-form-item>
@@ -86,7 +86,7 @@
                                             </el-form-item>
                                             <el-form-item  label="图片URl:">
                                                 <p :style="{'width':'350px','word-wrap':'break-word'}">{{i.filePath}}</p>
-                                            </el-form-item> 
+                                            </el-form-item>
                                      </div>
                                 </template>
                                 <el-form-item>
@@ -139,7 +139,7 @@
                                             </el-form-item>
                                             <el-form-item  label="图片URl:">
                                                 <p :style="{'width':'350px','word-wrap':'break-word'}">{{i.filePath}}</p>
-                                            </el-form-item> 
+                                            </el-form-item>
                                      </div>
                                 </template>
                                 <el-form-item label="落地页:">
@@ -161,7 +161,7 @@
                                         </div>
                                     </el-card>
                                 </el-form-item>
-                               
+
                                 <!-- <el-form-item label="预览:">
                                     <img src="http://element-cn.eleme.io/static/hamburger.50e4091.png" alt="">
                                 </el-form-item> -->
@@ -203,7 +203,7 @@
                                             </el-form-item>
                                             <el-form-item  label="图片URl:">
                                                 <p :style="{'width':'350px','word-wrap':'break-word'}">{{i.filePath}}</p>
-                                            </el-form-item> 
+                                            </el-form-item>
                                      </div>
                                 </template>
                             </template>
@@ -349,11 +349,11 @@
                 Task.materials.map(function(item,index){
                     if(item.type==0||item.type=="文字"){
                         let landings=[];
-                         item.word.landingPage.map(function(langdingItem,langdingIdex){
-                             landings.push(langdingItem.value);
+                         item.word.landingPage.map(function(landingItem,langdingIdex){
+                             landings.push(landingItem.value);
                          });
                         let content = `${item.word.landingPageDesc}`;
-                        wl.push({type:0,content:content,langdings:landings});
+                        wl.push({type:0,content:content,landings:landings});
                     }else if(item.type==1||item.type=="卡片式链接"){
                         let p = item.cardLink.pics.map(function(item){
                             return {filePath:item.filePath,fileType:item.fileType};
@@ -423,9 +423,9 @@
                     str = str.replace(/yyyy|YYYY/,this.getFullYear());
                     str = str.replace(/MM/,(this.getMonth()+1)>9?(this.getMonth()+1).toString():'0'+(this.getMonth()+1));
                     str = str.replace(/DD/,this.getDate()>9?this.getDate().toString():'0'+this.getDate());
-                    str = str.replace(/hh|HH/,this.getHours()>9?this.getHours().toString():'0' + this.getHours());  
-                    str = str.replace(/mm/,this.getMinutes()>9?this.getMinutes().toString():'0' + this.getMinutes()); 
-                    str = str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds()); 
+                    str = str.replace(/hh|HH/,this.getHours()>9?this.getHours().toString():'0' + this.getHours());
+                    str = str.replace(/mm/,this.getMinutes()>9?this.getMinutes().toString():'0' + this.getMinutes());
+                    str = str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds());
                     return str;
                 }
                 self.timeFormated =  this.ruleForm.times.map(function(item){
@@ -439,7 +439,7 @@
             // 卡片式链接
             previewCardLink(item){
                 item.cardLinkPre = true;
-                
+
             },
             // 图片预览
             handleRemove(file, fileList) {
@@ -477,7 +477,7 @@
                         self.ruleForm.all = res.data.all==1?"否":"是"
                         self.ruleForm.materials = self.transfer(JSON.parse(res.data.materials));
                         // self.transfer(JSON.parse(res.data.materials));
-                        
+
                         let a = JSON.parse(res.data.times).map(function(item){
                             return {time:new Date(item).getTime()};
                         })
@@ -522,11 +522,11 @@
                             {label:'卡片式链接',value:1},
                             {label:'小程序',value:2},
                             {label:'图片',value:3}
-                    */ 
+                    */
                     if(item.type==0){
                         w.type="文字";
                         w.word.landingPageDesc = item.content;
-                        w.word.landingPage = item.langdings.map(function(item){
+                        w.word.landingPage = item.landings.map(function(item){
                             return {value:item};
                         });
                         wl.push(w);
@@ -623,7 +623,7 @@
                     return index!=a;
                 });
             },
-            // 
+            //
             back(){
                 this.$router.push("/basetable");
             }
@@ -678,10 +678,10 @@
     }
     .preview .item .last{
         width:35%;
-    } 
+    }
     .preview .item .first{
         width:65%;
-    } 
+    }
     .preview .item .first h2,.preview .item .first p{
         overflow: hidden;
         white-space: nowrap;
@@ -701,7 +701,7 @@
     }
     /* .preview .item1 .last{
         width:35%;
-    } 
+    }
     .preview .item1 .first{
         width:65%;
     }  */
