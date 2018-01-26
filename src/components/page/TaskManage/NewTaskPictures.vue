@@ -43,6 +43,8 @@
                         ></datepicker>-->
                 </template>
                 <el-button @click="addTimes">添加时间</el-button>
+                <el-button @click="delTimes">删除时间</el-button>
+
             </el-form-item>
 
             <el-form-item label="物料:">
@@ -202,7 +204,8 @@
                                     :key="index"
                                     >
                                     <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value"></el-input>
-                                    <el-button @click="addLandPage(item.word)">+</el-button>
+                                    <el-button v-if="index+1==item.word.landingPage.length" @click="addLandPage(item.word)">+</el-button>
+                                    <el-button v-if="index+1==item.word.landingPage.length" @click="delLandPage(item.word)">-</el-button>
                                 </el-form-item>
                             </template>
                             <template v-else>
@@ -591,6 +594,9 @@
                     value:""
                 });
             },
+            delLandPage(item){
+                item.landingPage.pop();
+            },
             checkName(){
                 var self = this;
                 self.$axios.get(`/tasks/checkName/${self.ruleForm.name}`).then(function(res){
@@ -659,6 +665,14 @@
                 console.log(this.ruleForm.times);
                 if(this.ruleForm.times.length<3){
                     this.ruleForm.times.push({time:""});
+                }else{
+                    return false;
+                }
+            },
+            delTimes(){
+                console.log(this.ruleForm.times);
+                if(this.ruleForm.times.length>0){
+                    this.ruleForm.times.pop();
                 }else{
                     return false;
                 }
@@ -753,7 +767,7 @@
         height:100%;
     }
     .landPageW{
-        width:80%;
+        width:72%;
     }
     /* 日期组件显示格式 */
     .datapicker1{

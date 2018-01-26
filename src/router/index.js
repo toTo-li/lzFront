@@ -82,7 +82,7 @@ const router = new Router({
                 // },
                 {
                     path: '/tasktable',
-                    component: resolve => require(['../components/page/ReportTable/TaskList.vue'], resolve)    // 任务报表组件
+                    component: resolve => require(['../components/page/ReportTable/Report.vue'], resolve)    // 任务报表组件
                 },
                 {
                     path: '/groupstable',
@@ -124,7 +124,7 @@ if(window.localStorage.getItem('token')){
     store.commit(types.LOGIN,{token:window.localStorage.getItem('token')});
 }
 router.beforeEach((to,from,next)=>{
-    
+
     if(to.matched.some(r=>r.meta.requireAuth)){
         if(store.state.token){
             next();
