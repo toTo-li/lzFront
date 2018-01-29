@@ -200,7 +200,7 @@
                                 </el-form-item> -->
                             </template>
                             <template v-else-if="item.type==0">
-                                <el-form-item label="文字:">
+                                <el-form-item label="文字:" >
                                     <el-input  row="2" type="textarea" placeholder="请输入内容" v-model="item.word.landingPageDesc"></el-input>
                                 </el-form-item>
                                 <el-form-item
@@ -302,7 +302,7 @@
                 if(!value){
                     callback(new Error('请输入任务描述'));
                 }else{
-                    if(value.length<50){
+                    if(value.length<100){
                         if(/[/\\:*"”“<>|]/.test(value)){
                             callback(new Error('不能输入/\:*?”“"<>|等特殊字符'));
                         }else{
@@ -328,6 +328,29 @@
                     }else{
                         callback(new Error('长度不能超过50'));
                     }
+                }
+            }
+            var validLandingDesc = function(rule,value,callback){
+                console.log(rule);
+                console.log(value);
+                console.log(callback);
+            }
+            var validHope = function(rule,value,callback){
+                console.log(value);
+                
+                if(isNaN(value)||!value){
+                    callback(new Error('请输入期望曝光人数'));
+                }else{
+                    if(value<100000000000){
+                        if(/^\+?[1-9][0-9]*$/.test(value)==false){
+                            callback(new Error('请输入大于0的正整数'));
+                        }else{
+                            callback();
+                        }
+                    }else{
+                        callback(new Error('长度不能超过11位'));
+                    }
+                    
                 }
             }
             return{
@@ -429,7 +452,7 @@
                         { required: true, validator:validDesc, trigger: 'blur' }
                     ],
                     tags:[
-                        { required: true, message: '请输入标签', trigger: 'blur' }
+                        { required: true, validator:validTags, trigger: 'blur' }
                     ],
                     times:[
                         {required:true,message:'请选择一个时间',trigger:'change'}
@@ -441,7 +464,7 @@
                         { required: true, trigger: 'blur' }
                     ],
                     landingPageDesc:[
-                        { required: true, message: '落地页描述不能为空', trigger: 'blur' }
+                        { required: true, validator:validLandingDesc, trigger: 'blur' }
                     ],
                     materials:[
                         { required: true, message: '请选择图片', trigger: 'blur' }
@@ -453,7 +476,7 @@
                         { required: true, message: '不能为空', trigger: 'blur' }
                     ],
                     hope:[
-                        {type:'number',required: true, message: '请填写曝光数', trigger: 'blur' }
+                        {type:'number',required: true, validator:validHope, trigger: 'blur' }
                     ]
                 },
 

@@ -3,7 +3,7 @@
         <el-button type="primary" :style="{'margin-bottom':'20px'}" @click="back">返回任务审核列表</el-button>
         <el-form  label-width="110px" :rules="rules" :model="ruleForm" ref="ruleForm" >
             <el-form-item label="任务名称:" prop="name">
-                <el-input  placeholder="请输入内容" v-model="ruleForm.name" :disabled="true"></el-input>
+                <el-input  placeholder="请输入内容" v-model="ruleForm.name" :readonly="true"></el-input>
             </el-form-item>
             <el-form-item label="描述:" prop="desc">
                 <el-input
@@ -11,12 +11,12 @@
                     :rows="2"
                     placeholder="请输入内容"
                     v-model="ruleForm.desc"
-                    :disabled="true"
+                    :readonly="true"
                    >
                 </el-input>
             </el-form-item>
             <el-form-item label="标签:" prop="tags">
-                <el-input  placeholder="请输入内容" v-model="ruleForm.tags" :disabled="true"></el-input>
+                <el-input  placeholder="请输入内容" v-model="ruleForm.tags" :readonly="true"></el-input>
             </el-form-item>
             <el-form-item label="发送时间:" prop="times">
                 <template v-for="(item,index) in ruleForm.times" >
@@ -26,23 +26,23 @@
                         placeholder="选择日期时间"
                         :key="index"
                         :name="index"
-                        :disabled="true"
+                        :readonly="true"
                         >
                     </el-date-picker>
                     
                 </template>
-                <!-- <el-button @click="addTimes" :disabled="true">添加时间</el-button> -->
+                <!-- <el-button @click="addTimes" :readonly="true">添加时间</el-button> -->
             </el-form-item>
 
             <el-form-item >
                     <el-card class="box-card"  v-for="(item,index) in ruleForm.materials" :key="index"  >
                         <div slot="header" class="clearfix">
                             <span>物料{{index+1}}</span>
-                            <el-button style="float: right; padding: 3px 0" type="text" @click="close(index)" :disabled="true">X</el-button>
+                            <!-- <el-button style="float: right; padding: 3px 0" type="text" @click="close(index)" :readonly="true">X</el-button> -->
                         </div>
                         <div class="text item">
                             <el-form-item label="投放类型:">
-                                <el-select v-model="item.type" placeholder="请选择" :disabled="true">
+                                <el-select v-model="item.type" placeholder="请选择" :readonly="true">
                                     <el-option
                                         v-for="iType in ruleForm.options"
                                         :key="iType.value"
@@ -54,14 +54,14 @@
 
                             <template v-if="item.type=='小程序'||item.type==2">
                                 <el-form-item label="标题:">
-                                    <el-input  placeholder="请输入内容" v-model="item.app.title" :disabled="true"></el-input>
+                                    <el-input  placeholder="请输入内容" v-model="item.app.title" :readonly="true"></el-input>
                                 </el-form-item>
                                 <el-form-item label="页面路径:">
-                                    <el-input  placeholder="请输入内容" v-model="item.app.pagePath" :disabled="true"></el-input>
+                                    <el-input  placeholder="请输入内容" v-model="item.app.pagePath" :readonly="true"></el-input>
                                 </el-form-item>
                                 
                                 <el-form-item label="描述文件:">
-                                    <el-button :disabled="true">上传</el-button>
+                                    <el-button :readonly="true">上传</el-button>
                                 </el-form-item>
                                 <el-form-item label="上传图片">
                                     <el-upload
@@ -76,7 +76,7 @@
                                         name="file"
                                         
                                        >
-                                        <el-button size="small" type="primary" :disabled="true">点击上传</el-button>
+                                        <el-button size="small" type="primary" :readonly="true">点击上传</el-button>
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                     </el-upload>
                                 </el-form-item>
@@ -91,7 +91,7 @@
                                      </div>
                                 </template>
                                 <el-form-item>
-                                    <el-button @click="previewApp(item.app)" :disabled="true">预览</el-button>
+                                    <el-button @click="previewApp(item.app)" :readonly="true">预览</el-button>
                                 </el-form-item>
                                 <el-form-item class="preview" v-if="item.app.appPre">
                                     <el-card class="box-card" v-for="(o,index) in item.app.pics" :key="index">
@@ -112,10 +112,10 @@
                             </template>
                             <template v-else-if="item.type=='卡片式链接'||item.type==1">
                                 <el-form-item label="标题:">
-                                    <el-input  placeholder="请输入内容" v-model="item.cardLink.title" :disabled="true"></el-input>
+                                    <el-input  placeholder="请输入内容" v-model="item.cardLink.title" :readonly="true"></el-input>
                                 </el-form-item>
                                 <el-form-item label="内容:">
-                                    <el-input  placeholder="请输入内容" v-model="item.cardLink.content" :disabled="true"></el-input>
+                                    <el-input  placeholder="请输入内容" v-model="item.cardLink.content" :readonly="true"></el-input>
                                 </el-form-item>
                                 <el-form-item label="上传图片:">
                                    <el-upload
@@ -129,7 +129,7 @@
                                         :show-file-list="false"
                                         name="file"
                                         >
-                                        <el-button size="small" type="primary" :disabled="true">点击上传</el-button>
+                                        <el-button size="small" type="primary" :readonly="true">点击上传</el-button>
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                     </el-upload>
                                 </el-form-item>
@@ -145,10 +145,10 @@
                                    
                                 </template>
                                 <el-form-item label="落地页:">
-                                    <el-input  placeholder="请输入内容" v-model="item.cardLink.landingPage" :disabled="true"></el-input>
+                                    <el-input  placeholder="请输入内容" v-model="item.cardLink.landingPage" :readonly="true"></el-input>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button @click="previewCardLink(item.cardLink)" :disabled="true">预览</el-button>
+                                    <el-button @click="previewCardLink(item.cardLink)" :readonly="true">预览</el-button>
                                 </el-form-item>
                                 <el-form-item class="preview" v-if="item.cardLink.cardLinkPre">
                                     <el-card class="box-card" v-for="(o,index) in item.cardLink.pics" :key="index">
@@ -177,7 +177,7 @@
                                     :label="'落地页' + (index+1)"
                                     :key="index"
                                     >
-                                    <el-input :class="{landPageW:true}" placeholder="请输入内容" :disabled="true" :value="landpage"></el-input>
+                                    <el-input :class="{landPageW:true}" placeholder="请输入内容" :readonly="true" :value="landpage"></el-input>
                                     <!-- <el-button v-if="index+1==item.word.landingPage.length" @click="addLandPage(item.word)">+</el-button>
                                     <el-button v-if="index+1==item.word.landingPage.length" @click="delLandPage(item.word)">-</el-button> -->
                                 </el-form-item>
@@ -195,7 +195,7 @@
                                         name="file"
                                         :show-file-list="false"
                                         >
-                                        <el-button size="small" type="primary" :disabled="true">点击上传</el-button>
+                                        <el-button size="small" type="primary" :readonly="true">点击上传</el-button>
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                     </el-upload>
                                 </el-form-item>
@@ -214,16 +214,16 @@
                     </el-card>
             </el-form-item>
             <el-form-item >
-                <!-- <el-button type="primary" @click="addWuLiao()" :disabled="true">添加物料</el-button> -->
+                <!-- <el-button type="primary" @click="addWuLiao()" :readonly="true">添加物料</el-button> -->
             </el-form-item>
             <el-form-item label="是否@ALL:" prop="all">
-                <el-select v-model="ruleForm.all" placeholder="请选择" :disabled="true">
+                <el-select v-model="ruleForm.all" placeholder="请选择" :readonly="true">
                     <el-option label="是" value="1"></el-option>
                     <el-option label="否" value="2"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="期望曝光人数:" prop="hope">
-                <el-input  placeholder="请输入内容" v-model="ruleForm.hope" :disabled="true"></el-input>
+                <el-input  placeholder="请输入内容" v-model="ruleForm.hope" :readonly="true"></el-input>
             </el-form-item>
             <!-- <el-form-item  >
                 <el-button type="primary" @click="submitForm()">确定</el-button>
@@ -331,7 +331,7 @@
                         { required: true, message: '不能为空', trigger: 'blur' }
                     ],
                     hope:[
-                        { required: true, message: '请填写曝光数', trigger: 'blur' }
+                        { required: true, }
                     ]
                 },
 
@@ -429,7 +429,6 @@
                         let a = JSON.parse(res.data.times).map(function(item){
                             return {time:new Date(item).getTime()};
                         })
-                        console.log(self.ruleForm.materials,11111111111111);
                         self.ruleForm.times = a;
                     }
                 })

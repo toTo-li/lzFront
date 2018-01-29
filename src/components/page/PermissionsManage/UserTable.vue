@@ -286,9 +286,6 @@
             //          获取数据
             getData(){
                 let self = this;
-                if(process.env.NODE_ENV === 'development'){
-                    self.url = '/static/vuetable.json';
-                };
                 if(self.$store.state.token){
                     self.$axios.get('/roles/all').then(function(res){
                         self.ruleForms.role = res.data;
@@ -296,7 +293,7 @@
                     self.$axios.get(`/users?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
                         self.total = res.data.pagination.total;
                         self.tableData = res.data.data;
-                     })
+                    })
                 }else{
                     return false;
                 }

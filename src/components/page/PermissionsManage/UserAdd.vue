@@ -18,13 +18,13 @@
 			  -->
 			  <el-form :model="ruleForms" :rules="rules"  ref="ruleForms" label-width="100px">
 				  <el-form-item label="用户名:" prop="name">
-				    <el-input v-model="ruleForms.name" :disabled="disabled" @blur="checkName" ></el-input>
+				    <el-input v-model="ruleForms.name" :readonly="disabled" @blur="checkName" ></el-input>
 				  </el-form-item>
 					<el-form-item label="密码:" prop="password" v-if="passwordFlag">
-				    <el-input type="password" v-model="ruleForms.password" :disabled="disabled"></el-input>
+				    <el-input type="password" v-model="ruleForms.password" :readonly="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色:" prop="roleName">
-				    <el-select v-model="roleName" :disabled="disabled" @change="get">
+				    <el-select v-model="roleName" :readonly="disabled"  @change="get">
 				      <el-option
 				      	v-for='item in ruleForms.role'
 				      	:key="item.id"
@@ -32,6 +32,7 @@
 				      	:value="item.id"
 				      	></el-option>
 				    </el-select>
+						<!-- <el-input  v-model="roleName" :readonly="disabled" v-else></el-input> -->
 				  </el-form-item>
 				  <!--
 				  	关联账号这个控件需要根据后台返回的数据进行显示，目前先不显示出来
@@ -53,10 +54,10 @@
 				  </el-form-item>
 
 				  <el-form-item label="联系人:" prop="contactName">
-				    <el-input  v-model="ruleForms.contactName" :disabled="disabled"></el-input>
+				    <el-input  v-model="ruleForms.contactName" :readonly="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="Email:" prop="email">
-				    <el-input  v-model="ruleForms.email" :disabled="disabled"></el-input>
+				    <el-input  v-model="ruleForms.email" :readonly="disabled"></el-input>
 				  </el-form-item>
 				</el-form>
 			  <!--弹出框的取消/保存部分-->
@@ -97,7 +98,7 @@
 				  if(!value){
 						callback(new Error('请输入密码'));
 					}else{
-						if(/^[a-zA-Z0-9_]+$/.test(value)==false){
+						if(/^[a-zA-Z0-9_]{6,16}$/.test(value)==false){
 								callback(new Error('只能填写字母、数字、下划线'))
 						}else{
 							callback();
@@ -329,7 +330,9 @@
 					// 检查用户名是否存在
 					checkName(){
 						var self = this;
-						if(store.state.userDialogNum!=3){
+						console.log(store.state.userDialogNum);
+						
+						if(store.state.userDialogNum==1){
 							self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
 								if(!res.data){
 										self.$message({

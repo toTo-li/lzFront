@@ -11,10 +11,10 @@
                     </el-select>
                 </div>
                 <div>
-                    <span>提交状态：</span>
+                    <!-- <span>提交状态：</span>
                     <el-select v-model="opertion_state" class="handle-select mr10" @change="operStaChange">
                         <el-option v-for="(item,index) in opertion_states"  :key="index" :label="item" :value="index-1">{{item}}</el-option>
-                    </el-select>
+                    </el-select> -->
                     <span>审核状态：</span>
                     <el-select v-model="audit_state" class="handle-select mr10" @change="auditStaChange">
                         <el-option v-for="(item,index) in audit_states"  :key="index" :label="item" :value="index-1">{{item}}</el-option>
@@ -29,23 +29,24 @@
                 </div>
             </div>
             <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-                <el-table-column prop="id" label="任务ID" width="100" ></el-table-column>  <!-- type="selection" -->
-                <el-table-column prop="name" label="任务名称"  width="180">
+                <el-table-column prop="id" label="任务ID" width="80" ></el-table-column>  <!-- type="selection" -->
+                <el-table-column prop="name" label="任务名称"  width="150">
                 </el-table-column>
                 <!-- <el-table-column prop="userPermi" label="投放类型" width="120">
                 </el-table-column> -->
-                <el-table-column prop="times" label="发送时间点" >
+                <el-table-column prop="times" label="发送时间点" min-width="200">
                     <template slot-scope="scope">
-                        <span>{{scope.row.times | timesTran}}</span>
+                        <!-- <span>{{scope.row.times | timesTran}}</span> -->
+                        <p v-for="(i,index) in scope.row.times" :key="index">{{i}}</p>
                     </template>
                 </el-table-column>
-                <el-table-column prop="commitStatus" label="提交状态" width="100" >
+                <!-- <el-table-column prop="commitStatus" label="提交状态" width="100" >
 
                     <template slot-scope="scope">
                         <span>{{scope.row.commitStatus==0?"未提交":(scope.row.commitStatus==1?"已提交":"提交中")}}</span>
                     </template>
 
-                </el-table-column>
+                </el-table-column> -->
                 <el-table-column prop="auditStatus" label="审核状态" width="100">
                     <template slot-scope="scope">
                         <span v-if="scope.row.auditStatus==0">未审核</span>
@@ -59,7 +60,7 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column label="操作" prop="opertion" width="400">
+                <el-table-column label="操作" prop="opertion" width="450">
                     <template slot-scope="scope">
                         <el-button size="small"
                                    @click="handleRead(scope.$index, scope.row)" >查看</el-button>
@@ -68,18 +69,17 @@
                         <el-button size="small" type="danger"
                                    @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
                         <el-button size="small" type="danger"
-                                   @click="handleSubmit(scope.$index, scope.row)" >{{scope.row.commitStatus==2?"任务提交中":"提交任务"}}</el-button>
+                                   @click="handleSubmit(scope.$index, scope.row)" :disabled="scope.row.commitStatus==1">{{scope.row.commitStatus==2?"任务提交中":"提交任务"}}</el-button>
                         <el-button size="small" type="danger"
                                    @click="handleUnPush(scope.$index, scope.row)"  >取消发布</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column label="占用的社群列表" width="150">
+                <el-table-column label="占用的社群列表" width="140">
                     <template slot-scope="scope">
                         <el-button size="small"
                                    @click="handleUsed(scope, scope.row)" >查看</el-button>
                     </template>
                 </el-table-column>
-
             </el-table>
             <div class="pagination">
                 <el-pagination
@@ -424,13 +424,13 @@
 <style scoped>
     .table{
         margin-top:10px;
-        min-width: 1400px;
+        min-width: 1200px;
     }
     .handle-box{
         margin-bottom: 5px;
         display:flex;
         justify-content:space-between;
-        min-width: 1400px;
+        min-width: 1200px;
     }
     .handle-select{
         width: 120px;

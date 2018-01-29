@@ -52,8 +52,14 @@ import datepicker from 'vue-date'
 import {formatDate} from '../../common/dateFormat.js'
 
 var start=new Date();
+start.setDate(start.getDate()-1);
+start.setHours(0,0,0);
+
 var end=new Date();
-end.setDate(start.getDate()+1);
+end.setDate(end.getDate()-1);
+end.setHours(23,59,59);
+
+// end.setDate(start.getDate()+1);
 
 
     export default {

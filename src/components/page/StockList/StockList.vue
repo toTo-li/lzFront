@@ -199,7 +199,7 @@
         width: 120px;
     }
     .handle-input{
-        width: 150px;
+        width: 250px;
         display: inline-block;
     }
     /*分页*/

@@ -104,13 +104,7 @@
             },
             getData(){
                 let self = this;
-                if(process.env.NODE_ENV === 'development'){
-//                    self.url = '/ms/table/list';
-                    self.url = '/static/vuetable.json';
-                };
-
                 /*
-
                 id:1
                 menuIds:null
                 menus:"任务管理,任务管理,任务管理,库存查看,库存查看,库存查看,任务审核,任务审核,任务审核,报表,报表,报表,权限管理,用户管理,角色管理"
@@ -119,7 +113,6 @@
 
                 */
                 self.$axios.get(`/roles?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
-                    console.log(res.data,11111111111111);
                     self.total = res.data.pagination.total;
                     self.tableData = res.data.data;
                 })
