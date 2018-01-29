@@ -281,6 +281,55 @@
     }
     export default {
         data(){
+            var validTaskName = function(rule,value,callback){
+                // [`~!@#$^&*()+=|＼＼＼[＼]＼{＼}:;'＼,.<>/?]
+                if(!value){
+                    callback(new Error('请输入任务名称'));
+                }else{
+                    if(value.length<50){
+                        if(/[/\\:*"”“<>|]/.test(value)){
+                            callback(new Error('不能输入/\:*?”“"<>|等特殊字符'));
+                        }else{
+                            callback();
+                        }
+                    }else{
+                        callback(new Error('长度不能超过50'));
+                    }
+                }
+
+            }
+            var validDesc = function(rule,value,callback){
+                if(!value){
+                    callback(new Error('请输入任务描述'));
+                }else{
+                    if(value.length<50){
+                        if(/[/\\:*"”“<>|]/.test(value)){
+                            callback(new Error('不能输入/\:*?”“"<>|等特殊字符'));
+                        }else{
+                            callback();
+                        }
+                    }else{
+                        callback(new Error('长度不能超过50'));
+                    }
+                }
+            }
+            var validTags = function(rule,value,callback){
+                if(!value){
+                    callback(new Error('请输入标签'));
+                }else{
+                    if(value.length<50){
+                        if(/[；]/.test(value)){
+                            callback(new Error('多个标签之间用英文分号 ; 隔开'));
+                        }else if(/[/\\:*"”“<>|]/.test(value)){
+                            callback(new Error('不能输入/\:*?”“"<>|等特殊字符'));
+                        }else{
+                            callback();
+                        }
+                    }else{
+                        callback(new Error('长度不能超过50'));
+                    }
+                }
+            }
             return{
                 ruleForm:{
 //                    任务名称
@@ -373,11 +422,11 @@
 //                校验规则
                 rules: {
                     name: [
-                        { required: true, message: '请输入活动名称', trigger: 'blur' },
+                        { required: true, validator:validTaskName, trigger: 'blur' },
                         // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
                     ],
                     desc: [
-                        { required: true, message: '请输入活动描述', trigger: 'blur' }
+                        { required: true, validator:validDesc, trigger: 'blur' }
                     ],
                     tags:[
                         { required: true, message: '请输入标签', trigger: 'blur' }
@@ -481,6 +530,7 @@
                     userId =  localStorage.getItem('user_id');
                 }
                 console.log(userId);
+                console.log(Task.tags);
                 self.$axios.get(`/tasks/checkName/${self.ruleForm.name}`).then(function(res){
                         console.log(res);
                         if(!res.data){
