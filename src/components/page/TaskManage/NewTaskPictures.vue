@@ -604,7 +604,11 @@
                 });
             },
             delLandPage(item){
-                item.landingPage.pop();
+                if(item.landingPage.length>1){
+                    item.landingPage.pop();
+                }else{
+                    return false;
+                }
             },
             checkName(){
                 var self = this;
