@@ -14,7 +14,7 @@
                     </el-select>
                 </div>
                 <div>
-                    <el-input v-model="select_word" placeholder="按用户名搜索" class="handle-input mr10"></el-input>
+                    <el-input v-model="select_word" placeholder="用户ID或名称搜索" class="handle-input mr10"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </div>
         </div>
@@ -40,12 +40,12 @@
                     <template v-if="scope.row.status==0">
                        <el-button size="small" type="danger"
                                @click="handleStop(scope.$index, scope.row)" >暂停</el-button>
-                    </template>           
+                    </template>
                     <template v-else>
                        <el-button size="small" type="danger"
                                @click="handleStop(scope.$index, scope.row)" >启用</el-button>
-                    </template>  
-                    
+                    </template>
+
                 </template>
             </el-table-column>
             <el-table-column prop="status" label="状态" width="120">
@@ -68,10 +68,10 @@
                 >
             </el-pagination>
         </div>
-         <!-- 
+         <!--
             添加和修改后刷新列表的解决方法：
                 利用Vuex的状态的改变，然后使用计算属性监听状态的变化，实现跨组件调用方法。
-            
+
             目前还没有想到更好的方式，先这样实现功能把！
          -->
         <div v-show="false">{{refresh}}</div>
@@ -130,7 +130,7 @@
 // 这里引入状态管理模块
   import store from "../../../store/store";
     export default {
-        
+
         data() {
             var validName = function(rule,value,callback){
 				  if(!value){
@@ -145,7 +145,7 @@
                                 callback();
                             }
                         }
-						
+
 					}
 			};
 			var validPass = function(rule,value,callback){
@@ -161,7 +161,7 @@
                         }else{
                             callback(new Error('请输入6-16位'))
                         }
-						
+
 					}
 			}
 			var validEmail = function(rule,value,callback){
@@ -174,7 +174,7 @@
 					}else{
 						callback();
 					}
-				  
+
 			}
 			var validrAccount = function(rule,value,callback){
 				if(!value){
@@ -182,7 +182,7 @@
 				}else{
 						callback();
 				}
-				
+
 			}
             return {
 //              存放数据
@@ -192,7 +192,7 @@
                 total:1,
                 select_per:10,
                 select_word: '',
-               
+
                 is_search: false,
                 page_sizes:[5,10,15,20,50],
 
@@ -215,7 +215,7 @@
                 // 保存当前修改的用户名和id
                 updateId:"",
                 updateName:"",
-                
+
                 rules: {
 		          name: [
 		            {required: true, trigger: 'blur' ,validator:validName}
@@ -352,7 +352,7 @@
 									self.rAccountFlag = false;
 							}
                         });
-                        
+
                         self.rAccount = rAccountDefault(user.linked);
                         self.ruleForms.contactName = user.contactName;
                         self.ruleForms.email = user.email;
@@ -360,7 +360,7 @@
                         return false;
                     }
                 });
-                
+
             },
             submitForm(formName){
                 let self = this;
@@ -370,7 +370,7 @@
                 if(!self.rAccountFlag&&self.rAccount.length!=0){
                     self.rAccount = [];
                 }
-                // 将文字的关联账号转为对应的id 
+                // 将文字的关联账号转为对应的id
                 self.rAccount.forEach(function(item){
                     if(typeof item == "string"){
                         let b =  self.ruleForms.rAccount.filter(function(item1){
@@ -418,7 +418,7 @@
 										self.$message({
 											message: '用户已存在，请重新输入！',
 											type: 'error'
-										}); 
+										});
 								}else{
                                     self.$axios.put(`/users/${self.updateId}`,{
                                         name:self.ruleForms.name,
@@ -518,7 +518,7 @@
                     /*
                         未冻结，启用状态，调用冻结接口
                         /users/frozen/{id}
-                    */ 
+                    */
                     var self = this;
                     self.$confirm('确定冻结该用户?', '提示', {
                         confirmButtonText: '确定',
@@ -561,9 +561,9 @@
                                     message: '启用成功!'
                                 });
                             }
-                            
+
                         });
-                        
+
                     }).catch(() => {
                         this.$message({
                             type: 'info',
@@ -605,7 +605,7 @@
 										self.$message({
 											message: '用户已存在，请重新输入！',
 											type: 'error'
-										}); 
+										});
 								}
 							})
                         }

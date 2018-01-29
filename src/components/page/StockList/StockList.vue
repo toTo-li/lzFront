@@ -8,7 +8,7 @@
                 </el-select>
             </div>
             <div>
-                <el-input v-model="select_word" placeholder="请输入社群名称" class="handle-input mr10"></el-input>
+                <el-input v-model="select_word" placeholder="社群ID或名称搜索" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </div>
         </div>
@@ -37,7 +37,7 @@
             >
             </el-pagination>
         </div>
-        
+
         <!--查看弹出框-->
         <el-dialog
             :visible.sync="dialogVisible"
@@ -161,7 +161,7 @@
                 console.log(row);
                 console.log(rowIndex);
                 return "usedTime";
-                
+
                 // if(row.mark === 1){
                 //     console.log(111111111);
                 //     return "usedTime";

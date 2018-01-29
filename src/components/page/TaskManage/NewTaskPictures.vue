@@ -460,7 +460,7 @@
                             type:2,
                             title:item.app.title,
                             // 描述文件的名字（标题）
-                            content:item.app.content,
+                            content:item.app.title,
                             // 页面路径
                             uri:`${item.app.pagePath}`,
                             files:p
@@ -610,7 +610,11 @@
                 });
             },
             delLandPage(item){
-                item.landingPage.pop();
+                if(item.landingPage.length>1){
+                    item.landingPage.pop();
+                }else{
+                    return false;
+                }
             },
             checkName(){
                 var self = this;

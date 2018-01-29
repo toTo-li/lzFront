@@ -24,7 +24,7 @@
                         <el-option v-for="(item,index) in publish_states"  :key="index" :label="item" :value="index-1">{{item}}</el-option>
                     </el-select>
 
-                    <el-input v-model="select_word" placeholder="请输入任务ID或名称" class="handle-input mr10"></el-input>
+                    <el-input v-model="select_word" placeholder="任务ID或名称搜索" class="handle-input mr10"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </div>
             </div>

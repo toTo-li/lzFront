@@ -9,7 +9,7 @@
                 </div>
 
                 <div>
-                    <el-input v-model="select_word" placeholder="按角色名称搜索" class="handle-input mr10"></el-input>
+                    <el-input v-model="select_word" placeholder="角色ID或名称搜索" class="handle-input mr10"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </div>
 
@@ -46,10 +46,10 @@
                 >
             </el-pagination>
         </div>
-        <!-- 
+        <!--
             添加和修改后刷新列表的解决方法：
                 利用Vuex的状态的改变，然后使用计算属性监听状态的变化，实现跨组件调用方法。
-            
+
             目前还没有想到更好的方式，先这样实现功能把！
          -->
         <div v-show="false">{{refresh}}</div>
@@ -110,13 +110,13 @@
                 };
 
                 /*
-                
+
                 id:1
                 menuIds:null
                 menus:"任务管理,任务管理,任务管理,库存查看,库存查看,库存查看,任务审核,任务审核,任务审核,报表,报表,报表,权限管理,用户管理,角色管理"
                 name:"栗子云管理员"
                 remarks:"管理员内置"
-                
+
                 */
                 self.$axios.get(`/roles?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
                     console.log(res.data,11111111111111);
@@ -172,7 +172,7 @@
                             return false;
                         }
                     });
-                    
+
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -213,6 +213,6 @@
         margin:5px 0px;
     }
 
-    
+
 
 </style>

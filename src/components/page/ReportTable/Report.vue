@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div >
 
         <!--@tab-click为选项卡选中时的监听事件-->
         <el-tabs v-model="activeName3" type="card" @tab-click="handleClick">
@@ -8,7 +8,7 @@
                     <!--用户增加按钮组件-->
                     <v-task-list></v-task-list>
                 </el-tab-pane>
-                <el-tab-pane label="社群报表" name="second">
+                <el-tab-pane  label="社群报表" name="second">
                     <!--角色列表组件-->
                     <v-group-list></v-group-list>
                 </el-tab-pane>
@@ -44,6 +44,9 @@
     }
     .el-select{
         width:40%;
+    }
+    .el-tabs__content{
+        overflow:visible !important;
     }
 
 </style>

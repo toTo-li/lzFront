@@ -1,17 +1,19 @@
 <template>
     <div class="table">
         <div class="handle-box">
-            <div>
-                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>-<el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-            </div>
+            <template>
+                <div style="width: 320px;">
+                    <datepicker range v-model="date_range" language="ch"></datepicker>
+                </div>
+            </template>
 
             <div>
                 <el-select v-model="select_per" placeholder="10" class="handle-select mr10" @change="selectChange">
                     <el-option v-for="(item,index) in page_sizes"  :key="index" :label="item" :value="item">{{item}}</el-option>
                 </el-select>
-                <el-input v-model="select_word" placeholder="请输入任务名称" class="handle-input mr10"></el-input>
+                <el-input v-model="select_word" placeholder="任务ID或名称搜索" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
-                <el-button type="primary" icon="download" @click="download">下载</el-button>
+                <!--  <el-button type="primary" icon="download" @click="download">下载</el-button>  -->
             </div>
 
         </div>
@@ -45,6 +47,15 @@
 </template>
 
 <script>
+
+import datepicker from 'vue-date'
+import {formatDate} from '../../common/dateFormat.js'
+
+var start=new Date();
+var end=new Date();
+end.setDate(start.getDate()+1);
+
+
     export default {
         data() {
             return {
@@ -61,7 +72,9 @@
 //              设置每页显示的条数
                 page_sizes:[10,15,20,25,30],
                 // 总条数
-                total:0
+                total:0,
+                date_range: [formatDate(start, "yyyy-MM-dd"),formatDate(end, "yyyy-MM-dd")]
+
 
             }
         },
@@ -74,9 +87,14 @@
                 return self.tableData;
             }
         },
+        components: { datepicker },
+
         watch:{
 //          监听搜索框
             select_word:function(){
+                this.getData();
+            },
+            date_range:function(){
                 this.getData();
             }
         },
@@ -95,7 +113,7 @@
             },
             getData(){
                 let self = this;
-                self.$axios.get(`/reports/group?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
+                self.$axios.get(`/reports/group?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}&startTime=${this.date_range[0].split("-").join("")}&endTime=${this.date_range[1].split("-").join("")}`).then((res) => {
                     console.log(res);
                     self.tableData = res.data.data;
                     self.total = res.data.pagination.total;
