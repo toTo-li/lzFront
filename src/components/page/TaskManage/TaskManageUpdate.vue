@@ -386,7 +386,7 @@
                             type:2,
                             title:item.app.title,
                             // 描述文件的名字（标题）
-                            content:item.app.content,
+                            content:item.app.title,
                             // 页面路径
                             uri:`${item.app.pagePath}`,
                             files:p
@@ -566,7 +566,7 @@
                         w.type="小程序";
                         w.app.pagePath = item.uri;
                         // w.app.content = item.content;
-                        w.app.title = item.title;
+                        w.app.title = item.content;
                         w.app.desFile = item.uri;
                         let p = item.files.map(function(item){
                             return {filePath:item.filePath,fileType:item.fileType};
