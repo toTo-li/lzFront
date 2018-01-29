@@ -14,7 +14,7 @@
                 </el-select>
                 <el-input v-model="select_word" placeholder="任务ID或名称搜索" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
-                <el-button type="primary" icon="download" @click="download">下载</el-button>
+                <!-- <el-button type="primary" icon="download" @click="download">下载</el-button>-->
             </div>
         </div>
         <el-table :data="data" border style="width: 100%" ref="multipleTable" >
