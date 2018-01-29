@@ -15,11 +15,12 @@
                 </el-input>
             </el-form-item>
             <el-form-item label="标签:" prop="tags">
-                <el-input  placeholder="请输入内容" v-model="ruleForm.tags"></el-input>
+                <el-input  placeholder="请输入内容" v-model="ruleForm.tags">
+                    <template slot="append" >多个标签之间用英文分号 ; 隔开 </template>
+                </el-input>
             </el-form-item>
             <el-form-item label="发送时间:" prop="times">
                 <template v-for="(item,index) in ruleForm.times" >
-
                     <el-date-picker
                     v-for="(item,index) in ruleForm.times"
                     v-model="item.time"

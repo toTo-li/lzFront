@@ -14,8 +14,13 @@
                    >
                 </el-input>
             </el-form-item>
-            <el-form-item label="标签:" prop="tags">
-                <el-input  placeholder="请输入内容" v-model="ruleForm.tags"></el-input>
+            <el-form-item label="标签:" prop="tags" >
+                <el-col >
+                    <el-input  placeholder="请输入内容" v-model="ruleForm.tags" label-width="80%">
+                        <template slot="append" >多个标签之间用英文分号 ; 隔开 </template>
+                    </el-input>
+                </el-col>
+
             </el-form-item>
             <el-form-item label="发送时间:"  >
                 <template  >
@@ -480,7 +485,7 @@
                         console.log(res);
                         if(!res.data){
                                 self.$message({
-                                    message: '用户已存在，请重新输入！',
+                                    message: '任务名称已存在，请重新输入！',
                                     type: 'error'
                                 });
                         }else{
@@ -503,6 +508,7 @@
                                                 message: '任务新建成功！',
                                                 type: 'success'
                                             });
+                                            self.$router.push("/basetable");
                                         }
                                     })
                                 }else{
@@ -612,7 +618,7 @@
                         console.log(res);
                         if(!res.data){
                                 self.$message({
-                                    message: '用户已存在，请重新输入！',
+                                    message: '任务名称已存在，请重新输入！',
                                     type: 'error'
                                 });
                         }
@@ -802,4 +808,10 @@
         right: 12px;
         bottom: 0px;
     }
+    .el-input-group__append{
+        background-color: white !important;
+        border: none !important;
+    }
+
+   
 </style>

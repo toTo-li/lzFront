@@ -21,7 +21,7 @@ const router = new Router({
             children:[
                 {
                     path: '/',
-					redirect:'/manage'
+					redirect:'/basetable'
                 },
                 // {
                 // 	path:"/readme",

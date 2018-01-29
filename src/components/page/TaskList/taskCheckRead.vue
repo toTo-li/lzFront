@@ -52,7 +52,7 @@
                                 </el-select>
                             </el-form-item>
 
-                            <template v-if="item.type==2">
+                            <template v-if="item.type=='小程序'||item.type==2">
                                 <el-form-item label="标题:">
                                     <el-input  placeholder="请输入内容" v-model="item.app.title" :disabled="true"></el-input>
                                 </el-form-item>
@@ -110,7 +110,7 @@
                                     <img src="http://element-cn.eleme.io/static/hamburger.50e4091.png" alt="">
                                 </el-form-item> -->
                             </template>
-                            <template v-else-if="item.type==1">
+                            <template v-else-if="item.type=='卡片式链接'||item.type==1">
                                 <el-form-item label="标题:">
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.title" :disabled="true"></el-input>
                                 </el-form-item>
@@ -168,12 +168,18 @@
                                     <img src="http://element-cn.eleme.io/static/hamburger.50e4091.png" alt="">
                                 </el-form-item> -->
                             </template>
-                             <template v-else-if="item.type==0">
+                             <template v-else-if="item.type=='文字'||item.type==0">
                                 <el-form-item label="落地页:">
-                                    <el-input  placeholder="请输入内容" v-model="item.word.landingPage" :disabled="true"></el-input>
+                                    <el-input  row="2" type="textarea" placeholder="请输入内容" v-model="item.word.landingPageDesc" :readonly="true"></el-input>
                                 </el-form-item>
-                                <el-form-item label="文字:">
-                                    <el-input  placeholder="请输入内容" v-model="item.word.landingPageDesc" :disabled="true"></el-input>
+                                <el-form-item
+                                    v-for="(landpage,index) in item.word.landingPage"
+                                    :label="'落地页' + (index+1)"
+                                    :key="index"
+                                    >
+                                    <el-input :class="{landPageW:true}" placeholder="请输入内容" :disabled="true" :value="landpage"></el-input>
+                                    <!-- <el-button v-if="index+1==item.word.landingPage.length" @click="addLandPage(item.word)">+</el-button>
+                                    <el-button v-if="index+1==item.word.landingPage.length" @click="delLandPage(item.word)">-</el-button> -->
                                 </el-form-item>
                             </template>
                             <template v-else>
@@ -431,7 +437,7 @@
             // 获取到的物料字段转换
             transfer(mater){
                 let wl = [];
-                console.log(mater);
+                console.log(mater,2232232);
                 mater.map(function(item){
                     var w = {
                         type:0,
@@ -452,7 +458,9 @@
                             cardLinkPre:false
                         },
                         word:{
-                            landingPage:"",
+                            landingPage:[{
+                                value:""
+                            }],
                             landingPageDesc:""
                         },
                         pic:{
@@ -467,10 +475,8 @@
                     */ 
                     if(item.type==0){
                         w.type="文字";
-                        let a = item.content.split('<!URL>');
-                        w.word.landingPageDesc = a[0];
-                        let b = a[1].split('?groupId');
-                        w.word.landingPage = b[0];
+                        w.word.landingPageDesc = item.content;
+                        w.word.landingPage = item.landings;
                         wl.push(w);
                     }else if(item.type==1){
                         w.type="卡片式链接";
