@@ -152,7 +152,7 @@
                     </el-table-column>
                     <el-table-column
                         prop="groupName"
-                        label="群ID"
+                        label="群名称"
                         width="200">
                     </el-table-column>
                     <el-table-column
