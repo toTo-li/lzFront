@@ -42,14 +42,15 @@
                         </div>
                         <div class="text item">
                             <el-form-item label="投放类型:">
-                                <el-select v-model="item.type" placeholder="请选择" :readonly="true">
+                                <!-- <el-select v-model="item.type" placeholder="请选择" :readonly="true">
                                     <el-option
                                         v-for="iType in ruleForm.options"
                                         :key="iType.value"
                                         :label="iType.label"
                                         :value="iType.value">
                                     </el-option>
-                                </el-select>
+                                </el-select> -->
+                                <el-input  placeholder="请输入内容" v-model="item.type" :readonly="true"></el-input>
                             </el-form-item>
 
                             <template v-if="item.type=='小程序'||item.type==2">
@@ -60,10 +61,10 @@
                                     <el-input  placeholder="请输入内容" v-model="item.app.pagePath" :readonly="true"></el-input>
                                 </el-form-item>
                                 
-                                <el-form-item label="描述文件:">
+                                <!-- <el-form-item label="描述文件:">
                                     <el-button :readonly="true">上传</el-button>
-                                </el-form-item>
-                                <el-form-item label="上传图片">
+                                </el-form-item> -->
+                                <!-- <el-form-item label="上传图片">
                                     <el-upload
                                         class="upload-demo"
                                         action="http://test.cactus.thextrader.cn/api/V1/publishers/uploadCertificate"
@@ -75,11 +76,11 @@
                                         :show-file-list="false"
                                         name="file"
                                         
-                                       >
-                                        <el-button size="small" type="primary" :readonly="true">点击上传</el-button>
+                                       > -->
+                                        <!-- <el-button size="small" type="primary" :readonly="true">点击上传</el-button> -->
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-                                    </el-upload>
-                                </el-form-item>
+                                    <!-- </el-upload>
+                                </el-form-item> -->
                                 <template  >
                                     <div v-for="(i,index) in item.app.pics" :key="index" v-if="i.fileType != 'text'">
                                             <el-form-item label="图片预览:">
@@ -91,7 +92,7 @@
                                      </div>
                                 </template>
                                 <el-form-item>
-                                    <el-button @click="previewApp(item.app)" :readonly="true">预览</el-button>
+                                    <!-- <el-button @click="previewApp(item.app)" :readonly="true">预览</el-button> -->
                                 </el-form-item>
                                 <el-form-item class="preview" v-if="item.app.appPre">
                                     <el-card class="box-card" v-for="(o,index) in item.app.pics" :key="index">
@@ -117,7 +118,7 @@
                                 <el-form-item label="内容:">
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.content" :readonly="true"></el-input>
                                 </el-form-item>
-                                <el-form-item label="上传图片:">
+                                <!-- <el-form-item label="上传图片:">
                                    <el-upload
                                         class="upload-demo"
                                         action="http://test.cactus.thextrader.cn/api/V1/publishers/uploadCertificate"
@@ -128,11 +129,11 @@
                                         list-type="picture"
                                         :show-file-list="false"
                                         name="file"
-                                        >
-                                        <el-button size="small" type="primary" :readonly="true">点击上传</el-button>
+                                        > -->
+                                        <!-- <el-button size="small" type="primary" :readonly="true">点击上传</el-button> -->
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-                                    </el-upload>
-                                </el-form-item>
+                                    <!-- </el-upload>
+                                </el-form-item> -->
                                <template  >
                                     <div v-for="(i,index) in item.cardLink.pics" :key="index" v-if="i.fileType != 'text'">
                                             <el-form-item label="图片预览:">
@@ -148,7 +149,7 @@
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.landingPage" :readonly="true"></el-input>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button @click="previewCardLink(item.cardLink)" :readonly="true">预览</el-button>
+                                    <!-- <el-button @click="previewCardLink(item.cardLink)" :readonly="true">预览</el-button> -->
                                 </el-form-item>
                                 <el-form-item class="preview" v-if="item.cardLink.cardLinkPre">
                                     <el-card class="box-card" v-for="(o,index) in item.cardLink.pics" :key="index">
@@ -183,7 +184,7 @@
                                 </el-form-item>
                             </template>
                             <template v-else>
-                                <el-form-item label="上传图片:">
+                                <!-- <el-form-item label="上传图片:">
                                    <el-upload
                                         class="upload-demo"
                                         action="http://test.cactus.thextrader.cn/api/V1/publishers/uploadCertificate"
@@ -194,11 +195,11 @@
                                         list-type="picture"
                                         name="file"
                                         :show-file-list="false"
-                                        >
-                                        <el-button size="small" type="primary" :readonly="true">点击上传</el-button>
+                                        > -->
+                                        <!-- <el-button size="small" type="primary" :readonly="true">点击上传</el-button> -->
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-                                    </el-upload>
-                                </el-form-item>
+                                    <!-- </el-upload>
+                                </el-form-item> -->
                                 <template  >
                                     <div v-for="(i,index) in item.pic.pics" :key="index">
                                             <el-form-item label="图片预览:">

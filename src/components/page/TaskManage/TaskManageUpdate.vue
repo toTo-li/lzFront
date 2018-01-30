@@ -3,7 +3,7 @@
         <el-button type="primary" :style="{'margin-bottom':'20px'}" @click="back">返回任务管理列表</el-button>
         <el-form  label-width="110px" :rules="rules" :model="ruleForm" ref="ruleForm" >
             <el-form-item label="任务名称:" prop="name">
-                <el-input  placeholder="请输入内容" v-model="ruleForm.name"></el-input>
+                <el-input  placeholder="请输入内容" v-model="ruleForm.name" @blur="checkName"></el-input>
             </el-form-item>
             <el-form-item label="描述:" prop="desc">
                 <el-input
@@ -20,8 +20,8 @@
                 </el-input>
             </el-form-item>
             <el-form-item label="发送时间:" prop="times">
-                <template v-for="(item,index) in ruleForm.times" >
-                    <el-date-picker
+                <template>
+                    <!-- <el-date-picker
                     v-for="(item,index) in ruleForm.times"
                     v-model="item.time"
                     type="datetime" :picker-options="pickerOpt"
@@ -29,10 +29,20 @@
                     :key="index"
                         :name="index"
                         >
+                    </el-date-picker> -->
+                    <el-date-picker
+                        v-for="(item,index) in ruleForm.times"
+                        v-model="item.time"
+                        type="datetime" :picker-options="pickerOpt"
+                        placeholder="选择日期时间"
+                        :key="index"
+                        :name="index"
+                        >
                     </el-date-picker>
 
                 </template>
                 <el-button @click="addTimes">添加时间</el-button>
+                <el-button @click="delTimes">删除时间</el-button>
             </el-form-item>
 
             <el-form-item >
@@ -178,7 +188,9 @@
                                     :key="index"
                                     >
                                     <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value"></el-input>
-                                    <el-button @click="addLandPage(item.word)">+</el-button>
+                                    <!-- <el-button @click="addLandPage(item.word)">+</el-button> -->
+                                    <el-button v-if="index+1==item.word.landingPage.length" @click="addLandPage(item.word)">+</el-button>
+                                    <el-button v-if="index+1==item.word.landingPage.length" @click="delLandPage(item.word)">-</el-button>
                                 </el-form-item>
                             </template>
                             <template v-else>
@@ -366,6 +378,8 @@
                 fileList3:[],
                 // 时间格式化
                 timeFormated:[],
+                // 保存一下修改的任务名
+                updateTaskName:"",
                 // 默认有一个物料
                 wl:{},
 //                校验规则
@@ -471,24 +485,55 @@
                 // 日期格式转化
                 self.$refs[formName].validate((valid) => {
                     if(valid){
+                        self.$axios.get(`/tasks/checkName/${self.ruleForm.name}`).then(function(res){
+                                if(self.updateTaskName==self.ruleForm.name){
+                                    self.$axios.put(`/tasks/${taskId}`,{
+                                        name:Task.name,
+                                        desc:Task.desc,
+                                        tags:Task.tags,
+                                        times:self.timeFormated,
+                                        all:self.flagAll(Task.all),
+                                        hope:Task.hope,
+                                        materials:JSON.stringify(wl)
+                                    }).then(function(res){
+                                        if(res.status==200){
+                                            self.$message({
+                                                message: '任务修改成功！',
+                                                type: 'success'
+                                            });
+                                            self.$router.push('/basetable');
+                                        }
+                                    });
+                                }else{
+                                    console.log(res);
+                                    if(!res.data){
+                                            self.$message({
+                                                message: '任务名称已存在，请重新输入！',
+                                                type: 'error'
+                                            });
+                                    }else{
+                                        self.$axios.put(`/tasks/${taskId}`,{
+                                            name:Task.name,
+                                            desc:Task.desc,
+                                            tags:Task.tags,
+                                            times:self.timeFormated,
+                                            all:self.flagAll(Task.all),
+                                            hope:Task.hope,
+                                            materials:JSON.stringify(wl)
+                                        }).then(function(res){
+                                            if(res.status==200){
+                                                self.$message({
+                                                    message: '任务修改成功！',
+                                                    type: 'success'
+                                                });
+                                                self.$router.push('/basetable');
+                                            }
+                                        });
+                                    }
+                                }
+                        })
+                        
 
-                        self.$axios.put(`/tasks/${taskId}`,{
-                            name:Task.name,
-                            desc:Task.desc,
-                            tags:Task.tags,
-                            times:self.timeFormated,
-                            all:self.flagAll(Task.all),
-                            hope:Task.hope,
-                            materials:JSON.stringify(wl)
-                        }).then(function(res){
-                            if(res.status==200){
-                                self.$message({
-                                    message: '任务修改成功！',
-                                    type: 'success'
-                                });
-                                self.$router.push('/basetable');
-                            }
-                        });
                     }else{
                         return false;
                     }
@@ -520,6 +565,9 @@
                 }
                 self.timeFormated =  this.ruleForm.times.map(function(item){
                     return new Date(item.time).Format('YYYY-MM-DD HH:mm:SS');
+                });
+                self.timeFormated = self.timeFormated.filter(function(item){
+                    return item != 'NaN-0NaN-0NaN 0NaN:0NaN:0NaN';
                 });
             },
             // 小程序预览
@@ -557,17 +605,27 @@
                     value:""
                 });
             },
+            delLandPage(item){
+                if(item.landingPage.length>1){
+                    item.landingPage.pop();
+                }else{
+                    return false;
+                }
+            },
             getData(){
                 let self = this;
                 let taskId =  self.$store.state.taskUpdateId;
 
                 self.$axios.get(`/tasks/${taskId}`).then(function(res){
+                    console.log(res);
                     if(res.status==200){
                         self.ruleForm = res.data;
+                        self.updateTaskName = res.data.name
                         self.ruleForm.all = res.data.all==1?"是":"否";
                         self.ruleForm.materials = self.transfer(JSON.parse(res.data.materials));
                         // self.transfer(JSON.parse(res.data.materials));
-
+                        console.log(res.data.times);
+                        
                         let a = JSON.parse(res.data.times).map(function(item){
                             return {time:new Date(item).getTime()};
                         })
@@ -653,17 +711,17 @@
                 return wl;
             },
 //            添加物料
-            addWuLiao(){
+             addWuLiao(){
+                let a = this.indexs+1;
                 var w = {
 //                    默认投放类型
                     type:0,
-//                     key值
-                    key:Date.now(),
+//                  key值
+                    key:a,
 //                    小程序
                     app:{
+//                      内容
                         pagePath:"",
-//                      页面路径
-                        content:"",
 //                      标题
                         title:"",
 //                      描述文件
@@ -684,16 +742,18 @@
                         landingPage:"",
                         cardLinkPre:false
                     },
-//                  文字
+//                    文字
                     word:{
 //                      落地页
-                        landingPage:"",
+                        landingPage:[{
+                            value:""
+                        }],
 //                      落地页描述
                         landingPageDesc:""
                     },
-//                  图片
+//                    图片
                     pic:{
-//                  图片
+//                      图片
                         pics:[],
                     }
                 }
@@ -707,6 +767,30 @@
                     return false;
                 }
             },
+            delTimes(){
+                console.log(this.ruleForm.times);
+                if(this.ruleForm.times.length>0){
+                    this.ruleForm.times.pop();
+                }else{
+                    return false;
+                }
+            },
+            checkName(){
+                var self = this;
+                if(self.updateTaskName!=self.ruleForm.name){
+                    self.$axios.get(`/tasks/checkName/${self.ruleForm.name}`).then(function(res){
+                            console.log(res);
+                            if(!res.data){
+                                    self.$message({
+                                        message: '任务名称已存在，请重新输入！',
+                                        type: 'error'
+                                    });
+                            }
+                    })
+                }
+                
+
+			},
 //            删除物料
             close(a){
                 this.ruleForm.materials = this.ruleForm.materials.filter(function(item,index){
@@ -805,6 +889,6 @@
         height:100%;
     }
      .landPageW{
-        width:80%;
+        width:72%;
     }
 </style>

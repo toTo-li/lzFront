@@ -24,7 +24,7 @@
 				    <el-input type="password" v-model="ruleForms.password" :readonly="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色:" prop="roleName">
-				    <el-select v-model="roleName" :readonly="disabled"  @change="get">
+				    <el-select v-model="roleName" :readonly="disabled"  @change="get" v-if="this.$store.state.userDialogNum!=2">
 				      <el-option
 				      	v-for='item in ruleForms.role'
 				      	:key="item.id"
@@ -32,7 +32,7 @@
 				      	:value="item.id"
 				      	></el-option>
 				    </el-select>
-						<!-- <el-input  v-model="roleName" :readonly="disabled" v-else></el-input> -->
+						<el-input  v-model="roleName" :readonly="disabled" v-else></el-input>
 				  </el-form-item>
 				  <!--
 				  	关联账号这个控件需要根据后台返回的数据进行显示，目前先不显示出来
@@ -98,10 +98,14 @@
 				  if(!value){
 						callback(new Error('请输入密码'));
 					}else{
-						if(/^[a-zA-Z0-9_]{6,16}$/.test(value)==false){
-								callback(new Error('只能填写字母、数字、下划线'))
+						if(value.length>=6&&value.length<=16){
+							if(/^[a-zA-Z0-9_]+$/.test(value)==false){
+									callback(new Error('只能填写字母、数字、下划线'))
+							}else{
+								callback();
+							}
 						}else{
-							callback();
+							callback(new Error('密码长度要求6-16位'));
 						}
 					}
 			}
@@ -229,40 +233,49 @@
 							let users = this.ruleForm;
 							var self = this;
 							if(store.state.userDialogNum==1){
-									var rAccounts = self.rAccount.join(',') || "";
+								var rAccounts = self.rAccount instanceof Array?self.rAccount.join(','):"";
+								  console.log(rAccounts);
 									self.$refs[formName].validate((valid)=>{
 											if(valid){
 													// 用户添加 
 													console.log(this.ruleForms,1111111111);
-													this.$axios.post('/users',{
-															name:users.name,
-															password:users.password,
-															email:users.email,
-															roleId:self.roleName==self.ruleForm.role[0].name?self.ruleForm.role[0].id:self.roleName,
-															contactName:users.contactName,
-															status:0,
-															linkIds:rAccounts
-													}).then(function(res){
-														console.log(res);
-														
-														if(res.status == 200 || res.status==201){
-															self.$message({
-																message: '用户添加成功！',
-																type: 'success'
-															});
-															console.log(self.ruleForms,3232323);
-															
-															self.ruleForm.password="";
-															self.ruleForm.name = "";
-															self.ruleForm.contactName = "";
-															self.ruleForm.email = "";
-															self.rAccount = "";
-															self.$store.commit("userDialog",{userDialogNum:1,flag:false,fresh:store.state.fresh});
+													self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
+														if(!res.data){
+																self.$message({
+																	message: '用户已存在，请重新输入！',
+																	type: 'error'
+																}); 
 														}else{
-															self.$message.error('用户添加失败！');
+															self.$axios.post('/users',{
+																	name:users.name,
+																	password:users.password,
+																	email:users.email,
+																	roleId:self.roleName==self.ruleForm.role[0].name?self.ruleForm.role[0].id:self.roleName,
+																	contactName:users.contactName,
+																	status:0,
+																	linkIds:rAccounts
+															}).then(function(res){
+																console.log(res);
+																if(res.status == 200 || res.status==201){
+																	self.$message({
+																		message: '用户添加成功！',
+																		type: 'success'
+																	});
+																	console.log(self.ruleForms,3232323);
+																	
+																	self.ruleForm.password="";
+																	self.ruleForm.name = "";
+																	self.ruleForm.contactName = "";
+																	self.ruleForm.email = "";
+																	self.rAccount = "";
+																	self.$store.commit("userDialog",{userDialogNum:1,flag:false,fresh:store.state.fresh});
+																}else{
+																	self.$message.error('用户添加失败！');
+																}
+		
+															});
 														}
-
-													});
+													})
 											}else{
 												return false;
 											}

@@ -173,10 +173,11 @@
 						}
 					}else{
 						callback();
-					}
+				  }
 
 			}
 			var validrAccount = function(rule,value,callback){
+                console.log(value);
 				if(!value){
 						callback(new Error('请选择关联账号（可多选）'));
 				}else{
@@ -240,10 +241,13 @@
         },
         watch:{
             select_word:function(){
+                console.log(11111111111111);
                 this.getData();
             }
         },
         created(){
+            console.log(11111111111112);
+            
             this.getData();
         },
         filters:{
@@ -262,6 +266,8 @@
             },
             // 添加修改后表格的刷新
             refresh(){
+                console.log(11111111111113);
+                
                 this.getData();
                 return this.$store.state.fresh;
             },

@@ -49,11 +49,16 @@
 				    if(!value){
 						callback(new Error('请输入角色名'));
 					}else{
-						if(/^[a-zA-Z0-9_]{1,}$/.test(value)==false){
-								callback(new Error('只能填写字母、数字、下划线'))
+						if(value.length<=50){
+							if(/^[a-zA-Z0-9_]{1,}$/.test(value)==false){
+									callback(new Error('只能填写字母、数字、下划线'))
+							}else{
+								callback();
+							}
 						}else{
-							callback();
+							callback(new Error('长度不能超过50'));
 						}
+						
 					}
 			};
 			return {

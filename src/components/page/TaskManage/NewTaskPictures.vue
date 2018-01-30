@@ -309,7 +309,7 @@
                             callback();
                         }
                     }else{
-                        callback(new Error('长度不能超过50'));
+                        callback(new Error('长度不能超过100'));
                     }
                 }
             }

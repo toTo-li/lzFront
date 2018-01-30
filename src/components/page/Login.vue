@@ -67,14 +67,21 @@
                                 console.log(res);
 
                                 if(res.data.token){
-                                    self.errorFlag = false;
-                                    localStorage.setItem('user_id',res.data.user.id);
-                                    localStorage.setItem("ms_username",res.data.user.name);
-                                    localStorage.setItem("menus",res.data.menus);
-                                    // 将拿到的token存放到状态管理对象里面
-                                    self.$store.commit(types.LOGIN,res.data);
-                                    // 然后跳转页面，需要做用户验证
-                                    self.$router.push('/home');
+                                    if(res.data.user.status==0){
+                                        self.errorFlag = false;
+                                        localStorage.setItem('user_id',res.data.user.id);
+                                        localStorage.setItem("ms_username",res.data.user.name);
+                                        localStorage.setItem("menus",res.data.menus);
+                                        // 将拿到的token存放到状态管理对象里面
+                                        self.$store.commit(types.LOGIN,res.data);
+                                        // 然后跳转页面，需要做用户验证
+                                        self.$router.push('/home');
+                                    }else{
+                                        self.$message({
+                                            message: '该用户是暂停状态，登录失败！',
+                                            type: 'error'
+                                        });
+                                    }
                                 }else{
 
                                 }

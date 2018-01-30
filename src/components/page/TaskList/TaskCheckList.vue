@@ -31,8 +31,8 @@
                                @click="handleRead(scope.index, scope.row)" >查看</el-button>
                     <el-button size="small" type="danger"
                                @click="handleAuditAndPush(scope.$index, scope.row)" :disabled="scope.row.auditStatus==0?false:true">审核通过并发布</el-button>
-                    <!-- <el-button size="small" type="danger"
-                               @click="handleNoAudit(scope.$index, scope.row)">审核拒绝</el-button> -->
+                    <el-button size="small" type="danger"
+                               @click="handleNoAudit(scope.$index, scope.row)">拒绝审核</el-button>
                 </template>
             </el-table-column>
             <el-table-column prop="auditStatus" label="状态" width="140">
@@ -218,6 +218,33 @@
                         if(res.status == 200){
                             self.$message({
                                 message: "审核通过并发布",
+                                type: 'success'
+                            });
+                            self.getData();
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消'
+                    });
+                });
+            },
+            // 拒绝审核
+            handleNoAudit(index,row){
+                let self = this;
+
+                this.$confirm('确定拒绝审核?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    self.$axios.put(`/tasks/reject/${row.id}`).then(function(res){
+                        console.log(res);
+                        if(res.status == 200){
+                            self.$message({
+                                message: "审核拒绝成功",
                                 type: 'success'
                             });
                             self.getData();

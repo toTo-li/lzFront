@@ -49,14 +49,17 @@
                 </el-table-column> -->
                 <el-table-column prop="auditStatus" label="审核状态" width="100">
                     <template slot-scope="scope">
-                        <span v-if="scope.row.auditStatus==0">未审核</span>
-                        <span v-else-if="scope.row.auditStatus==1">审核通过</span>
-                        <span v-else>审核拒绝</span>
+                        <span v-if="scope.row.pushStatus!=2">
+                            <span v-if="scope.row.auditStatus==0">未审核</span>
+                            <span v-else-if="scope.row.auditStatus==1">审核通过</span>
+                            <span v-else>审核拒绝</span>
+                        </span>
+                        <span v-else>--</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="pushStatus" label="发布状态" width="100">
                     <template slot-scope="scope">
-                        <span>{{scope.row.pushStatus==0?"未发布":"已发布"}}</span>
+                        <span>{{scope.row.pushStatus==0?"未发布":scope.row.pushStatus==1?"已发布":'已取消'}}</span>
                     </template>
                 </el-table-column>
 
@@ -69,12 +72,12 @@
                         <el-button size="small" type="danger"
                                    @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
                         <el-button size="small" type="danger"
-                                   @click="handleSubmit(scope.$index, scope.row)" :disabled="scope.row.commitStatus==1">{{scope.row.commitStatus==2?"任务提交中":"提交任务"}}</el-button>
+                                   @click="handleSubmit(scope.$index, scope.row)" :disabled="scope.row.commitStatus==1">{{scope.row.commitStatus==2?"任务提交中":"提交审核"}}</el-button>
                         <el-button size="small" type="danger"
                                    @click="handleUnPush(scope.$index, scope.row)"  >取消发布</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column label="占用的社群列表" width="140">
+                <el-table-column label="群明细" width="100">
                     <template slot-scope="scope">
                         <el-button size="small"
                                    @click="handleUsed(scope, scope.row)" >查看</el-button>
@@ -145,12 +148,17 @@
                     <el-table-column
                         prop="groupId"
                         label="群ID"
-                        width="380">
+                        width="200">
+                    </el-table-column>
+                    <el-table-column
+                        prop="groupName"
+                        label="群ID"
+                        width="200">
                     </el-table-column>
                     <el-table-column
                         prop="execTime"
                         label="日期"
-                        width="380">
+                        width="300">
                     </el-table-column>
                     <el-table-column
                         prop="mark"
@@ -158,7 +166,8 @@
                     >
                         <template slot-scope="scope">
                                 <span v-if="scope.row.mark==1">已发布</span>
-                                <span v-else>未发布</span>
+                                <span v-else-if="scope.row.mark==0">未发布</span>
+                                <span v-else>已取消</span>
                         </template>
 
                     </el-table-column>
@@ -193,9 +202,9 @@
                 page_sizes:[10,15,20,25,30],
                 opertion_states:["全部","未提交","已提交"],
                 opertion_state:-1,
-                audit_states:["全部","未审核","审核通过"],
+                audit_states:["全部","未审核","审核通过","审核拒绝"],
                 audit_state:-1,
-                publish_states:["全部","未发布","已发布"],
+                publish_states:["全部","未发布","已发布","已取消"],
                 publish_state:-1,
                 // 占用的社群的数据
                 tableData3: [],
@@ -328,7 +337,6 @@
                 }).then(() => {
                     self.$axios.put(`/tasks/unpush/${row.id}`).then(function(res){
                         console.log(res);
-
                         if(res.status == 200){
                             self.$message({
                                 message: "取消发布成功",
@@ -374,6 +382,7 @@
                 this.getData();
             },
             pubStaChange(val){
+                console.log(this.publish_state);
                 this.getData();
             },
 
