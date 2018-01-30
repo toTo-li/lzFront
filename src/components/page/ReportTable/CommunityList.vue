@@ -11,7 +11,7 @@
                 <el-select v-model="select_per" placeholder="10" class="handle-select mr10" @change="selectChange">
                     <el-option v-for="(item,index) in page_sizes"  :key="index" :label="item" :value="item">{{item}}</el-option>
                 </el-select>
-                <el-input v-model="select_word" placeholder="任务ID或名称搜索" class="handle-input mr10"></el-input>
+                <el-input v-model="select_word" placeholder="任务ID或名称、社群ID或名称搜索" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 <!--  <el-button type="primary" icon="download" @click="download">下载</el-button>  -->
             </div>
@@ -21,7 +21,7 @@
             <el-table-column prop="taskId" label="任务ID" width="120" ></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="taskName" label="任务名称"  >
             </el-table-column>
-            <el-table-column prop="groupId" label="社群ID"  width="120">
+            <el-table-column prop="groupId" label="社群ID"  width="220">
             </el-table-column>
             <el-table-column prop="groupName" label="社群名称" >
             </el-table-column>
@@ -149,7 +149,7 @@ end.setHours(23,59,59);
         width: 120px;
     }
     .handle-input{
-        width: 150px;
+        width: 300px;
         display: inline-block;
     }
     /*分页*/

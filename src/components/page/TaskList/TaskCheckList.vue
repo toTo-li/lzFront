@@ -20,7 +20,7 @@
             </el-table-column>
             <el-table-column prop="name" label="任务名称" width="240">
             </el-table-column>
-            <el-table-column prop="times" label="发送时间点" width="812">
+            <el-table-column prop="times" label="发送时间点">
                 <template slot-scope="scope">
                     <span>{{scope.row.times | timesTran}}</span>
                 </template>

@@ -42,14 +42,15 @@
                         </div>
                         <div class="text item">
                             <el-form-item label="投放类型:">
-                                <el-select v-model="item.type" placeholder="请选择" :readonly="true">
+                                <!-- <el-select v-model="item.type" placeholder="请选择" :readonly="true">
                                     <el-option
                                         v-for="iType in options"
                                         :key="iType.value"
                                         :label="iType.label"
                                         :value="iType.value">
                                     </el-option>
-                                </el-select>
+                                </el-select> -->
+                                 <el-input   v-model="item.type" :readonly="true"></el-input>
                             </el-form-item>
 
                             <template v-if="item.type=='小程序'||item.type==2">
@@ -214,10 +215,11 @@
                 <el-button type="primary" @click="addWuLiao()">添加物料</el-button>
             </el-form-item> -->
             <el-form-item label="是否@ALL:" prop="all">
-                <el-select v-model="ruleForm.all" placeholder="请选择" :readonly="true">
+                <!-- <el-select v-model="ruleForm.all" placeholder="请选择" :readonly="true">
                     <el-option label="是" value="1"></el-option>
                     <el-option label="否" value="2"></el-option>
-                </el-select>
+                </el-select> -->
+                <el-input   v-model="ruleForm.all" :readonly="true"></el-input>
             </el-form-item>
             <el-form-item label="期望曝光人数:" prop="hope">
                 <el-input  placeholder="请输入内容" v-model="ruleForm.hope" :readonly="true"></el-input>

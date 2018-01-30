@@ -241,8 +241,8 @@
                 if(!value){
                     callback(new Error('请输入任务名称'));
                 }else{
-                    if(value.length<50){
-                        if(/[/\\:*"”“<>|]/.test(value)){
+                    if(value.length<=50){
+                        if(/[/\\:*?？"”“<>|]/.test(value)){
                             callback(new Error('不能输入/\:*?”“"<>|等特殊字符'));
                         }else{
                             callback();
@@ -257,14 +257,14 @@
                 if(!value){
                     callback(new Error('请输入任务描述'));
                 }else{
-                    if(value.length<50){
-                        if(/[/\\:*"”“<>|]/.test(value)){
+                    if(value.length<=100){
+                        if(/[/\\:*?？"”“<>|]/.test(value)){
                             callback(new Error('不能输入/\:*?”“"<>|等特殊字符'));
                         }else{
                             callback();
                         }
                     }else{
-                        callback(new Error('长度不能超过50'));
+                        callback(new Error('长度不能超过100'));
                     }
                 }
             }
@@ -272,10 +272,10 @@
                 if(!value){
                     callback(new Error('请输入标签'));
                 }else{
-                    if(value.length<50){
+                    if(value.length<=50){
                         if(/[；]/.test(value)){
                             callback(new Error('多个标签之间用英文分号 ; 隔开'));
-                        }else if(/[/\\:*"”“<>|]/.test(value)){
+                        }else if(/[/\\:*?？"”“<>|]/.test(value)){
                             callback(new Error('不能输入/\:*?”“"<>|等特殊字符'));
                         }else{
                             callback();

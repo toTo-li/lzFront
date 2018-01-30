@@ -37,7 +37,7 @@
                 <el-table-column prop="times" label="发送时间点" min-width="200">
                     <template slot-scope="scope">
                         <!-- <span>{{scope.row.times | timesTran}}</span> -->
-                        <p v-for="(i,index) in scope.row.times" :key="index">{{i}}</p>
+                        <p v-for="(i,index) in scope.row.times" :key="index">{{i | timesTran}}</p>
                     </template>
                 </el-table-column>
                 <!-- <el-table-column prop="commitStatus" label="提交状态" width="100" >
@@ -226,11 +226,15 @@
         },
         filters:{
             timesTran:function(val){
-                if(val && val.length!=0){
-                    let t = val.filter(function(item){
-                        return item!="NaN-0NaN-0NaN 0NaN:0NaN:0NaN";
-                    });
-                    return t.join('; ');
+                // if(val && val.length!=0){
+                //     let t = val.filter(function(item){
+                //         return item!="NaN-0NaN-0NaN 0NaN:0NaN:0NaN";
+                //     });
+                //     console.log(t);
+                //     return t.join(' ');
+                // }
+                if(val!="NaN-0NaN-0NaN 0NaN:0NaN:0NaN"){
+                    return val;
                 }
             }
         },

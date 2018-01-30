@@ -32,7 +32,21 @@
                     callback();
                 }
             };
-
+            var checkPassword = function(rule,value,callback){
+                if(!value){
+                    callback(new Error('请输入密码'));
+                }else{
+                    if(value.length<6||value.length>16){
+                        callback(new Error('请输入6-16位'));
+                    }else{
+                        if(/^[a-zA-Z0-9_]+$/.test(value)==false){
+                            callback(new Error('只能填写字母、数字、下划线'))
+                        }else{
+                            callback();
+                        }
+                    }
+                }
+            }
             return{
                 passForm:{
 //                    密码
@@ -45,14 +59,13 @@
 //                校验规则
                 rules: {
                     pass: [
-                        { required: true, message: '请输入密码', trigger: 'blur' }
+                        { required: true, validator:checkPassword, trigger: 'blur' }
                     ],
                     newpass1: [
-                        { required: true, message: '请输入新密码', trigger: 'blur' }
+                        { required: true, validator:checkPassword, trigger: 'blur' }
                     ],
                     newpass2: [
                         {required: true, validator:checkNewpass,trigger: 'blur'}
-
                     ]
                 },
             }
@@ -68,7 +81,6 @@
                 self.$refs[formName].validate((valid) => {
                     console.log(self.$refs);
                     console.log(valid);
-
                     if (valid) {
 						this.$axios.put("/users/changePassword",{
 								name:localStorage.getItem("ms_username"),
@@ -77,14 +89,14 @@
 							}).then(function(res){
                                     console.log(res);
                                     // 然后跳转页面，需要做用户验证
-                                    self.$router.push('/home');
+                                    self.$router.push('/login');
 						    },function(err){
                                 console.log(err);
-                                new Error('修改密码失败');
+                                // new Error('修改密码失败');
                                 self.$message({
                                         message: "修改密码失败！",
                                         type: 'warning'
-                                    });
+                                });
                             }).catch(function(error){
                                 console.log(error);
                             });

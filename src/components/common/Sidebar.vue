@@ -1,6 +1,6 @@
 <template>
     <div class="sidebar">
-        <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="dark" router >
+        <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="dark" router :collapse="true">
             <template v-for="item in items">
                 <template v-if="item.subs">
                     <el-submenu :index="item.index" :key="item.index">
@@ -82,7 +82,10 @@
                         title: '权限管理'
                     })
                 };
-                self.$router.push("/"+self.items[0].index);
+                if(self.items.length>0){
+                    self.$router.push("/"+self.items[0].index);
+                }
+               
             }
         },
         computed:{
