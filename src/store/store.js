@@ -51,7 +51,8 @@ export default new Vuex.Store({
         // 修改角色的id
         updateRoleId:null,
         // 添加角色成功后的刷新角色列表的开关
-        fresh:1
+        fresh:1,
+        roles:""
 /*****************************************************/
 
 
@@ -87,7 +88,7 @@ export default new Vuex.Store({
             state.readUser = data;
         },
         addUserSelectVal:(state,data)=>{
-            state.readUser.role = data;
+            state.role = data;
         },
 /*****************************************************/
 

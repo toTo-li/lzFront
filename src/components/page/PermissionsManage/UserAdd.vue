@@ -24,7 +24,7 @@
 				    <el-input type="password" v-model="ruleForms.password" :readonly="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色:" prop="roleName">
-				    <el-select v-model="roleName" :readonly="disabled"  @change="get" v-if="this.$store.state.userDialogNum!=2">
+				    <el-select v-model="ruleForm.roleName"  @change="getAccount" v-if="this.$store.state.userDialogNum!=2">
 				      <el-option
 				      	v-for='item in ruleForms.role'
 				      	:key="item.id"
@@ -32,7 +32,7 @@
 				      	:value="item.id"
 				      	></el-option>
 				    </el-select>
-						<el-input  v-model="roleName" :readonly="disabled" v-else></el-input>
+						<el-input  v-model="ruleForms.roleName" :readonly="disabled" v-else></el-input>
 				  </el-form-item>
 				  <!--
 				  	关联账号这个控件需要根据后台返回的数据进行显示，目前先不显示出来
@@ -141,7 +141,7 @@
 							email: '',
 							password:'',
 							roleName:"",
-							rAccount:[121212,43243]
+							rAccount:[]
 		        },
 		        //角色的默认选项
 		        roleName:"",
@@ -195,9 +195,8 @@
 											// 密码框的显示
 											this.passwordFlag = true;
 											// 角色的默认选项
-											this.roleName = this.ruleForm.role[0].name;
-											this.ruleForm.roleName = this.ruleForm.role[0].name;
-											this.get();
+											this.roleName = store.state.role[0].name;
+											this.ruleForm.roleName = store.state.role[0].name;
 											// this.ruleForm.name = "";
 										  return this.ruleForm;
 									}else{
@@ -206,7 +205,6 @@
 													this.disabled = true;
 													this.roleName = store.state.readUser.roleName;
 													console.log(store.state.readUser);
-													this.get();
 													return store.state.readUser;
 											}else if(store.state.userDialogNum==3){
 												  // // this.roleName = store.state.updateId;
@@ -227,11 +225,11 @@
 							}
 				},
 				created(){
-										var self = this;
-										self.$axios.get('/roles/all').then(function(res){
-											self.ruleForm.role = res.data;
-											self.$store.commit("addUserSelectVal",res.data)
-										});
+						var self = this;
+						self.$axios.get('/roles/all').then(function(res){
+							self.ruleForm.role = res.data;
+							self.$store.commit("addUserSelectVal",res.data)
+						});
 				},
 		    methods:{
 				  //添加用户的保存事件
@@ -325,8 +323,9 @@
 					close(formName){
 						this.$store.commit("userDialog",{userDialogNum:1,flag:false});
 						this.$refs[formName].resetFields();
-
-						this.ruleForm.password="";
+						if(store.state.userDialogNum==2){
+							this.ruleForm.password="";
+						}
 						this.ruleForm.name = "";
 						this.ruleForm.contactName = "";
 						this.ruleForm.email = "";
@@ -336,7 +335,9 @@
 			    handleClose(done) {
 						this.$store.commit("userDialog",{userDialogNum:1,flag:false});
 						this.$refs['ruleForms'].resetFields();
-						this.ruleForm.password="";
+						if(store.state.userDialogNum==2){
+							this.ruleForm.password="";
+						}
 						this.ruleForm.name = "";
 						this.ruleForm.contactName = "";
 						this.ruleForm.email = "";
@@ -344,6 +345,11 @@
 					},
 					openUserDialog(){
 						 this.$store.commit("userDialog",{userDialogNum:1,flag:true});
+						 if(store.state.userDialogNum==1){
+							 this.getAccount(this.ruleForm.role[0].id);
+						 }else if(store.state.userDialogNum==2){
+							 this.getAccount(store.state.readUser.roleId);
+						 }
 					},
 					// 检查用户名是否存在
 					checkName(){
@@ -361,10 +367,18 @@
 							})
 						}
 					},
-					get(){
+					getAccount(a){
 						let self = this;
-						console.log(this.roleName);
-						self.$axios.get(`/roles/${this.ruleForm.role[0].id}`).then(function(res){
+						let roleId;
+						console.log(a);
+						if(a){
+							roleId = a;
+						}else{
+							roleId = this.ruleForms.roleName;
+						}
+						console.log(roleId,"ljy");
+						self.$axios.get(`/roles/${roleId}`).then(function(res){
+							console.log(res,"---------------");
 							if(/任务审核/g.test(res.data.menus)){
 									self.rAccountFlag = true;
 									self.$axios.get(`/users/linked`).then(function(res){

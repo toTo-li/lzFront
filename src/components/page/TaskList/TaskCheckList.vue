@@ -186,7 +186,7 @@
                     console.log(res);
                     if(res.status == 200){
                         self.tableData = res.data.data;
-                        self.total = res.data.pagination.total;
+                        self.total = res.data.pagination.total==0?1:res.data.pagination.total;
                     }
                 })
             },

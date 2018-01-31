@@ -122,7 +122,7 @@ end.setHours(23,59,59);
                 self.$axios.get(`/reports/group?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}&startTime=${this.date_range[0].split("-").join("")}&endTime=${this.date_range[1].split("-").join("")}`).then((res) => {
                     console.log(res);
                     self.tableData = res.data.data;
-                    self.total = res.data.pagination.total;
+                    self.total = res.data.pagination.total==0?1:res.data.pagination.total;
                 })
             },
             search(){

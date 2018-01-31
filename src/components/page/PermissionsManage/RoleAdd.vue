@@ -267,10 +267,10 @@
 				},
 				// 弹出框
 				openRoleDialog(formName){
-					this.$store.commit("roleDialog",{roleDialogNum:1,flag:true});
-					// 清空数据，以免上次数据的保留
 					this.ruleForm.name = "";
 					this.ruleForm.menus = [];
+					this.$store.commit("roleDialog",{roleDialogNum:1,flag:true});
+					// 清空数据，以免上次数据的保留
 					console.log(this.$refs[formName]);
 					if(this.$refs[formName]){
 						this.$refs[formName].resetFields();

@@ -89,7 +89,7 @@
                                         :file-list="fileList0"
                                         :on-success="(res)=>{handleAppDescFile(res,item,index)}"
                                         name="file"
-                                        :before-upload = "(res)=>{getFileType(res,item,index)}"
+                                        :before-upload="(res)=>{getFileType(res,item,index)}"
                                         :disabled="fileBtnBool"
                                        >
                                         <el-button size="small" type="primary">点击上传</el-button>
@@ -105,9 +105,11 @@
                                         :file-list="fileList1"
                                         :on-success="(res)=>{handleSuccess(res,item,index)}"
                                         list-type="picture"
-                                        :before-upload = "(res)=>{getPicType(res,item,index)}"
+                                        :before-upload="(res)=>{getPicType(res,item,index)}"
                                         :show-file-list="false"
                                         name="file"
+                                        limit=1
+                                        :on-exceed="overFilesNum"
                                        >
                                         <el-button size="small" type="primary">点击上传</el-button>
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
@@ -128,7 +130,7 @@
                                 </el-form-item>
                                 <el-form-item class="preview" v-if="item.app.appPre" >
                                     <el-card class="box-card" v-for="(o,index) in item.app.pics" :key="index" v-if="o.fileType != 'text'">
-                                        <div class="text item1" v-if="o.fileType == 'text'">
+                                        <div class="text item1" v-if="o.fileType != 'text'">
                                             <div class="first">
                                                 <h2 style="width:100%">{{item.app.title}}</h2>
                                                 <!-- <p style="width:100%">{{item.app.content}}</p> -->
@@ -683,6 +685,11 @@
                 let fileUrl = response.map.material.url;
                 this.ruleForm.materials[index].app.pics.push({filePath:response.map.material.url,fileType:"text"});
                 console.log(this.ruleForm.materials[index].app.pics);
+            },
+            overFilesNum(files,filelist){
+                console.log(11111111111112233);
+                console.log(files);
+                console.log(filelist);
             },
             // 添加落地页
             addLandPage(item){

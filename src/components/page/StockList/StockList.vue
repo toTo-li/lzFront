@@ -120,7 +120,7 @@
             getData(){
                 let self = this;
                 self.$axios.get(`/groups?per_page=${self.select_per}&page=${self.cur_page}&search=${self.select_word}`).then((res) => {
-                    self.total = res.data.pagination.total;
+                    self.total = res.data.pagination.total==0?1:res.data.pagination.total;
                     self.tableData = res.data.data;
                 })
 

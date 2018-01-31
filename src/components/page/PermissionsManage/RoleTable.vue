@@ -113,7 +113,7 @@
 
                 */
                 self.$axios.get(`/roles?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
-                    self.total = res.data.pagination.total;
+                    self.total = res.data.pagination.total==0?1:res.data.pagination.total;;
                     self.tableData = res.data.data;
                 })
             },
