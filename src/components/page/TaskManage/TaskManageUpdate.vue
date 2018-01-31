@@ -72,7 +72,20 @@
                                 </el-form-item>
 
                                 <el-form-item label="描述文件:">
-                                    <el-button>上传</el-button>
+                                    <el-upload
+                                        class="upload-demo"
+                                        action="http://test.cactus.thextrader.cn/api/V1/publishers/uploadCertificate"
+                                        :on-preview="handlePreview"
+                                        :on-remove="handleRemove"
+                                        :file-list="fileList0"
+                                        :on-success="(res)=>{handleAppDescFile(res,item,index)}"
+                                        name="file"
+                                        :before-upload = "(res)=>{getFileType(res,item,index)}"
+                                        :disabled="fileBtnBool"
+                                       >
+                                        <el-button size="small" type="primary">点击上传</el-button>
+                                        <div slot="tip" class="el-upload__tip">只能上传xml文件</div>
+                                    </el-upload>
                                 </el-form-item>
                                 <el-form-item label="上传图片">
                                     <el-upload
@@ -83,6 +96,7 @@
                                         :file-list="fileList1"
                                         :on-success="(res)=>{handleSuccess(res,item,index)}"
                                         list-type="picture"
+                                         :before-upload = "(res)=>{getPicType(res,item,index)}"
                                         :show-file-list="false"
                                         name="file"
                                        >
@@ -136,6 +150,7 @@
                                         :file-list="fileList2"
                                         :on-success="(res)=>{handleSuccess(res,item,index)}"
                                         list-type="picture"
+                                         :before-upload = "(res)=>{getPicType(res,item,index)}"
                                         :show-file-list="false"
                                         name="file"
                                         >
@@ -204,6 +219,7 @@
                                         :file-list="fileList3"
                                         list-type="picture"
                                         name="file"
+                                         :before-upload = "(res)=>{getPicType(res,item,index)}"
                                         :show-file-list="false"
                                         >
                                         <el-button size="small" type="primary">点击上传</el-button>
@@ -370,6 +386,8 @@
                             {label:'小程序',value:2},
                             {label:'图片',value:3}
                 ],
+                fileBtnBool:false,
+                fileList0:[],
                 // 小程序
                 fileList1:[],
                 // 卡片链接
@@ -579,8 +597,8 @@
                 item.cardLinkPre = true;
             },
             // 图片预览
-            handleRemove(file, fileList) {
-                console.log(file, fileList);
+            handleRemove(file, fileList0) {
+                this.fileBtnBool = false;
             },
             // 点击已上传的文件链接钩子时触发
             handlePreview(file) {
@@ -588,15 +606,51 @@
             },
             // 图片上传成功后将图片的信息传入对应的图片列表中
             handleSuccess(response,item,index){
-                var imgUrl = response.map.material.url;
-                if(item.type==0){
-                    this.ruleForm.materials[index].word.pics.push(imgUrl)
-                }else if(item.type==1){
+                // response.map.material.url
+                if(item.type==1){
+                    let imgUrl = {filePath:response.map.material.url,fileType:item.cardLink.fileType};
                     this.ruleForm.materials[index].cardLink.pics.push(imgUrl)
                 }else if(item.type==2){
+                    let imgUrl = {filePath:response.map.material.url,fileType:item.app.fileType};
                     this.ruleForm.materials[index].app.pics.push(imgUrl)
                 }else{
+                    let imgUrl = {filePath:response.map.material.url,fileType:item.pic.fileType};
                     this.ruleForm.materials[index].pic.pics.push(imgUrl)
+                }
+            },
+            // 获取描述文件类型和名字
+            getFileType(res,item,index){
+                if(res.type=="text/xml"){
+                    item.app.content = res.name;
+                    item.app.fileType = "text";
+                }else{
+                    return false;
+                }
+            },
+            // 获取描述文件上传后的地址
+            handleAppDescFile(response,item,index){
+                console.log(response);
+                this.fileBtnBool = response.ok;
+                let fileUrl = response.map.material.url;
+                this.ruleForm.materials[index].app.pics.push({filePath:response.map.material.url,fileType:item.app.fileType});
+                console.log(this.ruleForm.materials[index].app.pics);
+            },
+            // 获取图片的地址
+            getPicType(res,item,index){
+                console.log(res);
+                console.log(item);
+                if(res.type=="image/jpeg"){
+                    console.log(res.type);
+                    if(item.type==1){
+                        item.cardLink.fileType = res.type.split('/')[0];
+                        console.log(item);
+                    }else if(item.type==2){
+                        item.app.fileType = res.type.split('/')[0];
+                    }else{
+                        item.pic.fileType = res.type.split('/')[0];
+                    }
+                }else{
+                    return false;
                 }
             },
             // 添加落地页

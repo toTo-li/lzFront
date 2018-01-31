@@ -74,7 +74,7 @@
                                 <el-form-item label="标题:">
                                     <el-input  placeholder="请输入内容" v-model="item.app.title"></el-input>
                                 </el-form-item>
-                                <el-form-item label="页面路径:" prop="name">
+                                <el-form-item label="页面路径:">
                                     <el-input  placeholder="请输入内容" v-model="item.app.pagePath"></el-input>
                                 </el-form-item>
                                 <el-form-item label="描述文件:">

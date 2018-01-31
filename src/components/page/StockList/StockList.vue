@@ -1,6 +1,6 @@
 <template>
     <div class="table">
-        <el-button type="primary" >同步社群信息</el-button>
+        <el-button type="primary" @click="reload">同步社群信息</el-button>
         <div class="handle-box">
             <div>
                 <el-select v-model="select_per" placeholder="10" class="handle-select mr10" @change="selectChange">
@@ -177,6 +177,12 @@
 //          弹出框关闭前的确认
             handleClose(done) {
                 done();
+            },
+            reload(){
+                let self = this;
+                self.$axios.get('/groups/sync').then(function(res){
+                    console.log(res);
+                });
             }
 
         }

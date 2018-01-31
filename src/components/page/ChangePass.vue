@@ -89,19 +89,20 @@ import * as types from '../../store/types'
                                 oldPass:self.passForm.pass,
                                 newPass:self.passForm.newpass1,
 							}).then(function(res){
-                                    console.log(res);
+                                    console.log(res,"密码修改成功");
                                     // 然后跳转页面，需要做用户验证
+                                    self.$store.commit(types.LOGOUT);
                                     self.$router.push('/login');
                                     self.$message({
                                         message: "修改密码成功！",
                                         type: 'success'
                                     });
 						    },function(err){
-                                console.log(err,2344232323);
-                                self.$message({
-                                        message: "修改密码失败！",
-                                        type: 'warning'
-                                });
+                                    console.log(err,'密码修改失败');
+                                    self.$message({
+                                            message: "修改密码失败！请重新输入！",
+                                            type: 'error'
+                                    });
                             });
 
                     } else {
