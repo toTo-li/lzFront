@@ -450,30 +450,7 @@
                     }
                 })
 
-                self.$axios.put(`/users/${self.updateId}`,{
-                    name:self.ruleForms.name,
-                    roleId:self.roleName==store.state.readUser.roleName?self.getRoleId(self.roleName)[0].id:self.roleName,
-                    linkIds:Array.from(set).join(','),
-                    contactName:self.ruleForms.contactName,
-                    email:self.ruleForms.email
-                }).then(function(res){
-                    console.log(res,111111);
-                    if(res.status == 200){
-                        self.$message({
-                            message: '用户修改成功！',
-                            type: 'success'
-                        });
-
-                        self.ruleForms.name = "";
-                        self.ruleForms.contactName = "";
-                        self.ruleForms.email = "";
-                        self.rAccount = [];
-
-                        self.userUpdatedialogVisible = false;
-                        self.getData();
-                        // self.$store.commit("userDialog",{userDialogNum:3,flag:false,fresh:store.state.fresh});
-                    }
-                });
+                
             },
             // 根据角色名获取角色id
             getRoleId(roleName){
