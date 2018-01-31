@@ -477,6 +477,7 @@
                             uri:`${item.cardLink.landingPage}`+"?groupId=${groupId}",
                             files:p
                         }
+                        console.log(p,'卡片式链接');
                         wl.push(link);
                     }else if(item.type==2||item.type=="小程序"){
                         let p = item.app.pics.map(function(item){
@@ -615,14 +616,18 @@
             // 图片上传成功后将图片的信息传入对应的图片列表中
             handleSuccess(response,item,index){
                 // response.map.material.url
+                console.log("llllllllllllllljjjjjjjjjjjjjjjj");
+                console.log(response);
+                console.log(item);
+                console.log("-----------------------------------------");
                 if(item.type==1){
-                    let imgUrl = {filePath:response.map.material.url,fileType:item.cardLink.fileType};
+                    let imgUrl = {filePath:response.map.material.url,fileType:"image"};
                     this.ruleForm.materials[index].cardLink.pics.push(imgUrl)
                 }else if(item.type==2){
-                    let imgUrl = {filePath:response.map.material.url,fileType:item.app.fileType};
+                    let imgUrl = {filePath:response.map.material.url,fileType:"image"};
                     this.ruleForm.materials[index].app.pics.push(imgUrl)
                 }else{
-                    let imgUrl = {filePath:response.map.material.url,fileType:item.pic.fileType};
+                    let imgUrl = {filePath:response.map.material.url,fileType:"image"};
                     this.ruleForm.materials[index].pic.pics.push(imgUrl)
                 }
             },
@@ -640,14 +645,14 @@
                 console.log(response);
                 this.fileBtnBool = response.ok;
                 let fileUrl = response.map.material.url;
-                this.ruleForm.materials[index].app.pics.push({filePath:response.map.material.url,fileType:item.app.fileType});
+                this.ruleForm.materials[index].app.pics.push({filePath:response.map.material.url,fileType:"text"});
                 console.log(this.ruleForm.materials[index].app.pics);
             },
             // 获取图片的地址
             getPicType(res,item,index){
                 console.log(res);
                 console.log(item);
-                if(res.type=="image/jpeg"){
+                if(res.type.split('/')[0]=="image"){
                     console.log(res.type);
                     if(item.type==1){
                         item.cardLink.fileType = res.type.split('/')[0];

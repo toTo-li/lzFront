@@ -71,7 +71,10 @@
                             </el-form-item>
 
                             <template v-if="item.type==2">
-                                <el-form-item label="标题:">
+                                <el-form-item label="标题:" 
+                                    prop="item.app.title"
+                                    :rules="{required: true, message: '请输入标题', trigger: 'blur'}"
+                                >
                                     <el-input  placeholder="请输入内容" v-model="item.app.title"></el-input>
                                 </el-form-item>
                                 <el-form-item label="页面路径:">
@@ -632,7 +635,7 @@
             getPicType(res,item,index){
                 console.log(res);
                 console.log(item);
-                if(res.type=="image/jpeg"){
+                if(res.type.split('/')[0]=="image"){
                     console.log(res.type);
                     if(item.type==1){
                         item.cardLink.fileType = res.type.split('/')[0];
@@ -649,14 +652,18 @@
             // 图片上传成功后将图片的信息传入对应的图片列表中
             handleSuccess(response,item,index){
                 // response.map.material.url
+                console.log("llllllllllllllljjjjjjjjjjjjjjjj");
+                console.log(response);
+                console.log(item);
+                console.log("-----------------------------------------");
                 if(item.type==1){
-                    let imgUrl = {filePath:response.map.material.url,fileType:item.cardLink.fileType};
+                    let imgUrl = {filePath:response.map.material.url,fileType:"image"};
                     this.ruleForm.materials[index].cardLink.pics.push(imgUrl)
                 }else if(item.type==2){
-                    let imgUrl = {filePath:response.map.material.url,fileType:item.app.fileType};
+                    let imgUrl = {filePath:response.map.material.url,fileType:"image"};
                     this.ruleForm.materials[index].app.pics.push(imgUrl)
                 }else{
-                    let imgUrl = {filePath:response.map.material.url,fileType:item.pic.fileType};
+                    let imgUrl = {filePath:response.map.material.url,fileType:"image"};
                     this.ruleForm.materials[index].pic.pics.push(imgUrl)
                 }
             },
@@ -674,7 +681,7 @@
                 console.log(response);
                 this.fileBtnBool = response.ok;
                 let fileUrl = response.map.material.url;
-                this.ruleForm.materials[index].app.pics.push({filePath:response.map.material.url,fileType:item.app.fileType});
+                this.ruleForm.materials[index].app.pics.push({filePath:response.map.material.url,fileType:"text"});
                 console.log(this.ruleForm.materials[index].app.pics);
             },
             // 添加落地页
