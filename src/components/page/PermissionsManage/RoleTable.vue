@@ -184,11 +184,13 @@
 <style scoped>
     .table{
         margin-top:10px;
+        min-width: 1200px;
     }
     .handle-box{
         margin-bottom: 5px;
         display:flex;
         justify-content:space-between;
+        min-width: 1200px;
     }
     .handle-select{
         width: 120px;

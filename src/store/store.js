@@ -45,7 +45,7 @@ export default new Vuex.Store({
              3：修改角色
              ...
         */
-        roleDialogNum:0,
+        roleDialogNum:1,
         // 存放查看角色按钮的信息
         readRole:null,
         // 修改角色的id

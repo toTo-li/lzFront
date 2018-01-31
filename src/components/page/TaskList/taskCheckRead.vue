@@ -218,10 +218,11 @@
                 <!-- <el-button type="primary" @click="addWuLiao()" :readonly="true">添加物料</el-button> -->
             </el-form-item>
             <el-form-item label="是否@ALL:" prop="all">
-                <el-select v-model="ruleForm.all" placeholder="请选择" :readonly="true">
+                <!-- <el-select v-model="ruleForm.all" placeholder="请选择" :readonly="true">
                     <el-option label="是" value="1"></el-option>
                     <el-option label="否" value="2"></el-option>
-                </el-select>
+                </el-select> -->
+                <el-input   v-model="ruleForm.all" :readonly="true"></el-input>
             </el-form-item>
             <el-form-item label="期望曝光人数:" prop="hope">
                 <el-input  placeholder="请输入内容" v-model="ruleForm.hope" :readonly="true"></el-input>

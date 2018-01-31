@@ -22,9 +22,9 @@
             <el-table-column prop="id" label="用户ID" width="100" ></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="name" label="用户名"  width="150">
             </el-table-column>
-            <el-table-column prop="roleName" label="角色权限" >
+            <el-table-column prop="roleName" label="角色权限" width="300">
             </el-table-column>
-            <el-table-column prop="linked" label="关联账号"  width="450">
+            <el-table-column prop="linked" label="关联账号"  >
                 <template slot-scope="scope">
                     <span>{{scope.row.linked |  rAccountf}}</span>
                 </template>
@@ -266,8 +266,6 @@
             },
             // 添加修改后表格的刷新
             refresh(){
-                console.log(11111111111113);
-                
                 this.getData();
                 return this.$store.state.fresh;
             },
@@ -635,11 +633,14 @@
 <style scoped>
     .table{
         margin-top:10px;
+        min-width: 1200px;
     }
     .handle-box{
         margin-bottom: 5px;
         display:flex;
         justify-content:space-between;
+        min-width: 1200px;
+        
     }
     .handle-select{
         width: 120px;

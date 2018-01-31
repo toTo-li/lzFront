@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import store from '../../store/store'
+import * as types from '../../store/types'
     export default {
         data(){
             var checkNewpass = (rule, value, callback) => {
@@ -82,7 +84,7 @@
                     console.log(self.$refs);
                     console.log(valid);
                     if (valid) {
-						this.$axios.put("/users/changePassword",{
+						self.$axios.put("/users/changePassword",{
 								name:localStorage.getItem("ms_username"),
                                 oldPass:self.passForm.pass,
                                 newPass:self.passForm.newpass1,
@@ -90,15 +92,16 @@
                                     console.log(res);
                                     // 然后跳转页面，需要做用户验证
                                     self.$router.push('/login');
+                                    self.$message({
+                                        message: "修改密码成功！",
+                                        type: 'success'
+                                    });
 						    },function(err){
-                                console.log(err);
-                                // new Error('修改密码失败');
+                                console.log(err,2344232323);
                                 self.$message({
                                         message: "修改密码失败！",
                                         type: 'warning'
                                 });
-                            }).catch(function(error){
-                                console.log(error);
                             });
 
                     } else {

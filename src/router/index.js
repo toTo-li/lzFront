@@ -89,12 +89,14 @@ if(window.localStorage.getItem('token')){
 router.beforeEach((to,from,next)=>{
 
     if(to.matched.some(r=>r.meta.requireAuth)){
+        console.log(store.state.token);
         if(store.state.token){
             next();
         }else{
+            console.log(2323232323);
             next({
                 path:"/login",
-                // query:{redirect:to.fullPath}
+                query:{redirect:to.fullPath}
             });
         }
     }else{

@@ -37,7 +37,7 @@
 				  <!--
 				  	关联账号这个控件需要根据后台返回的数据进行显示，目前先不显示出来
 				  -->
-				  <el-form-item label="关联账号:" prop="rAccount" v-if="rAccountFlag">
+				  <el-form-item label="关联账号:" prop="rAccount" v-if="rAccountFlag&&this.$store.state.userDialogNum!=2">
 				    <el-select v-model="rAccount" placeholder="请选择关联账号（可多选）" multiple>
 				      <el-option
 				      	v-for="item in ruleForm.rAccount"
@@ -122,6 +122,7 @@
 				  
 			}
 			var validrAccount = function(rule,value,callback){
+				console.log(value,"sdasdasdasd");
 				if(!value){
 						callback(new Error('请选择关联账号（可多选）'));
 				}else{
@@ -140,7 +141,7 @@
 							email: '',
 							password:'',
 							roleName:"",
-							rAccount:[]
+							rAccount:[121212,43243]
 		        },
 		        //角色的默认选项
 		        roleName:"",
@@ -178,11 +179,7 @@
 					    // 由用户添加按钮和查看按钮触发弹出框
 							userdialogVisible:{
 								 get(){
-									  var self = this;
-										self.$axios.get('/roles/all').then(function(res){
-											self.ruleForm.role = res.data;
-											self.$store.commit("addUserSelectVal",res.data)
-										});
+									  
 										return store.state.userDialog;
 								 },
 								 set(){
@@ -200,6 +197,7 @@
 											// 角色的默认选项
 											this.roleName = this.ruleForm.role[0].name;
 											this.ruleForm.roleName = this.ruleForm.role[0].name;
+											this.get();
 											// this.ruleForm.name = "";
 										  return this.ruleForm;
 									}else{
@@ -208,6 +206,7 @@
 													this.disabled = true;
 													this.roleName = store.state.readUser.roleName;
 													console.log(store.state.readUser);
+													this.get();
 													return store.state.readUser;
 											}else if(store.state.userDialogNum==3){
 												  // // this.roleName = store.state.updateId;
@@ -227,6 +226,13 @@
 								set(){}
 							}
 				},
+				created(){
+										var self = this;
+										self.$axios.get('/roles/all').then(function(res){
+											self.ruleForm.role = res.data;
+											self.$store.commit("addUserSelectVal",res.data)
+										});
+				},
 		    methods:{
 				  //添加用户的保存事件
 			    submitForm(formName){
@@ -234,11 +240,12 @@
 							var self = this;
 							if(store.state.userDialogNum==1){
 								var rAccounts = self.rAccount instanceof Array?self.rAccount.join(','):"";
-								  console.log(rAccounts);
 									self.$refs[formName].validate((valid)=>{
+										  self.$refs[formName].validateField('rAccount',function(a){
+												console.log(a,5555555);
+											});
 											if(valid){
 													// 用户添加 
-													console.log(this.ruleForms,1111111111);
 													self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
 														if(!res.data){
 																self.$message({
@@ -261,7 +268,6 @@
 																		message: '用户添加成功！',
 																		type: 'success'
 																	});
-																	console.log(self.ruleForms,3232323);
 																	
 																	self.ruleForm.password="";
 																	self.ruleForm.name = "";
@@ -328,7 +334,6 @@
 					},
 			    //弹出框关闭前的确认
 			    handleClose(done) {
-						console.log(1111111111);
 						this.$store.commit("userDialog",{userDialogNum:1,flag:false});
 						this.$refs['ruleForms'].resetFields();
 						this.ruleForm.password="";
@@ -358,7 +363,8 @@
 					},
 					get(){
 						let self = this;
-						self.$axios.get(`/roles/${this.roleName}`).then(function(res){
+						console.log(this.roleName);
+						self.$axios.get(`/roles/${this.ruleForm.role[0].id}`).then(function(res){
 							if(/任务审核/g.test(res.data.menus)){
 									self.rAccountFlag = true;
 									self.$axios.get(`/users/linked`).then(function(res){

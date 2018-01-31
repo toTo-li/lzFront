@@ -10,6 +10,10 @@
             </div>
 
             <div>
+                <span>审核状态：</span>
+                    <el-select v-model="audit_state" class="handle-select mr10" @change="auditStaChange">
+                        <el-option v-for="(item,index) in audit_states"  :key="index" :label="item" :value="index-1">{{item}}</el-option>
+                    </el-select>
                 <el-input v-model="select_word" placeholder="任务ID或名称搜索" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </div>
@@ -37,15 +41,15 @@
             </el-table-column>
             <el-table-column prop="auditStatus" label="状态" width="140">
                 <template slot-scope="scope">
-                        <span v-if="scope.row.auditStatus==0">未审核</span>
+                        <!-- <span v-if="scope.row.auditStatus==0">未审核</span>
                         <span v-else-if="scope.row.auditStatus==1">审核通过</span>
-                        <span v-else>审核拒绝</span>
-                        <!-- <span v-if="scope.row.pushStatus!=2">
+                        <span v-else>审核拒绝</span> -->
+                        <span v-if="scope.row.pushStatus!=2">
                             <span v-if="scope.row.auditStatus==0">未审核</span>
                             <span v-else-if="scope.row.auditStatus==1">审核通过</span>
                             <span v-else>审核拒绝</span>
                         </span>
-                        <span v-else>--</span> -->
+                        <span v-else>--</span>
                 </template>
             </el-table-column>
         </el-table>
@@ -136,7 +140,9 @@
                 is_search: false,
 //              设置每页显示的条数
                 page_sizes:[5,10,15,20,25,30],
-                total:1
+                total:1,
+                audit_states:["全部","未审核","审核通过","审核拒绝"],
+                audit_state:-1,
             }
         },
         created(){
@@ -176,7 +182,7 @@
 //            获取数据的方法
             getData(){
                 let self = this;
-                self.$axios.get(`/tasks/beAudited?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
+                self.$axios.get(`/tasks/beAudited?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}&audit=${this.audit_state}`).then((res) => {
                     console.log(res);
                     if(res.status == 200){
                         self.tableData = res.data.data;
@@ -196,6 +202,9 @@
 //          分页器切换改变
             handleCurrentChange(val){
                 this.cur_page = val;
+                this.getData();
+            },
+            auditStaChange(val){
                 this.getData();
             },
 //          搜索事件

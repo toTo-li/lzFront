@@ -78,7 +78,7 @@ end.setHours(23,59,59);
 //              设置每页显示的条数
                 page_sizes:[10,15,20,25,30],
                 // 总条数
-                total:0,
+                total:1,
                 date_range: [formatDate(start, "yyyy-MM-dd"),formatDate(end, "yyyy-MM-dd")]
 
 

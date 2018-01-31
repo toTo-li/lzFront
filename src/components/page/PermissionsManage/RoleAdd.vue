@@ -50,8 +50,8 @@
 						callback(new Error('请输入角色名'));
 					}else{
 						if(value.length<=50){
-							if(/^[a-zA-Z0-9_]{1,}$/.test(value)==false){
-									callback(new Error('只能填写字母、数字、下划线'))
+							if(/[/\\:*?？"”“<>|]/.test(value)){
+								callback(new Error('不能输入/\:*?”“"<>|等特殊字符'))
 							}else{
 								callback();
 							}
@@ -115,6 +115,7 @@
 											this.disabled = false;
 											this.ruleForm.name = "";
 											this.ruleForm.menus = [];
+											console.log(this.ruleForm,23232323);
 										    return this.ruleForm;
 									}else if(store.state.roleDialogNum==2){
 										    this.ruleForm.name = store.state.readRole.name;
@@ -254,7 +255,15 @@
 				},
 			    //弹出框叉号关闭前的确认
 			    handleClose(done) {
-					this.$store.commit("roleDialog",{roleDialogNum:1,flag:false});
+					if(store.state.roleDialogNum==2){
+						this.$store.commit("roleDialog",{roleDialogNum:2,flag:false});
+					}else if(store.state.roleDialogNum==1){
+						this.$store.commit("roleDialog",{roleDialogNum:1,flag:false});
+					}else if(store.state.roleDialogNum==3){
+						this.$store.commit("roleDialog",{roleDialogNum:3,flag:false});
+					}
+					this.ruleForm.name = "";
+					this.ruleForm.menus = [];
 				},
 				// 弹出框
 				openRoleDialog(formName){
@@ -272,15 +281,19 @@
 				checkName(){
 					var self = this;
 					if(store.state.roleDialogNum==1){
-						self.$axios.get(`/roles/checkName/${self.ruleForms.name}`).then(function(res){
-							console.log(res);
-							if(!res.data){
-									self.$message({
-										message: '角色已存在，请重新输入！',
-										type: 'error'
-									}); 
+						self.$refs['ruleForms'].validateField('name',(valid)=>{
+							if(valid){
+								self.$axios.get(`/roles/checkName/${self.ruleForms.name}`).then(function(res){
+									console.log(res);
+									if(!res.data){
+											self.$message({
+												message: '角色已存在，请重新输入！',
+												type: 'error'
+											}); 
+									}
+								})
 							}
-						})
+						});
 					}
 				}
 		    }
