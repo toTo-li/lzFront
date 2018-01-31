@@ -515,7 +515,7 @@
                         wl.push({type:0,content:content,landings:landings});
                     }else if(item.type==1){
                         let p = item.cardLink.pics.map(function(item){
-                            return {filePath:item.filePath,fileType:item.fileType};
+                            return {filePath:item.filePath,fileType:'image'};
                         });
                         let link = {
                             type:1,

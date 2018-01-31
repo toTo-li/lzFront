@@ -468,7 +468,7 @@
                         wl.push({type:0,content:content,landings:landings});
                     }else if(item.type==1||item.type=="卡片式链接"){
                         let p = item.cardLink.pics.map(function(item){
-                            return {filePath:item.filePath,fileType:item.fileType};
+                            return {filePath:item.filePath,fileType:'image'};
                         });
                         let link = {
                             type:1,
@@ -499,13 +499,19 @@
                          wl.push({type:3,files:p});
                     }
                 });
-                self.timeFormat();
                 // 日期格式转化
+                self.timeFormat();
+                // 获取当前用户的id
+                let userId = "";
+                if(localStorage){
+                    userId =  localStorage.getItem('user_id');
+                }
                 self.$refs[formName].validate((valid) => {
                     if(valid){
                         self.$axios.get(`/tasks/checkName/${self.ruleForm.name}`).then(function(res){
                                 if(self.updateTaskName==self.ruleForm.name){
                                     self.$axios.put(`/tasks/${taskId}`,{
+                                        userId:userId,
                                         name:Task.name,
                                         desc:Task.desc,
                                         tags:Task.tags,
@@ -514,6 +520,7 @@
                                         hope:Task.hope,
                                         materials:JSON.stringify(wl)
                                     }).then(function(res){
+                                        console.log(res,'任务修改成功');
                                         if(res.status==200){
                                             self.$message({
                                                 message: '任务修改成功！',
@@ -531,6 +538,7 @@
                                             });
                                     }else{
                                         self.$axios.put(`/tasks/${taskId}`,{
+                                            userId:userId,
                                             name:Task.name,
                                             desc:Task.desc,
                                             tags:Task.tags,
