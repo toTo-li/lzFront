@@ -471,6 +471,7 @@
                         return item.id;
                     }
                 });
+                console.log(id,"id");
                 return id;
             },
             // 删除
@@ -581,13 +582,6 @@
             // 检查用户名是否存在
 					checkName(){
 						var self = this;
-						// var url = "";
-						// if(store.state.userDialogNum==1){
-						// 	url =  `/users/checkName/${self.ruleForms.name}`;
-						// }else if(store.state.userDialogNum==3){
-						// 	url =  `/users/checkName/${store.state.updateId}/${self.ruleForms.name}`
-						// }
-						// if(store.state.userDialogNum!=3){
                         if(self.ruleForms.name == self.updateName){
                             return false;
                         }else{
@@ -603,26 +597,23 @@
                     },
                     getAccount(a){
                         let self = this;
-                        // let r ;
-                        // if(isNaN(this.roleName)){
-                        //     r = self.getRoleId(this.roleName)[0].id;
-                        // }else{
-                        //     r = self.ruleForms.roleName;
-                        // }
                         let roleId;
-						console.log(a);
-						if(a){
-							roleId = a;
+						if(isNaN(a)){
+							roleId = this.getRoleId(a).length==0?"":this.getRoleId(a)[0].id;
 						}else{
-							roleId = this.ruleForms.roleName;
-						}
-						self.$axios.get(`/roles/${roleId}`).then(function(res){
-							if(/任务审核/g.test(res.data.menus)){
-									self.rAccountFlag = true;
-							}else{
-									self.rAccountFlag = false;
-							}
-						});
+							roleId = a;
+                        }
+                        if(roleId==""){
+                            return ;
+                        }else{
+                            self.$axios.get(`/roles/${roleId}`).then(function(res){
+                                if(/任务审核/g.test(res.data.menus)){
+                                        self.rAccountFlag = true;
+                                }else{
+                                        self.rAccountFlag = false;
+                                }
+                            });
+                        }
 					}
         }
     }

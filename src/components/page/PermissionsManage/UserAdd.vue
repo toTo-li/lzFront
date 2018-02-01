@@ -47,7 +47,7 @@
 				      	></el-option>
 				    </el-select>
 				  </el-form-item>
-					<el-form-item label="关联账号:"  v-if="this.$store.state.userDialogNum==2&&ruleForms.linked.length>0">
+					<el-form-item label="关联账号:" prop="rAccount" v-if="this.$store.state.userDialogNum==2&&ruleForms.linked.length>0">
 							<div v-for="(item,index) in ruleForms.linked" :key="index">
 								{{item.name}}
 							</div>
@@ -66,7 +66,7 @@
 			    <el-button type="primary" @click="submitForm('ruleForms')">保存</el-button>
 			  </span>
 				<span slot="footer" class="dialog-footer" v-else>
-			    <el-button @click="submitForm('ruleForms')">返 回</el-button>
+			    <el-button @click="close('ruleForms')">返 回</el-button>
 			    <!-- <el-button type="primary" @click="submitForm('ruleForms')">保存</el-button> -->
 				</span>
 
@@ -234,7 +234,7 @@
 				created(){
 						var self = this;
 						self.$axios.get('/roles/all').then(function(res){
-							self.ruleForm.role = res.data;
+							self.ruleForms.role = res.data;
 							self.$store.commit("addUserSelectVal",res.data)
 						});
 						self.$axios.get(`/users/linked`).then(function(res){
@@ -323,7 +323,8 @@
 					},
 					// 根据角色名获取角色id
 					getRoleId(roleName){
-						let id =  store.state.readUser.role.filter(function(item,index){
+						console.log(this.$store.state.readUser.role);
+						let id =  this.ruleForms.role.filter(function(item,index){
 							if(item.name==roleName){
 								return item.id;
 							}
@@ -335,28 +336,31 @@
 						this.$store.commit("userDialog",{userDialogNum:1,flag:false});
 						this.$refs[formName].resetFields();
 						if(store.state.userDialogNum==1){
-							this.ruleForm.password="";
+							this.ruleForms.password="";
 						}
-						this.ruleForm.name = "";
-						this.ruleForm.contactName = "";
-						this.ruleForm.email = "";
-						this.ruleForms.rAccount = "";
+						this.ruleForms.name = "";
+						this.ruleForms.contactName = "";
+						this.ruleForms.email = "";
+						// this.ruleForms.rAccount = "";
 					},
 			    //弹出框关闭前的确认
 			    handleClose(done) {
 						this.$store.commit("userDialog",{userDialogNum:1,flag:false});
 						this.$refs['ruleForms'].resetFields();
 						if(store.state.userDialogNum==1){
-							this.ruleForm.password="";
+							this.ruleForms.password="";
 						}
-						this.ruleForm.name = "";
-						this.ruleForm.contactName = "";
-						this.ruleForm.email = "";
-						this.ruleForms.rAccount = "";
+						this.ruleForms.name = "";
+						this.ruleForms.contactName = "";
+						this.ruleForms.email = "";
+						// this.ruleForms.rAccount = "";
 					},
 					openUserDialog(){
 						 this.$store.commit("userDialog",{userDialogNum:1,flag:true});
+						 console.log(this);
+  					//  this.$refs.ruleForms.resetFields();
 						 if(store.state.userDialogNum==1){
+							 console.log(this.ruleForms.role[0].id);
 							 this.getAccount(this.ruleForms.role[0].id);
 						 }else if(store.state.userDialogNum==2){
 							 this.getAccount(store.state.readUser.roleId);
@@ -365,8 +369,6 @@
 					// 检查用户名是否存在
 					checkName(){
 						var self = this;
-						console.log(store.state.userDialogNum);
-						
 						if(store.state.userDialogNum==1){
 							self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
 								if(!res.data){
@@ -381,22 +383,26 @@
 					getAccount(a){
 						let self = this;
 						let roleId;
+						console.log("--------------------------------------");
 						console.log(a);
-						if(a){
-							roleId = a;
+						if(isNaN(a)){
+							roleId = this.getRoleId(a).length==0?"":this.getRoleId(a)[0].id;
 						}else{
-							roleId = this.ruleForms.roleName;
+							roleId = a;
 						}
-						console.log(roleId,"ljy");
-						self.$axios.get(`/roles/${roleId}`).then(function(res){
-							console.log(res,"---------------");
-							if(/任务审核/g.test(res.data.menus)){
-									self.rAccountFlag = true;
-									
-							}else{
-									self.rAccountFlag = false;
-							}
-						});
+						console.log(roleId);
+						console.log("--------------------------------------");
+						if(roleId==""){
+								return ;
+						}else{
+								self.$axios.get(`/roles/${roleId}`).then(function(res){
+										if(/任务审核/g.test(res.data.menus)){
+														self.rAccountFlag = true;
+										}else{
+														self.rAccountFlag = false;
+										}
+								});
+						}
 					}
 
 		  }
