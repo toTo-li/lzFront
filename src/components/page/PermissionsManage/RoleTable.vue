@@ -125,6 +125,7 @@
             handleEdit(index, row) {
                 let self = this;
                 this.$axios.get(`/roles/${row.id}`).then(function(res){
+                    console.log(res,"角色信息");
                     if(res.status == 200){
                         self.$store.commit("roleDialog",{roleDialogNum:2,flag:true});
                         self.$store.commit('readRoles',res.data);

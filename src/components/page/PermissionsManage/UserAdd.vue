@@ -24,7 +24,7 @@
 				    <el-input type="password" v-model="ruleForms.password" :readonly="disabled"></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色:" prop="roleName">
-				    <el-select v-model="ruleForm.roleName"  @change="getAccount" v-if="this.$store.state.userDialogNum!=2">
+				    <el-select v-model="ruleForms.roleName"  @change="getAccount" v-if="this.$store.state.userDialogNum!=2">
 				      <el-option
 				      	v-for='item in ruleForms.role'
 				      	:key="item.id"
@@ -38,9 +38,9 @@
 				  	关联账号这个控件需要根据后台返回的数据进行显示，目前先不显示出来
 				  -->
 				  <el-form-item label="关联账号:" prop="rAccount" v-if="rAccountFlag&&this.$store.state.userDialogNum!=2">
-				    <el-select v-model="rAccount" placeholder="请选择关联账号（可多选）" multiple>
+				    <el-select v-model="ruleForms.rAccount" placeholder="请选择关联账号（可多选）" multiple>
 				      <el-option
-				      	v-for="item in ruleForm.rAccount"
+				      	v-for="item in ruleForms.accounts"
 				      	:key="item.id"
 				      	:label="item.name"
 				      	:value="item.id"
@@ -123,12 +123,18 @@
 			}
 			var validrAccount = function(rule,value,callback){
 				console.log(value,"sdasdasdasd");
-				if(!value){
+				if(value.length==0){
 						callback(new Error('请选择关联账号（可多选）'));
 				}else{
 						callback();
 				}
-				
+			}
+			var validRoleName = function(rule,value,callback){
+				if(!value){
+					callback(new Error('请选择角色'));
+				}else{
+					callback();
+				}
 			}
 			return {
 				//是否显示弹出框
@@ -141,7 +147,8 @@
 							email: '',
 							password:'',
 							roleName:"",
-							rAccount:[]
+							rAccount:[],
+							accounts:[]
 		        },
 		        //角色的默认选项
 		        roleName:"",
@@ -157,7 +164,7 @@
 		            { required: true,  trigger: 'blur' ,validator:validPass}
 		          ],
 		          roleName: [
-		            { required: true, message: '请选择角色权限', trigger: 'blur' }
+		            { required: true, validator:validRoleName, trigger: 'blur' }
 		          ],
 		          rAccount: [
 		            { type: 'array', required: true, trigger: 'change',validator:validrAccount }
@@ -189,19 +196,19 @@
 							// 当状态管理器中的状态改变 判断由哪个操作按钮触发弹出框并显示对应的样式
 							ruleForms:{
 								get(){
-									if(store.state.userDialogNum==1){
+									if(store.state.userDialogNum==1&&store.state.userDialog){
 										  // 是否为只读
 											this.disabled = false;
 											// 密码框的显示
 											this.passwordFlag = true;
 											// 角色的默认选项
-											this.roleName = store.state.role[0].name;
+											// this.roleName = store.state.role[0].name;
 											this.ruleForm.roleName = store.state.role[0].name;
 											// this.ruleForm.name = "";
 										  return this.ruleForm;
 									}else{
 										  this.passwordFlag = false;
-											if(store.state.userDialogNum==2){
+											if(store.state.userDialogNum==2&&store.state.userDialog){
 													this.disabled = true;
 													this.roleName = store.state.readUser.roleName;
 													console.log(store.state.readUser);
@@ -230,6 +237,10 @@
 							self.ruleForm.role = res.data;
 							self.$store.commit("addUserSelectVal",res.data)
 						});
+						self.$axios.get(`/users/linked`).then(function(res){
+							console.log(res);
+							self.ruleForm.accounts = res.data;
+						});
 				},
 		    methods:{
 				  //添加用户的保存事件
@@ -237,11 +248,11 @@
 							let users = this.ruleForm;
 							var self = this;
 							if(store.state.userDialogNum==1){
-								var rAccounts = self.rAccount instanceof Array?self.rAccount.join(','):"";
+									var rAccounts = self.ruleForms.rAccount instanceof Array?self.ruleForms.rAccount.join(','):"";
+									console.log(users,"users");
+									console.log(rAccounts,"rAccounts");
 									self.$refs[formName].validate((valid)=>{
-										  self.$refs[formName].validateField('rAccount',function(a){
-												console.log(a,5555555);
-											});
+										  
 											if(valid){
 													// 用户添加 
 													self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
@@ -255,7 +266,7 @@
 																	name:users.name,
 																	password:users.password,
 																	email:users.email,
-																	roleId:self.roleName==self.ruleForm.role[0].name?self.ruleForm.role[0].id:self.roleName,
+																	roleId:users.roleName==self.ruleForm.role[0].name?self.ruleForm.role[0].id:users.roleName,
 																	contactName:users.contactName,
 																	status:0,
 																	linkIds:rAccounts
@@ -271,7 +282,7 @@
 																	self.ruleForm.name = "";
 																	self.ruleForm.contactName = "";
 																	self.ruleForm.email = "";
-																	self.rAccount = "";
+																	self.ruleForm.rAccount = "";
 																	self.$store.commit("userDialog",{userDialogNum:1,flag:false,fresh:store.state.fresh});
 																}else{
 																	self.$message.error('用户添加失败！');
@@ -323,30 +334,30 @@
 					close(formName){
 						this.$store.commit("userDialog",{userDialogNum:1,flag:false});
 						this.$refs[formName].resetFields();
-						if(store.state.userDialogNum==2){
+						if(store.state.userDialogNum==1){
 							this.ruleForm.password="";
 						}
 						this.ruleForm.name = "";
 						this.ruleForm.contactName = "";
 						this.ruleForm.email = "";
-						this.rAccount = "";
+						this.ruleForms.rAccount = "";
 					},
 			    //弹出框关闭前的确认
 			    handleClose(done) {
 						this.$store.commit("userDialog",{userDialogNum:1,flag:false});
 						this.$refs['ruleForms'].resetFields();
-						if(store.state.userDialogNum==2){
+						if(store.state.userDialogNum==1){
 							this.ruleForm.password="";
 						}
 						this.ruleForm.name = "";
 						this.ruleForm.contactName = "";
 						this.ruleForm.email = "";
-						this.rAccount = "";
+						this.ruleForms.rAccount = "";
 					},
 					openUserDialog(){
 						 this.$store.commit("userDialog",{userDialogNum:1,flag:true});
 						 if(store.state.userDialogNum==1){
-							 this.getAccount(this.ruleForm.role[0].id);
+							 this.getAccount(this.ruleForms.role[0].id);
 						 }else if(store.state.userDialogNum==2){
 							 this.getAccount(store.state.readUser.roleId);
 						 }
@@ -381,10 +392,7 @@
 							console.log(res,"---------------");
 							if(/任务审核/g.test(res.data.menus)){
 									self.rAccountFlag = true;
-									self.$axios.get(`/users/linked`).then(function(res){
-										console.log(res);
-										self.ruleForm.rAccount = res.data;
-									});
+									
 							}else{
 									self.rAccountFlag = false;
 							}

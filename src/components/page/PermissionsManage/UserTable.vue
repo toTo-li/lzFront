@@ -88,7 +88,7 @@
 				    <el-input type="password" v-model="ruleForms.password" ></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色:" prop="roleName">
-				    <el-select v-model="roleName"  @change="get">
+				    <el-select v-model="ruleForms.roleName"  @change="getAccount">
 				      <el-option
 				      	v-for='item in ruleForms.role'
 				      	:key="item.id"
@@ -101,9 +101,9 @@
 				  	关联账号这个控件需要根据后台返回的数据进行显示，目前先不显示出来
 				  -->
 				  <el-form-item label="关联账号:" prop="rAccount" v-if="rAccountFlag">
-				    <el-select v-model="rAccount" placeholder="请选择关联账号（可多选）" multiple>
+				    <el-select v-model="ruleForms.rAccount" placeholder="请选择关联账号（可多选）" multiple>
 				      <el-option
-				      	v-for="item in ruleForms.rAccount"
+				      	v-for="item in ruleForms.accounts"
 				      	:key="item.id"
 				      	:label="item.name"
 				      	:value="item.id"
@@ -177,8 +177,8 @@
 
 			}
 			var validrAccount = function(rule,value,callback){
-                console.log(value);
-				if(!value){
+                console.log(value,"valllllllllllll");
+				if(value.length==0){
 						callback(new Error('请选择关联账号（可多选）'));
 				}else{
 						callback();
@@ -205,7 +205,8 @@
                     email: '',
                     password:'',
                     roleName:"",
-                    rAccount:[]
+                    rAccount:[],
+                    accounts:[]
                 },
                 // 角色的默认值
                 roleName:"",
@@ -241,13 +242,20 @@
         },
         watch:{
             select_word:function(){
-                console.log(11111111111111);
                 this.getData();
             }
         },
         created(){
-            console.log(11111111111112);
-            
+            let self = this;
+            // 获取所有的关联账号
+            self.$axios.get(`/users/linked`).then(function(res){
+                        console.log(res);
+                        self.ruleForms.accounts = res.data;
+            });
+            // 获取所有的角色
+            self.$axios.get('/roles/all').then(function(res){
+                        self.ruleForms.role = res.data;
+            });
             this.getData();
         },
         filters:{
@@ -291,9 +299,7 @@
             getData(){
                 let self = this;
                 if(self.$store.state.token){
-                    self.$axios.get('/roles/all').then(function(res){
-                        self.ruleForms.role = res.data;
-                    });
+                    
                     self.$axios.get(`/users?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}`).then((res) => {
                         self.total = res.data.pagination.total==0?1:res.data.pagination.total;;
                         self.tableData = res.data.data;
@@ -331,10 +337,6 @@
                     });
                     return arr;
                 };
-                self.$axios.get(`/users/linked`).then(function(res){
-                        console.log(res);
-                        self.ruleForms.rAccount = res.data;
-                });
                 // 获取修改用户的信息
                 self.$axios.get(`/users/${row.id}`).then(function(res){
                     console.log(res);
@@ -344,17 +346,18 @@
                         // self.$store.commit("userDialog",{userDialogNum:4,flag:true,updateId:row.id});
                         self.ruleForms.name = user.name;
                         self.updateName  = user.name;
-                        self.roleName = user.roleName;
+                        self.ruleForms.roleName = user.roleName;
                         // 根据角色的id来判断此角色是否有任务审核的权限
-                        self.$axios.get(`/roles/${user.roleId}`).then(function(res){
-							if(/任务审核/g.test(res.data.menus)){
-									self.rAccountFlag = true;
-							}else{
-									self.rAccountFlag = false;
-							}
-                        });
-
-                        self.rAccount = rAccountDefault(user.linked);
+                        // self.$axios.get(`/roles/${user.roleId}`).then(function(data){
+                        //     console.log(data);
+						// 	if(/任务审核/g.test(data.data.menus)){
+						// 			self.rAccountFlag = true;
+						// 	}else{
+						// 			self.rAccountFlag = false;
+						// 	}
+                        // });
+                        self.getAccount(user.roleId);
+                        self.ruleForms.rAccount = rAccountDefault(user.linked);
                         self.ruleForms.contactName = user.contactName;
                         self.ruleForms.email = user.email;
                     }else{
@@ -368,13 +371,13 @@
                 let arr = [];
 
                 // 判断在提交时，是否有关联账号，如果没有就清除之前的关联账号
-                if(!self.rAccountFlag&&self.rAccount.length!=0){
-                    self.rAccount = [];
+                if(!self.rAccountFlag&&self.ruleForms.rAccount.length!=0){
+                    self.ruleForms.rAccount = [];
                 }
                 // 将文字的关联账号转为对应的id
-                self.rAccount.forEach(function(item){
+                self.ruleForms.rAccount.forEach(function(item){
                     if(typeof item == "string"){
-                        let b =  self.ruleForms.rAccount.filter(function(item1){
+                        let b =  self.ruleForms.accounts.filter(function(item1){
                             return item1.name == item;
                         });
                         if(b.length!=0){
@@ -391,62 +394,71 @@
                 self.$axios.get(`/users/${self.updateId}`).then(function(res){
                     // 当name与当前修改的name一样时不做检验
                     if(self.ruleForms.name == res.data.name){
-                        self.$axios.put(`/users/${self.updateId}`,{
-                            name:self.ruleForms.name,
-                            roleId:self.roleName==store.state.readUser.roleName?self.getRoleId(self.roleName)[0].id:self.roleName,
-                            linkIds:Array.from(set).join(','),
-                            contactName:self.ruleForms.contactName,
-                            email:self.ruleForms.email
-                        }).then(function(res){
-                            if(res.status == 200){
-                                self.$message({
-                                    message: '用户修改成功！',
-                                    type: 'success'
+                        self.$refs[formName].validate((valid)=>{
+                            if(valid){
+                                self.$axios.put(`/users/${self.updateId}`,{
+                                    name:self.ruleForms.name,
+                                    roleId:self.ruleForms.roleName==store.state.readUser.roleName?self.getRoleId(self.ruleForms.roleName)[0].id:self.ruleForms.roleName,
+                                    linkIds:Array.from(set).join(','),
+                                    contactName:self.ruleForms.contactName,
+                                    email:self.ruleForms.email
+                                }).then(function(res){
+                                    if(res.status == 200){
+                                        self.$message({
+                                            message: '用户修改成功！',
+                                            type: 'success'
+                                        });
+                                        self.ruleForms.name = "";
+                                        self.ruleForms.contactName = "";
+                                        self.ruleForms.email = "";
+                                        self.ruleForms.rAccount = [];
+        
+                                        self.userUpdatedialogVisible = false;
+                                        self.getData();
+                                        // self.$store.commit("userDialog",{userDialogNum:3,flag:false,fresh:store.state.fresh});
+                                    }
                                 });
-                                self.ruleForms.name = "";
-                                self.ruleForms.contactName = "";
-                                self.ruleForms.email = "";
-                                self.rAccount = [];
-
-                                self.userUpdatedialogVisible = false;
-                                self.getData();
-                                // self.$store.commit("userDialog",{userDialogNum:3,flag:false,fresh:store.state.fresh});
                             }
                         });
                     }else{
-                        self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
-								if(!res.data){
-										self.$message({
-											message: '用户已存在，请重新输入！',
-											type: 'error'
-										});
-								}else{
-                                    self.$axios.put(`/users/${self.updateId}`,{
-                                        name:self.ruleForms.name,
-                                        roleId:self.roleName==store.state.readUser.roleName?self.getRoleId(self.roleName)[0].id:self.roleName,
-                                        linkIds:Array.from(set).join(','),
-                                        contactName:self.ruleForms.contactName,
-                                        email:self.ruleForms.email
-                                    }).then(function(res){
-                                        console.log(res,111111);
-                                        if(res.status == 200){
-                                            self.$message({
-                                                message: '用户修改成功！',
-                                                type: 'success'
+                        self.$refs[formName].validate((valid)=>{
+                            if(valid){
+                                self.$axios.get(`/users/checkName/${self.ruleForms.name}`).then(function(res){
+                                        if(!res.data){
+                                                self.$message({
+                                                    message: '用户已存在，请重新输入！',
+                                                    type: 'error'
+                                                });
+                                        }else{
+                                            self.$axios.put(`/users/${self.updateId}`,{
+                                                name:self.ruleForms.name,
+                                                roleId:self.ruleForms.roleName==store.state.readUser.roleName?self.getRoleId(self.ruleForms.roleName)[0].id:self.ruleForms.roleName,
+                                                linkIds:Array.from(set).join(','),
+                                                contactName:self.ruleForms.contactName,
+                                                email:self.ruleForms.email
+                                            }).then(function(res){
+                                                console.log(res,111111);
+                                                if(res.status == 200){
+                                                    self.$message({
+                                                        message: '用户修改成功！',
+                                                        type: 'success'
+                                                    });
+        
+                                                    self.ruleForms.name = "";
+                                                    self.ruleForms.contactName = "";
+                                                    self.ruleForms.email = "";
+                                                    self.ruleForms.rAccount = [];
+        
+                                                    self.userUpdatedialogVisible = false;
+                                                    self.getData();
+                                                    // self.$store.commit("userDialog",{userDialogNum:3,flag:false,fresh:store.state.fresh});
+                                                }
                                             });
-
-                                            self.ruleForms.name = "";
-                                            self.ruleForms.contactName = "";
-                                            self.ruleForms.email = "";
-                                            self.rAccount = [];
-
-                                            self.userUpdatedialogVisible = false;
-                                            self.getData();
-                                            // self.$store.commit("userDialog",{userDialogNum:3,flag:false,fresh:store.state.fresh});
                                         }
-                                    });
-                                }
-						})
+                                })
+
+                            }
+                        });
                     }
                 })
 
@@ -559,7 +571,8 @@
                         // this.$store.commit("userDialog",{userDialogNum:1,flag:false});
                         this.userUpdatedialogVisible = false;
 						this.$refs[formName].resetFields();
-
+                        
+                        this.ruleForms.password = "";
 						this.ruleForms.name = "";
 						this.ruleForms.contactName = "";
 						this.ruleForms.email = "";
@@ -588,16 +601,24 @@
 							})
                         }
                     },
-                    get(){
+                    getAccount(a){
                         let self = this;
-                        self.$axios.get(`/users/linked`).then(function(res){
-                                        console.log(res);
-										self.ruleForms.rAccount = res.data;
-                        });
-						self.$axios.get(`/roles/${this.roleName}`).then(function(res){
+                        // let r ;
+                        // if(isNaN(this.roleName)){
+                        //     r = self.getRoleId(this.roleName)[0].id;
+                        // }else{
+                        //     r = self.ruleForms.roleName;
+                        // }
+                        let roleId;
+						console.log(a);
+						if(a){
+							roleId = a;
+						}else{
+							roleId = this.ruleForms.roleName;
+						}
+						self.$axios.get(`/roles/${roleId}`).then(function(res){
 							if(/任务审核/g.test(res.data.menus)){
 									self.rAccountFlag = true;
-									self.rAccount = [];
 							}else{
 									self.rAccountFlag = false;
 							}

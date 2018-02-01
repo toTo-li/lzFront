@@ -205,9 +205,7 @@
                                 </el-form-item> -->
                             </template>
                             <template v-else-if="item.type==0">
-                                <el-form-item label="文字:" 
-                                    :rules=[]
-                                >
+                                <el-form-item label="文字:" >
                                     <el-input  row="2" type="textarea" placeholder="请输入内容" v-model="item.word.landingPageDesc"></el-input>
                                 </el-form-item>
                                 <el-form-item

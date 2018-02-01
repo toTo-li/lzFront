@@ -21,8 +21,8 @@
 				    <el-input v-model="ruleForms.name" :readonly="disabled" @blur="checkName"></el-input>
 				  </el-form-item>
 				  <el-form-item label="角色权限" prop="menus">
-				    <el-checkbox-group v-model="ruleForm.menus">
-				      <el-checkbox v-for="permi in ruleForm.permissions" :label="permi.id"  :key="permi.id" :disabled="disabled">{{permi.name}}</el-checkbox></br>
+				    <el-checkbox-group v-model="ruleForms.menus">
+				      <el-checkbox v-for="permi in ruleForms.permissions" :label="permi.id"  :key="permi.id" :disabled="disabled">{{permi.name}}</el-checkbox></br>
 				    </el-checkbox-group>
 				  </el-form-item>
 			</el-form>
@@ -87,21 +87,22 @@
 					disabled:false,
 				}
 			},
+			created(){
+				var self = this;
+				// 获取所有权限
+				self.$axios.get('/roles/menus').then(function(res){
+					console.log(res);
+					if(res.status == 200){
+						self.ruleForm.permissions = res.data;
+					}else{
+						return false;
+					}
+				});
+			},
 				computed:{
 					    // 由用户添加按钮和查看按钮触发弹出框
 							roledialogVisible:{
 								 get(){
-										var self = this;
-										// 获取所有权限
-										self.$axios.get('/roles/menus').then(function(res){
-											console.log(res);
-											
-											if(res.status == 200){
-												self.ruleForm.permissions = res.data;
-											}else{
-												return false;
-											}
-										});
 										return store.state.roleDialog;
 								 },
 								 set(){
@@ -111,18 +112,18 @@
 							// 当状态管理器中的状态改变 判断由哪个操作按钮触发弹出框并显示对应的样式
 							ruleForms:{
 								get(){
-									if(store.state.roleDialogNum==1){
+									if(store.state.roleDialogNum==1&&store.state.roleDialog){
 											this.disabled = false;
 											this.ruleForm.name = "";
 											this.ruleForm.menus = [];
 											console.log(this.ruleForm,23232323);
 										    return this.ruleForm;
-									}else if(store.state.roleDialogNum==2){
+									}else if(store.state.roleDialogNum==2&&store.state.roleDialog){
 										    this.ruleForm.name = store.state.readRole.name;
 											this.ruleForm.menus = this.permis;
 											this.disabled = true;
 											return this.ruleForm;
-									}else if(store.state.roleDialogNum==3){
+									}else if(store.state.roleDialogNum==3&&store.state.roleDialog){
 											this.ruleForm.name = store.state.readRole.name;
 											this.ruleForm.menus = this.permis;
 											this.disabled = false;
@@ -187,7 +188,8 @@
 																		message: '角色添加成功！',
 																		type: 'success'
 																	});
-																	self.ruleForm = {name: '',rescs: [],menus: [],permissions:[],};
+																	self.$refs['ruleForms'].resetFields();
+																	self.ruleForm = {name: '',rescs: [],menus: [],permissions:self.ruleForm.permissions};
 																	self.$store.commit("roleDialog",{roleDialogNum:1,flag:false,fresh:store.state.fresh});
 																}else{
 																	self.$message.error('角色添加失败！');
@@ -206,6 +208,8 @@
 							}else if(store.state.roleDialogNum==3){
 											self.$axios.get(`/roles/${store.state.updateRoleId}`).then(function(res){
 												if(self.ruleForm.name==res.data.name){
+													self.$refs[formName].validate((valid)=>{
+														if(valid){
 															self.$axios.put(`/roles/${store.state.updateRoleId}`,{
 																	name:self.ruleForm.name,
 																	menuIds:self.menuIds
@@ -215,35 +219,44 @@
 																		message: '角色修改成功！',
 																		type: 'success'
 																	});
-																	self.ruleForm = {name:'',rescs: [],menus: [],permissions:[]};
+																	self.$refs['ruleForms'].resetFields();
+																	self.ruleForm = {name:'',rescs: [],menus: [],permissions:self.ruleForm.permissions};
 																	self.$store.commit("roleDialog",{roleDialogNum:3,flag:false,fresh:store.state.fresh});
 																}
 															});
+
+														}
+													});
 												}else{
 													console.log(self.ruleForm.name);
-													self.$axios.get(`/roles/checkName/${self.ruleForm.name}`).then(function(res){
-														console.log(res);
-														if(!res.data){
-																self.$message({
-																	message: '角色已存在，请重新输入！',
-																	type: 'error'
-																}); 
-														}else{
-															self.$axios.put(`/roles/${store.state.updateRoleId}`,{
-																	name:self.ruleForm.name,
-																	menuIds:self.menuIds
-															}).then(function(res){
-																if(res.status == 200){
-																	self.$message({
-																		message: '角色修改成功！',
-																		type: 'success'
+													self.$refs[formName].validate((valid)=>{
+														if(valid){
+															self.$axios.get(`/roles/checkName/${self.ruleForm.name}`).then(function(res){
+																console.log(res);
+																if(!res.data){
+																		self.$message({
+																			message: '角色已存在，请重新输入！',
+																			type: 'error'
+																		}); 
+																}else{
+																	self.$axios.put(`/roles/${store.state.updateRoleId}`,{
+																			name:self.ruleForm.name,
+																			menuIds:self.menuIds
+																	}).then(function(res){
+																		if(res.status == 200){
+																			self.$message({
+																				message: '角色修改成功！',
+																				type: 'success'
+																			});
+																			self.$refs['ruleForms'].resetFields();
+																			self.ruleForm = {name:'',rescs: [],menus: [],permissions:self.ruleForm.permissions};
+																			self.$store.commit("roleDialog",{roleDialogNum:3,flag:false,fresh:store.state.fresh});
+																		}
 																	});
-																	self.ruleForm = {name:'',rescs: [],menus: [],permissions:[]};
-																	self.$store.commit("roleDialog",{roleDialogNum:3,flag:false,fresh:store.state.fresh});
 																}
-															});
+															})
 														}
-													})
+													});
 												}
 											});
 							}
@@ -264,17 +277,18 @@
 					}
 					this.ruleForm.name = "";
 					this.ruleForm.menus = [];
+					this.$refs['ruleForms'].resetFields();
 				},
 				// 弹出框
 				openRoleDialog(formName){
+					if(this.$refs[formName]){
+						this.$refs[formName].resetFields();
+					}
 					this.ruleForm.name = "";
 					this.ruleForm.menus = [];
 					this.$store.commit("roleDialog",{roleDialogNum:1,flag:true});
 					// 清空数据，以免上次数据的保留
 					console.log(this.$refs[formName]);
-					if(this.$refs[formName]){
-						this.$refs[formName].resetFields();
-					}
 
 				},
 				// 角色名重复验证
