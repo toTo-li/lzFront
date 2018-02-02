@@ -241,7 +241,7 @@
                                              <br> 现在给你推荐以精选下福利，快去领取吧：
                                              <br> 免费领薇姿小样：${URL1}
                                              <br> 0元购御泥坊红石榴面膜：${URL2}
-                                             <br> 9.9元购进口樱桃果肉酸奶4瓶：${URL3}）
+                                             <br> 9.9元购进口樱桃果肉酸奶4瓶：${URL3}
                                              <br> 需要运营同事注意：
                                              <br> 假如文字中填写了目标链接宏参数，宏参数名称必须不同；
                                              <br> 且如果填写了目标链接宏参数，落地页必填，
@@ -259,8 +259,8 @@
                                         >
                                         <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value"></el-input>
                                         <!-- <el-button @click="addLandPage(item.word)">+</el-button> -->
-                                        <el-button v-if="index+1==item.word.landingPage.length" @click="addLandPage(item.word)">+</el-button>
-                                        <el-button v-if="index+1==item.word.landingPage.length" @click="delLandPage(item.word)">-</el-button>
+                                        <el-button v-if="indexi+1==item.word.landingPage.length" @click="addLandPage(item.word)">+</el-button>
+                                        <el-button v-if="indexi+1==item.word.landingPage.length" @click="delLandPage(item.word)">-</el-button>
                                     </el-form-item>
                                  </el-col>
                                  <el-col :span="1" >
@@ -854,7 +854,6 @@
 //                                fileList0[index]=[{"name":item1.filePath,"url":item1.filePath}];
 //                                self.ruleForm["fileList0"]=fileList0;
 //                                self.ruleForm["fileList0"].index=
-
                             }
                         });
                         w.app.pics = p;
