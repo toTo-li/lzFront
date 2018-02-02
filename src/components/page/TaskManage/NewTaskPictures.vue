@@ -71,37 +71,45 @@
                             </el-form-item>
 
                             <template v-if="item.type==2">
-                                <el-form-item label="标题:" 
-                                    prop="item.app.title"
-                                    :rules="{required: true, message: '请输入标题', trigger: 'blur'}"
+                                <el-form-item label="标题:"
+                                    :prop="'materials.'+index+'.app.title'"
+                                    :rules="{required: true, message: '标题不能为空', trigger: 'blur'}"
                                 >
                                     <el-input  placeholder="请输入内容" v-model="item.app.title"></el-input>
                                 </el-form-item>
-                                <el-form-item label="页面路径:">
+                                <el-form-item label="页面路径:"
+                                    :prop="'materials.'+index+'.app.pagePath'"
+                                    :rules="{required: true, message: '页面路径不能为空', trigger: 'blur'}"
+                                >
                                     <el-input  placeholder="请输入内容" v-model="item.app.pagePath"></el-input>
                                 </el-form-item>
-                                <el-form-item label="描述文件:">
+                                <el-form-item label="描述文件:"
+                                              :prop="'materials.'+index+'.app.desFile'"
+                                    :rules="{required: true, message: '请上传描述文件', trigger: 'blur'}"
+                                >
                                     <el-upload
                                         class="upload-demo"
                                         action="http://test.cactus.thextrader.cn/api/V1/publishers/uploadCertificate"
                                         :on-preview="handlePreview"
-                                        :on-remove="handleRemove"
-                                        :file-list="fileList0"
+                                        :on-remove="handleRemove(index)"
+                                        :file-list="fileList0.index"
                                         :on-success="(res)=>{handleAppDescFile(res,item,index)}"
                                         name="file"
                                         :before-upload="(res)=>{getFileType(res,item,index)}"
-                                        :disabled="fileBtnBool"
+                                        :disabled="fileBtnBool.index"
                                        >
                                         <el-button size="small" type="primary">点击上传</el-button>
                                         <div slot="tip" class="el-upload__tip">只能上传xml文件</div>
                                     </el-upload>
                                 </el-form-item>
-                                <el-form-item label="上传图片">
+                                <el-form-item label="上传图片"
+                                    :prop="'materials.'+index+'.app.pics'"
+                                    :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'blur'}"
+                                >
                                     <el-upload
                                         class="upload-demo"
                                         action="http://test.cactus.thextrader.cn/api/V1/publishers/uploadCertificate"
                                         :on-preview="handlePreview"
-                                        :on-remove="handleRemove"
                                         :file-list="fileList1"
                                         :on-success="(res)=>{handleSuccess(res,item,index)}"
                                         list-type="picture"
@@ -129,7 +137,7 @@
                                     <el-button @click="previewApp(item.app)">预览</el-button>
                                 </el-form-item>
                                 <el-form-item class="preview" v-if="item.app.appPre" >
-                                    <el-card class="box-card" v-for="(o,index) in item.app.pics" :key="index" v-if="o.fileType != 'text'">
+                                    <el-card class="box-card" v-for="(o,indexj) in item.app.pics" :key="indexj" v-if="o.fileType != 'text'">
                                         <div class="text item1" v-if="o.fileType != 'text'">
                                             <div class="first">
                                                 <h2 style="width:100%">{{item.app.title}}</h2>
@@ -146,18 +154,25 @@
                                 </el-form-item> -->
                             </template>
                             <template v-else-if="item.type==1">
-                                <el-form-item label="标题:">
+                                <el-form-item label="标题:"
+                                    :prop="'materials.'+index+'.cardLink.title'"
+                                    :rules="{required: true, message: '标题不能为空', trigger: 'blur'}"
+                                    >
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.title"></el-input>
                                 </el-form-item>
-                                <el-form-item label="内容:">
+                                <el-form-item label="内容:"
+                                    :prop="'materials.'+index+'.cardLink.content'"
+                                    :rules="{required: true, message: '内容不能为空', trigger: 'blur'}">
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.content"></el-input>
                                 </el-form-item>
-                                <el-form-item label="上传图片:">
+                                <el-form-item label="上传图片:"
+                                    :prop="'materials.'+index+'.cardLink.pics'"
+                                    :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'blur'}"
+                                >
                                    <el-upload
                                         class="upload-demo"
                                         action="http://test.cactus.thextrader.cn/api/V1/publishers/uploadCertificate"
                                         :on-preview="handlePreview"
-                                        :on-remove="handleRemove"
                                         :file-list="fileList2"
                                         :on-success="(res)=>{handleSuccess(res,item,index)}"
                                         list-type="picture"
@@ -180,8 +195,11 @@
                                      </div>
 
                                 </template>
-                                <el-form-item label="落地页:">
-                                    <el-input  placeholder="请输入内容" v-model="item.cardLink.landingPage"></el-input>
+                                <el-form-item label="落地页:"
+                                    :prop="'materials.'+index+'.cardLink.landingPage'"
+                                    :rules="[{required: true, message: '落地页不能为空', trigger: 'blur'},{type:'url', message: '请输入正确网址', trigger: 'blur'}]"
+                                   >
+                                    <el-input  placeholder="请输入内容"  v-model="item.cardLink.landingPage"></el-input>
                                 </el-form-item>
                                 <el-form-item>
                                     <el-button @click="previewCardLink(item.cardLink)">预览</el-button>
@@ -205,26 +223,72 @@
                                 </el-form-item> -->
                             </template>
                             <template v-else-if="item.type==0">
-                                <el-form-item label="文字:" >
-                                    <el-input  row="2" type="textarea" placeholder="请输入内容" v-model="item.word.landingPageDesc"></el-input>
-                                </el-form-item>
-                                <el-form-item
-                                    v-for="(landpage,index) in item.word.landingPage"
-                                    :label="'落地页' + (index+1)"
-                                    :key="index"
+                                <el-col :span="23" >
+                                    <el-form-item label="文字:"
+                                        :prop="'materials.'+index+'.word.landingPageDesc'"
+                                        :rules="{required: true, message: '文字不能为空', trigger: 'blur'}"
                                     >
-                                    <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value"></el-input>
-                                    <el-button v-if="index+1==item.word.landingPage.length" @click="addLandPage(item.word)">+</el-button>
-                                    <el-button v-if="index+1==item.word.landingPage.length" @click="delLandPage(item.word)">-</el-button>
-                                </el-form-item>
+                                        <el-input   row="2"  type="textarea" placeholder="请输入内容" v-model="item.word.landingPageDesc">
+                                        </el-input>
+
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="1" >
+                                    <el-tooltip placement="top">
+                                        <div slot="content">文字备注：
+                                           <br> 假如文字中包含目标链接时，需要用宏参数来代替。
+                                            <br> 填写文字时，第一个目标链接用“${URL1}”来代替、
+                                            <br> 第二个目标链接用“${URL2}”来表示，以此类推。
+                                            <br> 举例：当发布在社群里的内容如下时：
+                                            <br> 现在给你推荐以精选下福利，快去领取吧：
+                                            <br> 免费领薇姿小样：https://w.url.cn/s/AgElSof
+                                            <br> 0元购御泥坊红石榴面膜：https://w.url.cn/s/As6eFnI
+                                            <br> 9.9元购进口樱桃果肉酸奶4瓶：https://w.url.cn/s/A7cKbo5
+                                            <br> 此处填写的内容应该是：
+                                            <br> 现在给你推荐以精选下福利，快去领取吧：
+                                            <br> 免费领薇姿小样：${URL1}
+                                            <br> 0元购御泥坊红石榴面膜：${URL2}
+                                            <br> 9.9元购进口樱桃果肉酸奶4瓶：${URL3}）
+                                            <br> 需要运营同事注意：
+                                            <br> 假如文字中填写了目标链接宏参数，宏参数名称必须不同；
+                                            <br> 且如果填写了目标链接宏参数，落地页必填，
+                                            <br> 且落地页的个数和宏参数的个数保持一致。</div>
+                                        <el-button type="primary" size="mini">？</el-button>
+                                    </el-tooltip>
+                                </el-col>
+                                <el-col :span="23" >
+                                    <el-form-item
+                                        v-for="(landpage,indexi) in item.word.landingPage"
+                                        :label="'落地页' + (indexi+1)"
+                                        :key="indexi"
+                                         :prop="'materials.'+index+'.word.landingPage.'+indexi+'.value'"
+                                        :rules="{type:'url', message: '请输入正确网址', trigger: 'blur'}"
+                                        >
+                                        <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value">
+                                            <i slot="suffix" class="el-input__icon el-icon-date"></i>
+                                        </el-input>
+                                        <el-button v-if="indexi+1==item.word.landingPage.length" @click="addLandPage(item.word)">+</el-button>
+                                        <el-button v-if="indexi+1==item.word.landingPage.length" @click="delLandPage(item.word)">-</el-button>
+                                    </el-form-item>
+                                    </el-col>
+                                <el-col :span="1" >
+                                    <el-tooltip placement="top">
+                                        <div slot="content">落地页备注：
+                                            <br/> 填写落地页时，需要把落地页按照对应顺序填写在落地页1、落地页2…中。
+                                            <br/>如果填写了目标链接宏参数，落地页必填，且落地页的个数和宏参数的个数保持一致。</div>
+                                        <el-button type="primary" size="mini">？</el-button>
+                                    </el-tooltip>
+                                </el-col>
                             </template>
                             <template v-else>
-                                <el-form-item label="上传图片:">
+                                <el-form-item label="上传图片:"
+                                    :prop="'materials.'+index+'.pic.pics'"
+                                    :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'blur'}"
+                                    >
                                    <el-upload
                                         class="upload-demo"
                                         action="http://test.cactus.thextrader.cn/api/V1/publishers/uploadCertificate"
                                         :on-preview="handlePreview"
-                                        :on-remove="handleRemove"
                                         :on-success="(res)=>{handleSuccess(res,item,index)}"
                                         :file-list="fileList3"
                                         list-type="picture"
@@ -271,8 +335,6 @@
 </template>
 
 <script>
-   // import datepicker from 'vuejs-datepicker';
-//import datetime from 'vue-datetimepicker';
 
     Date.prototype.Format = function(formatStr){
                     let str = formatStr;
@@ -354,7 +416,7 @@
                     }else{
                         callback(new Error('长度不能超过11位'));
                     }
-                    
+
                 }
             }
             return{
@@ -430,8 +492,8 @@
                     hope:1,
 
                 },
-                fileBtnBool:false,
-                fileList0:[],
+                fileBtnBool:[false],
+                fileList0:[[],[]],
                 // 小程序
                 fileList1:[],
                 // 卡片链接
@@ -532,6 +594,7 @@
                         let p = item.app.pics.map(function(item){
                             return {filePath:item.filePath,fileType:item.fileType};
                         });
+                        p.push({filePath:item.app.desFile,fileType:"text"})
                         let app = {
                             type:2,
                             title:item.app.title,
@@ -624,8 +687,8 @@
 
             },
             // 图片预览
-            handleRemove(file, fileList0) {
-                this.fileBtnBool = false;
+            handleRemove(index) {
+                this.fileBtnBool.index = false;
             },
             // 点击已上传的文件链接钩子时触发
             handlePreview(file) {
@@ -678,11 +741,13 @@
             },
             // 获取描述文件上传后的地址
             handleAppDescFile(response,item,index){
-                console.log(response);
-                this.fileBtnBool = response.ok;
-                let fileUrl = response.map.material.url;
-                this.ruleForm.materials[index].app.pics.push({filePath:response.map.material.url,fileType:"text"});
-                console.log(this.ruleForm.materials[index].app.pics);
+//                console.log(response);
+                this.fileBtnBool.index = response.ok;
+//                let fileUrl = response.map.material.url;
+
+//                this.ruleForm.materials[index].app.pics.push({filePath:response.map.material.url,fileType:"text"});
+                this.ruleForm.materials[index].app.desFile=response.map.material.url;
+//                console.log( this.ruleForm.materials[index].app.desFile);
             },
             overFilesNum(files,filelist){
                 console.log(11111111111112233);
@@ -783,9 +848,11 @@
             },
 //            删除物料
             close(a){
-                this.ruleForm.materials = this.ruleForm.materials.filter(function(item,index){
-                    return index!=a;
-                });
+                if(this.ruleForm.materials.length>1){
+                    this.ruleForm.materials = this.ruleForm.materials.filter(function(item,index){
+                        return index!=a;
+                    });
+                }
             }
         }
     }
@@ -871,7 +938,7 @@
         height:100%;
     }
     .landPageW{
-        width:72%;
+        width:70%;
     }
     /* 日期组件显示格式 */
     .datapicker1{
@@ -903,5 +970,5 @@
         border: none !important;
     }
 
-   
+
 </style>
