@@ -28,6 +28,7 @@
                         v-model="item.time"
                         type="datetime" :picker-options="pickerOpt"
                         placeholder="选择日期时间"
+                        :clearable=false
                         :key="index"
                         :name="index"
                         >

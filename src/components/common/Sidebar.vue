@@ -85,12 +85,23 @@
                 if(self.items.length>0){
                     self.$router.push("/"+self.items[0].index);
                 }
-               
+
             }
         },
         computed:{
             onRoutes(){
-                return this.$route.path.replace('/','');
+                let path=this.$route.path
+                if(path.indexOf("basecharts")||path.indexOf("taskcheckread")){
+                    return "basecharts";
+                }else if(path.indexOf("baseform")){
+                    return "baseform";
+                }else if(path.indexOf("tasktable")){
+                    return "tasktable";
+                }else if(path.indexOf("manage")){
+                    return "manage";
+                }else{
+                    return "basetable";
+                }
             }
         }
     }

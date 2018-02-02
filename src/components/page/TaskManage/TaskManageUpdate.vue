@@ -35,6 +35,7 @@
                         v-model="item.time"
                         type="datetime" :picker-options="pickerOpt"
                         placeholder="选择日期时间"
+                        :clearable=false
                         :key="index"
                         :name="index"
                         >
@@ -952,9 +953,11 @@
 			},
 //            删除物料
             close(a){
-                this.ruleForm.materials = this.ruleForm.materials.filter(function(item,index){
-                    return index!=a;
-                });
+                if(this.ruleForm.materials.length>1) {
+                    this.ruleForm.materials = this.ruleForm.materials.filter(function (item, index) {
+                        return index != a;
+                    });
+                }
             },
             //
             back(){
