@@ -167,7 +167,7 @@
 		            { required: true, validator:validRoleName, trigger: 'blur' }
 		          ],
 		          rAccount: [
-		            { type: 'array', required: true, trigger: 'change',validator:validrAccount }
+		            { type: 'array', required: true, trigger: 'blur',validator:validrAccount }
 		          ],
 		          contactName:[
 		          	{required:false,message:'请填写联系人',trigger:'blur'}
@@ -204,6 +204,7 @@
 											// 角色的默认选项
 											// this.roleName = store.state.role[0].name;
 											this.ruleForm.roleName = store.state.role[0].name;
+											this.ruleForm.rAccount = [];
 											// this.ruleForm.name = "";
 										  return this.ruleForm;
 									}else{
