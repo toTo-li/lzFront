@@ -20,9 +20,8 @@
                         <template slot="append" >多个标签之间用英文分号 ; 隔开 </template>
                     </el-input>
                 </el-col>
-
             </el-form-item>
-            <el-form-item label="发送时间:"  >
+            <el-form-item label="发送时间:">
                 <template  >
                      <el-date-picker
                         v-for="(item,index) in ruleForm.times"
@@ -283,7 +282,7 @@
                             <template v-else>
                                 <el-form-item label="上传图片:"
                                     :prop="'materials.'+index+'.pic.pics'"
-                                    :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'blur'}"
+                                    :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'change'}"
                                     >
                                    <el-upload
                                         class="upload-demo"
@@ -431,6 +430,7 @@
                     times:[{
                         time:new Date()
                     }],
+                    timesflag:"",
 //                    添加物料
                     /*
                         投放类型：
@@ -516,6 +516,9 @@
                     ],
                     desc: [
                         { required: true, validator:validDesc, trigger: 'blur' }
+                    ],
+                    timeflag: [
+                        { required: true, trigger: 'change' }
                     ],
                     tags:[
                         { required: true, validator:validTags, trigger: 'blur' }
@@ -840,7 +843,7 @@
             },
             delTimes(){
                 console.log(this.ruleForm.times);
-                if(this.ruleForm.times.length>0){
+                if(this.ruleForm.times.length>1){
                     this.ruleForm.times.pop();
                 }else{
                     return false;

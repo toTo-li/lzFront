@@ -45,7 +45,7 @@
                 <el-button @click="delTimes">删除时间</el-button>
             </el-form-item>
 
-            <el-form-item >
+            <el-form-item  label="物料:" >
                     <el-card class="box-card"  v-for="(item,index) in ruleForm.materials" :key="index"  >
                         <div slot="header" class="clearfix">
                             <span>物料{{index+1}}</span>
@@ -928,7 +928,7 @@
             },
             delTimes(){
                 console.log(this.ruleForm.times);
-                if(this.ruleForm.times.length>0){
+                if(this.ruleForm.times.length>1){
                     this.ruleForm.times.pop();
                 }else{
                     return false;
