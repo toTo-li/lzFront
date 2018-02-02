@@ -389,6 +389,7 @@
 							roleId = this.getRoleId(a).length==0?"":this.getRoleId(a)[0].id;
 						}else{
 							roleId = a;
+							self.ruleForms.rAccount = [];
 						}
 						console.log(roleId);
 						console.log("--------------------------------------");

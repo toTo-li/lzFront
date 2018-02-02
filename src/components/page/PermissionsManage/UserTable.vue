@@ -177,14 +177,22 @@
 
 			}
 			var validrAccount = function(rule,value,callback){
-                console.log(value,"valllllllllllll");
+                // console.log(value,"valllllllllllll");
 				if(value.length==0){
 						callback(new Error('请选择关联账号（可多选）'));
 				}else{
 						callback();
 				}
 
-			}
+            }
+            var validRoleName =  function(rule,value,callback){
+                // console.log(value,"juese quanxian");
+                if(!value){
+                    callback(new Error("请选择角色权限"));
+                }else{
+                    callback();
+                }
+            }
             return {
 //              存放数据
                 tableData: [],
@@ -226,7 +234,7 @@
 		            { required: true,  trigger: 'blur' ,validator:validPass}
 		          ],
 		          roleName: [
-		            { required: true, message: '请选择角色权限', trigger: 'blur' }
+		            { required: true, validator:validRoleName, trigger: 'blur' }
 		          ],
 		          rAccount: [
 		            { type: 'array', required: true, trigger: 'change',validator:validrAccount }
@@ -249,7 +257,7 @@
             let self = this;
             // 获取所有的关联账号
             self.$axios.get(`/users/linked`).then(function(res){
-                        console.log(res);
+                        // console.log(res);
                         self.ruleForms.accounts = res.data;
             });
             // 获取所有的角色
@@ -339,7 +347,7 @@
                 };
                 // 获取修改用户的信息
                 self.$axios.get(`/users/${row.id}`).then(function(res){
-                    console.log(res);
+                    // console.log(res);
                     if(res.status == 200){
                         let user = res.data;
                         self.$store.commit('readUsers',res.data);
@@ -389,7 +397,7 @@
                 });
                 let set = new Set();
                 arr.forEach(function(i){set.add(i)});
-
+                // console.log(set,"set guanlianzhanghao");
                 // 在提交前做重复校验
                 self.$axios.get(`/users/${self.updateId}`).then(function(res){
                     // 当name与当前修改的name一样时不做检验
@@ -437,7 +445,6 @@
                                                 contactName:self.ruleForms.contactName,
                                                 email:self.ruleForms.email
                                             }).then(function(res){
-                                                console.log(res,111111);
                                                 if(res.status == 200){
                                                     self.$message({
                                                         message: '用户修改成功！',
@@ -471,7 +478,7 @@
                         return item.id;
                     }
                 });
-                console.log(id,"id");
+                // console.log(id,"id");
                 return id;
             },
             // 删除
@@ -577,7 +584,7 @@
 						this.ruleForms.name = "";
 						this.ruleForms.contactName = "";
 						this.ruleForms.email = "";
-						this.rAccount = "";
+						this.ruleForms.rAccount = "";
             },
             // 检查用户名是否存在
 					checkName(){
@@ -601,7 +608,8 @@
 						if(isNaN(a)){
 							roleId = this.getRoleId(a).length==0?"":this.getRoleId(a)[0].id;
 						}else{
-							roleId = a;
+                            roleId = a;
+                            self.ruleForms.rAccount = [];
                         }
                         if(roleId==""){
                             return ;
