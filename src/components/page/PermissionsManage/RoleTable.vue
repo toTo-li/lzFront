@@ -93,12 +93,12 @@
                 this.pageSizeChange(val);
             },
             pageSizeChange(val){
-                console.log(val);
+                // console.log(val);
                 this.select_per = val;
                 this.getData();
             },
             handleCurrentChange(val){
-                console.log(val);
+                // console.log(val);
                 this.cur_page = val;
                 this.getData();
             },
@@ -125,7 +125,7 @@
             handleEdit(index, row) {
                 let self = this;
                 this.$axios.get(`/roles/${row.id}`).then(function(res){
-                    console.log(res,"角色信息");
+                    // console.log(res,"角色信息");
                     if(res.status == 200){
                         self.$store.commit("roleDialog",{roleDialogNum:2,flag:true});
                         self.$store.commit('readRoles',res.data);

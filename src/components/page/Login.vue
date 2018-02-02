@@ -64,7 +64,6 @@
 								username:self.ruleForm.username,
                                 password:self.ruleForm.password
 							}).then(function(res){
-                                console.log(res);
 
                                 if(res.data.token){
                                     if(res.data.user.status==0){
