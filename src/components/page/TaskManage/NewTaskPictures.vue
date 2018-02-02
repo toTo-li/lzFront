@@ -20,9 +20,8 @@
                         <template slot="append" >多个标签之间用英文分号 ; 隔开 </template>
                     </el-input>
                 </el-col>
-
             </el-form-item>
-            <el-form-item label="发送时间:"  >
+            <el-form-item label="发送时间:">
                 <template  >
                      <el-date-picker
                         v-for="(item,index) in ruleForm.times"
@@ -248,7 +247,7 @@
                                             <br> 现在给你推荐以精选下福利，快去领取吧：
                                             <br> 免费领薇姿小样：${URL1}
                                             <br> 0元购御泥坊红石榴面膜：${URL2}
-                                            <br> 9.9元购进口樱桃果肉酸奶4瓶：${URL3}）
+                                            <br> 9.9元购进口樱桃果肉酸奶4瓶：${URL3}
                                             <br> 需要运营同事注意：
                                             <br> 假如文字中填写了目标链接宏参数，宏参数名称必须不同；
                                             <br> 且如果填写了目标链接宏参数，落地页必填，
@@ -283,7 +282,7 @@
                             <template v-else>
                                 <el-form-item label="上传图片:"
                                     :prop="'materials.'+index+'.pic.pics'"
-                                    :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'blur'}"
+                                    :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'change'}"
                                     >
                                    <el-upload
                                         class="upload-demo"
@@ -431,6 +430,7 @@
                     times:[{
                         time:new Date()
                     }],
+                    timesflag:"",
 //                    添加物料
                     /*
                         投放类型：
@@ -516,6 +516,9 @@
                     ],
                     desc: [
                         { required: true, validator:validDesc, trigger: 'blur' }
+                    ],
+                    timeflag: [
+                        { required: true, trigger: 'change' }
                     ],
                     tags:[
                         { required: true, validator:validTags, trigger: 'blur' }
@@ -840,7 +843,7 @@
             },
             delTimes(){
                 console.log(this.ruleForm.times);
-                if(this.ruleForm.times.length>0){
+                if(this.ruleForm.times.length>1){
                     this.ruleForm.times.pop();
                 }else{
                     return false;

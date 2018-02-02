@@ -34,7 +34,7 @@
                 <!-- <el-button @click="addTimes" :readonly="true">添加时间</el-button> -->
             </el-form-item>
 
-            <el-form-item >
+            <el-form-item  label="物料:">
                     <el-card class="box-card"  v-for="(item,index) in ruleForm.materials" :key="index"  >
                         <div slot="header" class="clearfix">
                             <span>物料{{index+1}}</span>
@@ -54,17 +54,29 @@
                             </el-form-item>
 
                             <template v-if="item.type=='小程序'||item.type==2">
-                                <el-form-item label="标题:">
+                                <el-form-item label="标题:"
+                                              :prop="'materials.'+index+'.app.title'"
+                                              :rules="{required: true, message: '标题不能为空', trigger: 'blur'}"
+                                    >
                                     <el-input  placeholder="请输入内容" v-model="item.app.title" :readonly="true"></el-input>
                                 </el-form-item>
-                                <el-form-item label="页面路径:">
+                                <el-form-item label="页面路径:"
+                                              :prop="'materials.'+index+'.app.pagePath'"
+                                              :rules="{required: true, message: '页面路径不能为空', trigger: 'blur'}"
+                                    >
                                     <el-input  placeholder="请输入内容" v-model="item.app.pagePath" :readonly="true"></el-input>
                                 </el-form-item>
 
-                                <el-form-item label="描述文件:">
+                                <el-form-item label="描述文件:"
+                                              :prop="'materials.'+index+'.app.desFile'"
+                                              :rules="{required: true, message: '请上传描述文件', trigger: 'blur'}"
+                                    >
                                     <el-button>上传</el-button>
                                 </el-form-item>
-                                <el-form-item label="上传图片">
+                                <el-form-item label="上传图片"
+                                              :prop="'materials.'+index+'.app.pics'"
+                                              :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'blur'}"
+                                    >
                                     <el-upload
                                         class="upload-demo"
                                         action="http://test.cactus.thextrader.cn/api/V1/publishers/uploadCertificate"
@@ -111,13 +123,22 @@
                                 </el-form-item> -->
                             </template>
                             <template v-else-if="item.type=='卡片式链接'||item.type==1">
-                                <el-form-item label="标题:">
+                                <el-form-item label="标题:"
+                                              :prop="'materials.'+index+'.cardLink.title'"
+                                              :rules="{required: true, message: '标题不能为空', trigger: 'blur'}"
+                                    >
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.title" :readonly="true"></el-input>
                                 </el-form-item>
-                                <el-form-item label="内容:">
+                                <el-form-item label="内容:"
+                                              :prop="'materials.'+index+'.cardLink.content'"
+                                              :rules="{required: true, message: '内容不能为空', trigger: 'blur'}"
+                                    >
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.content" :readonly="true"></el-input>
                                 </el-form-item>
-                                <el-form-item label="上传图片:">
+                                <el-form-item label="上传图片:"
+                                              :prop="'materials.'+index+'.cardLink.pics'"
+                                              :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'blur'}"
+                                    >
                                    <el-upload
                                         class="upload-demo"
                                         action="http://test.cactus.thextrader.cn/api/V1/publishers/uploadCertificate"
@@ -143,7 +164,10 @@
                                             </el-form-item>
                                      </div>
                                 </template>
-                                <el-form-item label="落地页:">
+                                <el-form-item label="落地页:"
+                                              :prop="'materials.'+index+'.cardLink.landingPage'"
+                                              :rules="[{required: true, message: '落地页不能为空', trigger: 'blur'},{type:'url', message: '请输入正确网址', trigger: 'blur'}]"
+                                    >
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.landingPage" :readonly="true"></el-input>
                                 </el-form-item>
                                 <el-form-item>
@@ -168,25 +192,67 @@
                                 </el-form-item> -->
                             </template>
                              <template v-else-if="item.type=='文字'||item.type==0">
-                                <el-form-item label="文字:">
-                                    <el-input  row="2" type="textarea" placeholder="请输入内容" v-model="item.word.landingPageDesc" :readonly="true"></el-input>
-                                </el-form-item>
-                                <el-form-item
-                                    v-for="(landpage,index) in item.word.landingPage"
-                                    :label="'落地页' + (index+1)"
-                                    :key="index"
-                                    >
-                                    <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value" :readonly="true"></el-input>
-                                    <!-- <el-button @click="addLandPage(item.word)" :readonly="true">+</el-button> -->
-                                </el-form-item>
+                                 <el-col :span="23" >
+                                     <el-form-item label="文字:"
+                                                  :prop="'materials.'+index+'.word.landingPageDesc'"
+                                                  :rules="{required: true, message: '文字不能为空', trigger: 'blur'}"
+                                        >
+                                        <el-input  row="2" type="textarea" placeholder="请输入内容" v-model="item.word.landingPageDesc" :readonly="true"></el-input>
+                                    </el-form-item>
+                                 </el-col>
+                                 <el-col :span="1" >
+                                     <el-tooltip placement="top">
+                                         <div slot="content">文字备注：
+                                             <br> 假如文字中包含目标链接时，需要用宏参数来代替。
+                                             <br> 填写文字时，第一个目标链接用“${URL1}”来代替、
+                                             <br> 第二个目标链接用“${URL2}”来表示，以此类推。
+                                             <br> 举例：当发布在社群里的内容如下时：
+                                             <br> 现在给你推荐以精选下福利，快去领取吧：
+                                             <br> 免费领薇姿小样：https://w.url.cn/s/AgElSof
+                                             <br> 0元购御泥坊红石榴面膜：https://w.url.cn/s/As6eFnI
+                                             <br> 9.9元购进口樱桃果肉酸奶4瓶：https://w.url.cn/s/A7cKbo5
+                                             <br> 此处填写的内容应该是：
+                                             <br> 现在给你推荐以精选下福利，快去领取吧：
+                                             <br> 免费领薇姿小样：${URL1}
+                                             <br> 0元购御泥坊红石榴面膜：${URL2}
+                                             <br> 9.9元购进口樱桃果肉酸奶4瓶：${URL3}
+                                             <br> 需要运营同事注意：
+                                             <br> 假如文字中填写了目标链接宏参数，宏参数名称必须不同；
+                                             <br> 且如果填写了目标链接宏参数，落地页必填，
+                                             <br> 且落地页的个数和宏参数的个数保持一致。</div>
+                                         <el-button type="primary" size="mini">？</el-button>
+                                     </el-tooltip>
+                                 </el-col>
+                                 <el-col :span="23" >
+                                    <el-form-item
+                                        v-for="(landpage,indexi) in item.word.landingPage"
+                                        :label="'落地页' + (indexi+1)"
+                                        :key="indexi"
+                                        :prop="'materials.'+index+'.word.landingPage.'+indexi+'.value'"
+                                        :rules="{type:'url', message: '请输入正确网址', trigger: 'blur'}"
+                                        >
+                                        <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value" :readonly="true"></el-input>
+                                        <!-- <el-button @click="addLandPage(item.word)" :readonly="true">+</el-button> -->
+                                    </el-form-item>
+                                 </el-col>
+                                 <el-col :span="1" >
+                                     <el-tooltip placement="top">
+                                         <div slot="content">落地页备注：
+                                             <br/> 填写落地页时，需要把落地页按照对应顺序填写在落地页1、落地页2…中。
+                                             <br/>如果填写了目标链接宏参数，落地页必填，且落地页的个数和宏参数的个数保持一致。</div>
+                                         <el-button type="primary" size="mini">？</el-button>
+                                     </el-tooltip>
+                                 </el-col>
                             </template>
                             <template v-else>
-                                <el-form-item label="上传图片:">
+                                <el-form-item label="上传图片:"
+                                              :prop="'materials.'+index+'.pic.pics'"
+                                              :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'change'}"
+                                    >
                                    <el-upload
                                         class="upload-demo"
                                         action="http://test.cactus.thextrader.cn/api/V1/publishers/uploadCertificate"
                                         :on-preview="handlePreview"
-                                        :on-remove="handleRemove"
                                         :on-success="(res)=>{handleSuccess(res,item,index)}"
                                         :file-list="fileList3"
                                         list-type="picture"
@@ -292,6 +358,7 @@
                             {label:'图片',value:3}
                 ],
                 // 小程序
+                fileList0:[[],[]],
                 fileList1:[],
                 // 卡片链接
                 fileList2:[],
