@@ -90,11 +90,11 @@
                                         :file-list="fileList0.index"
                                         :on-success="(res)=>{handleAppDescFile(res,item,index)}"
                                         name="file"
-                                        :before-upload = "(res)=>{getFileType(res,item,index)}"
+                                        :before-upload="getFileType"
                                         :disabled="fileBtnBool.index"
                                        >
                                         <el-button size="small" type="primary">点击上传</el-button>
-                                        <div slot="tip" class="el-upload__tip">只能上传xml文件</div>
+                                        <div slot="tip" class="el-upload__tip">只能上传不超过10M的xml文件</div>
                                     </el-upload>
                                 </el-form-item>
                                 <el-form-item label="上传图片"
@@ -109,7 +109,7 @@
                                         :file-list="fileList1"
                                         :on-success="(res)=>{handleSuccess(res,item,index)}"
                                         list-type="picture"
-                                         :before-upload = "(res)=>{getPicType(res,item,index)}"
+                                         :before-upload = "getPicType"
                                         :show-file-list="false"
                                         name="file"
                                        >
@@ -171,7 +171,7 @@
                                         :file-list="fileList2"
                                         :on-success="(res)=>{handleSuccess(res,item,index)}"
                                         list-type="picture"
-                                         :before-upload = "(res)=>{getPicType(res,item,index)}"
+                                         :before-upload = "getPicType"
                                         :show-file-list="false"
                                         name="file"
                                         >
@@ -287,7 +287,7 @@
                                         :file-list="fileList3"
                                         list-type="picture"
                                         name="file"
-                                         :before-upload = "(res)=>{getPicType(res,item,index)}"
+                                         :before-upload = "getPicType"
                                         :show-file-list="false"
                                         >
                                         <el-button size="small" type="primary">点击上传</el-button>
@@ -685,10 +685,6 @@
             // 图片上传成功后将图片的信息传入对应的图片列表中
             handleSuccess(response,item,index){
                 // response.map.material.url
-                console.log("llllllllllllllljjjjjjjjjjjjjjjj");
-                console.log(response);
-                console.log(item);
-                console.log("-----------------------------------------");
                 if(item.type==1){
                     let imgUrl = {filePath:response.map.material.url,fileType:"image"};
                     this.ruleForm.materials[index].cardLink.pics.push(imgUrl)
@@ -702,12 +698,11 @@
             },
             // 获取描述文件类型和名字
             getFileType(res,item,index){
-                if(res.type=="text/xml"){
-                    item.app.content = res.name;
-                    item.app.fileType = "text";
-                }else{
-                    return false;
+                const isLt1M = res.size / 1024 / 1024 < 10;
+                if(!isLt1M){
+                    this.$message.error('上传文件失败，文件大小不能超过 10MB!');
                 }
+                return isLt1M;
             },
             // 获取描述文件上传后的地址
             handleAppDescFile(response,item,index){
@@ -719,22 +714,13 @@
                 console.log(this.ruleForm.materials[index].app.pics);
             },
             // 获取图片的地址
-            getPicType(res,item,index){
+            getPicType(res){
                 console.log(res);
-                console.log(item);
-                if(res.type.split('/')[0]=="image"){
-                    console.log(res.type);
-                    if(item.type==1){
-                        item.cardLink.fileType = res.type.split('/')[0];
-                        console.log(item);
-                    }else if(item.type==2){
-                        item.app.fileType = res.type.split('/')[0];
-                    }else{
-                        item.pic.fileType = res.type.split('/')[0];
-                    }
-                }else{
-                    return false;
+                const isLt1M = res.size / 1024 / 1024 < 10;
+                if(!isLt1M){
+                    this.$message.error('上传图片失败，图片大小不能超过 10MB!');
                 }
+                return isLt1M;
             },
             // 添加落地页
             addLandPage(item){

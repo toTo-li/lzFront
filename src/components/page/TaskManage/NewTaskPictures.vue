@@ -73,13 +73,18 @@
                             <template v-if="item.type==2">
                                 <el-form-item label="标题:"
                                     :prop="'materials.'+index+'.app.title'"
-                                    :rules="{required: true, message: '标题不能为空', trigger: 'blur'}"
+                                    :rules="[
+                                            {required: true,  trigger: 'blur', message: '标题不能为空'}
+                                        ]"
                                 >
                                     <el-input  placeholder="请输入内容" v-model="item.app.title"></el-input>
                                 </el-form-item>
                                 <el-form-item label="页面路径:"
                                     :prop="'materials.'+index+'.app.pagePath'"
-                                    :rules="{required: true, message: '页面路径不能为空', trigger: 'blur'}"
+                                    :rules="[
+                                            {required: true, message: '不能为空', trigger: 'blur'},
+                                            {type:'url', trigger: 'blur',message: '请输入正确的网址'}
+                                        ]"
                                 >
                                     <el-input  placeholder="请输入内容" v-model="item.app.pagePath"></el-input>
                                 </el-form-item>
@@ -95,11 +100,11 @@
                                         :file-list="fileList0.index"
                                         :on-success="(res)=>{handleAppDescFile(res,item,index)}"
                                         name="file"
-                                        :before-upload="(res)=>{getFileType(res,item,index)}"
+                                        :before-upload="getFileType"
                                         :disabled="fileBtnBool.index"
                                        >
                                         <el-button size="small" type="primary">点击上传</el-button>
-                                        <div slot="tip" class="el-upload__tip">只能上传xml文件</div>
+                                        <div slot="tip" class="el-upload__tip">只能上传不超过10M的xml文件</div>
                                     </el-upload>
                                 </el-form-item>
                                 <el-form-item label="上传图片"
@@ -113,7 +118,7 @@
                                         :file-list="fileList1"
                                         :on-success="(res)=>{handleSuccess(res,item,index)}"
                                         list-type="picture"
-                                        :before-upload="(res)=>{getPicType(res,item,index)}"
+                                        :before-upload="getPicType"
                                         :show-file-list="false"
                                         name="file"
                                         limit=1
@@ -156,13 +161,17 @@
                             <template v-else-if="item.type==1">
                                 <el-form-item label="标题:"
                                     :prop="'materials.'+index+'.cardLink.title'"
-                                    :rules="{required: true, message: '标题不能为空', trigger: 'blur'}"
+                                    :rules="[
+                                        {required: true, trigger: 'blur',message:'标题不能为空'}
+                                    ]"
                                     >
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.title"></el-input>
                                 </el-form-item>
                                 <el-form-item label="内容:"
                                     :prop="'materials.'+index+'.cardLink.content'"
-                                    :rules="{required: true, message: '内容不能为空', trigger: 'blur'}">
+                                    :rules="[
+                                        {required: true, trigger: 'blur',message:'内容不能为空'}
+                                    ]">
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.content"></el-input>
                                 </el-form-item>
                                 <el-form-item label="上传图片:"
@@ -176,7 +185,7 @@
                                         :file-list="fileList2"
                                         :on-success="(res)=>{handleSuccess(res,item,index)}"
                                         list-type="picture"
-                                        :before-upload = "(res)=>{getPicType(res,item,index)}"
+                                        :before-upload="getPicType"
                                         :show-file-list="false"
                                         name="file"
                                         >
@@ -197,7 +206,10 @@
                                 </template>
                                 <el-form-item label="落地页:"
                                     :prop="'materials.'+index+'.cardLink.landingPage'"
-                                    :rules="[{required: true, message: '落地页不能为空', trigger: 'blur'},{type:'url', message: '请输入正确网址', trigger: 'blur'}]"
+                                    :rules="[
+                                        {required: true, trigger: 'blur',message:'不能为空'},
+                                        {type:'url',trigger: 'blur',message:'请输入正确的网址'}
+                                    ]"
                                    >
                                     <el-input  placeholder="请输入内容"  v-model="item.cardLink.landingPage"></el-input>
                                 </el-form-item>
@@ -226,7 +238,9 @@
                                 <el-col :span="23" >
                                     <el-form-item label="文字:"
                                         :prop="'materials.'+index+'.word.landingPageDesc'"
-                                        :rules="{required: true, message: '文字不能为空', trigger: 'blur'}"
+                                        :rules="[
+                                            {required: true, trigger: 'blur',message:'不能为空'}
+                                        ]"
                                     >
                                         <el-input   row="2"  type="textarea" placeholder="请输入内容" v-model="item.word.landingPageDesc">
                                         </el-input>
@@ -262,7 +276,9 @@
                                         :label="'落地页' + (indexi+1)"
                                         :key="indexi"
                                          :prop="'materials.'+index+'.word.landingPage.'+indexi+'.value'"
-                                        :rules="{type:'url', message: '请输入正确网址', trigger: 'blur'}"
+                                        :rules="[
+                                            {type:'url', trigger: 'blur',message:'请输入正确的网址'}
+                                        ]"
                                         >
                                         <el-input :class="{landPageW:true}" placeholder="请输入内容" v-model="landpage.value">
                                             <i slot="suffix" class="el-input__icon el-icon-date"></i>
@@ -292,7 +308,7 @@
                                         :on-success="(res)=>{handleSuccess(res,item,index)}"
                                         :file-list="fileList3"
                                         list-type="picture"
-                                        :before-upload = "(res)=>{getPicType(res,item,index)}"
+                                        :before-upload="getPicType"
                                         name="file"
                                         :show-file-list="false"
                                         >
@@ -664,6 +680,62 @@
 
 
             },
+            // validLength(rules,value,callback){
+            //     console.log(rules);
+            //     console.log(value);
+            //     if(!value){
+            //         callback(new Error('不能为空'));
+            //     }else{
+            //         if(value.length>50){
+            //             callback(new Error("长度不能超过50"));
+            //         }else{
+            //             callback();
+            //         }
+            //     }
+            // },
+            // validAppLength(rules,value,callback){
+            //     console.log(rules);
+            //     if(!value){
+            //         callback(new Error('不能为空'));
+            //     }else{
+            //         if(value.length>50){
+            //             callback(new Error("长度不能超过50"));
+            //         }else{
+            //             callback();
+            //         }
+            //     }
+            // },
+            // validLandLength(rules,value,callback){
+            //     console.log(value);
+            //     if(value==""){
+            //         callback();
+            //     }else{
+            //         if(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/.test(value)){
+            //             if(value.length>50){
+            //                 callback(new Error("长度不能超过50"));
+            //             }else{
+            //                 callback();
+            //             }
+            //         }else{
+            //             callback(new Error('请输入正确的网址'));
+            //         }
+            //     }
+            // },
+            // validCardLength(rules,value,callback){
+            //     if(!value){
+            //         callback(new Error("不能为空"));
+            //     }else{
+            //         if(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/.test(value)){
+            //             if(value.length>50){
+            //                 callback(new Error("长度不能超过50"));
+            //             }else{
+            //                 callback();
+            //             }
+            //         }else{
+            //             callback(new Error('请输入正确的网址'));
+            //         }
+            //     }
+            // },
             // 时间格式转化
             timeFormat(){
                 var self = this;
@@ -698,31 +770,17 @@
             handlePreview(file) {
                 console.log(file);
             },
-            // 获取图片的地址
-            getPicType(res,item,index){
-                console.log(res);
-                console.log(item);
-                if(res.type.split('/')[0]=="image"){
-                    console.log(res.type);
-                    if(item.type==1){
-                        item.cardLink.fileType = res.type.split('/')[0];
-                        console.log(item);
-                    }else if(item.type==2){
-                        item.app.fileType = res.type.split('/')[0];
-                    }else{
-                        item.pic.fileType = res.type.split('/')[0];
-                    }
-                }else{
-                    return false;
+            // 限制图片的大小
+            getPicType(res){
+                const isLt1M = res.size / 1024 / 1024 < 10;
+                if(!isLt1M){
+                    this.$message.error('上传图片失败，图片大小不能超过 10MB!');
                 }
+                return isLt1M;
             },
             // 图片上传成功后将图片的信息传入对应的图片列表中
             handleSuccess(response,item,index){
                 // response.map.material.url
-                console.log("llllllllllllllljjjjjjjjjjjjjjjj");
-                console.log(response);
-                console.log(item);
-                console.log("-----------------------------------------");
                 if(item.type==1){
                     let imgUrl = {filePath:response.map.material.url,fileType:"image"};
                     this.ruleForm.materials[index].cardLink.pics.push(imgUrl)
@@ -735,23 +793,20 @@
                 }
             },
             // 获取描述文件类型和名字
-            getFileType(res,item,index){
-                if(res.type=="text/xml"){
-                    item.app.content = res.name;
-                    item.app.fileType = "text";
-                }else{
-                    return false;
+            getFileType(res){
+                const isLt1M = res.size / 1024 / 1024 < 10;
+                if(!isLt1M){
+                    this.$message.error('上传文件失败，文件大小不能超过 10MB!');
                 }
+                return isLt1M;
             },
             // 获取描述文件上传后的地址
             handleAppDescFile(response,item,index){
-//                console.log(response);
+                console.log(response);
                 this.fileBtnBool.index = response.ok;
 //                let fileUrl = response.map.material.url;
-
 //                this.ruleForm.materials[index].app.pics.push({filePath:response.map.material.url,fileType:"text"});
                 this.ruleForm.materials[index].app.desFile=response.map.material.url;
-//                console.log( this.ruleForm.materials[index].app.desFile);
             },
             overFilesNum(files,filelist){
                 console.log(11111111111112233);
@@ -973,6 +1028,17 @@
         background-color: white !important;
         border: none !important;
     }
-
+.el-upload-list__item.is-success:hover .el-icon-close {
+    display: inline-block;
+    cursor: pointer;
+    opacity: .75;
+    -ms-transform: scale(.7);
+    transform: scale(.7);
+    color: rgb(72, 106, 106);
+    position: absolute !important;
+    right: 5px !important;
+    top: 5px !important;
+    
+    }
 
 </style>

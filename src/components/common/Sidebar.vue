@@ -90,14 +90,14 @@
         },
         computed:{
             onRoutes(){
-                let path=this.$route.path
-                if(path.indexOf("basecharts")||path.indexOf("taskcheckread")){
+                let path=this.$route.path;
+                if(path.indexOf("basecharts")!=-1||path.indexOf("taskcheckread")!=-1){
                     return "basecharts";
-                }else if(path.indexOf("baseform")){
+                }else if(path.indexOf("baseform")!=-1){
                     return "baseform";
-                }else if(path.indexOf("tasktable")){
+                }else if(path.indexOf("tasktable")!=-1){
                     return "tasktable";
-                }else if(path.indexOf("manage")){
+                }else if(path.indexOf("manage")!=-1){
                     return "manage";
                 }else{
                     return "basetable";
