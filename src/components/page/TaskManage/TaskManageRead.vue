@@ -67,13 +67,13 @@
                                     <el-input  placeholder="请输入内容" v-model="item.app.pagePath" :readonly="true"></el-input>
                                 </el-form-item>
 
-                                <el-form-item label="描述文件:"
+                                <!-- <el-form-item label="描述文件:"
                                               :prop="'materials.'+index+'.app.desFile'"
                                               :rules="{required: true, message: '请上传描述文件', trigger: 'blur'}"
                                     >
                                     <el-button>上传</el-button>
-                                </el-form-item>
-                                <el-form-item label="上传图片"
+                                </el-form-item> -->
+                                <!-- <el-form-item label="上传图片"
                                               :prop="'materials.'+index+'.app.pics'"
                                               :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'blur'}"
                                     >
@@ -88,10 +88,10 @@
                                         :show-file-list="false"
                                         name="file"
                                        >
-                                        <el-button size="small" type="primary" :readonly="true">点击上传</el-button>
+                                        <el-button size="small" type="primary" :readonly="true">点击上传</el-button> -->
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-                                    </el-upload>
-                                </el-form-item>
+                                    <!-- </el-upload>
+                                </el-form-item> -->
                                 <template  >
                                     <div v-for="(i,index) in item.app.pics" :key="index" v-if="i.fileType && i.fileType != 'text'">
                                             <el-form-item label="图片预览:">
@@ -135,7 +135,7 @@
                                     >
                                     <el-input  placeholder="请输入内容" v-model="item.cardLink.content" :readonly="true"></el-input>
                                 </el-form-item>
-                                <el-form-item label="上传图片:"
+                                <!-- <el-form-item label="上传图片:"
                                               :prop="'materials.'+index+'.cardLink.pics'"
                                               :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'blur'}"
                                     >
@@ -150,10 +150,10 @@
                                         :show-file-list="false"
                                         name="file"
                                         >
-                                        <el-button size="small" type="primary" :readonly="true">点击上传</el-button>
+                                        <el-button size="small" type="primary" :readonly="true">点击上传</el-button> -->
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-                                    </el-upload>
-                                </el-form-item>
+                                    <!-- </el-upload>
+                                </el-form-item> -->
                                <template  >
                                     <div v-for="(i,index) in item.cardLink.pics" :key="index" v-if="i.fileType!='' || i.fileType != 'text'">
                                             <el-form-item label="图片预览:">
@@ -245,7 +245,7 @@
                                  </el-col>
                             </template>
                             <template v-else>
-                                <el-form-item label="上传图片:"
+                                <!-- <el-form-item label="上传图片:"
                                               :prop="'materials.'+index+'.pic.pics'"
                                               :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'change'}"
                                     >
@@ -259,10 +259,10 @@
                                         name="file"
                                         :show-file-list="false"
                                         >
-                                        <el-button size="small" type="primary" :readonly="true">点击上传</el-button>
+                                        <el-button size="small" type="primary" :readonly="true">点击上传</el-button> -->
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-                                    </el-upload>
-                                </el-form-item>
+                                    <!-- </el-upload>
+                                </el-form-item> -->
                                 <template  >
                                     <div v-for="(i,index) in item.pic.pics" :key="index">
                                             <el-form-item label="图片预览:">
