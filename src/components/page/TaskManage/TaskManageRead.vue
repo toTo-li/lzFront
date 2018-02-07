@@ -67,12 +67,12 @@
                                     <el-input  placeholder="请输入内容" v-model="item.app.pagePath" :readonly="true"></el-input>
                                 </el-form-item>
 
-                                <!-- <el-form-item label="描述文件:"
+                                <el-form-item label="描述文件:"
                                               :prop="'materials.'+index+'.app.desFile'"
                                               :rules="{required: true, message: '请上传描述文件', trigger: 'blur'}"
                                     >
-                                    <el-button>上传</el-button>
-                                </el-form-item> -->
+                                    <div style="word-break:break-all">{{item.app.content}}</div>
+                                </el-form-item>
                                 <!-- <el-form-item label="上传图片"
                                               :prop="'materials.'+index+'.app.pics'"
                                               :rules="{ type: 'array', required: true, message: '请上传图片',trigger: 'blur'}"
@@ -351,6 +351,7 @@
 //                    期望曝光人数
                     hope:1,
                 },
+                fileBtnBool:[false],
                 options:[
                             {label:'文字',value:0},
                             {label:'卡片式链接',value:1},
@@ -616,7 +617,7 @@
                     }else if(item.type==2){
                         w.type="小程序";
                         w.app.pagePath = item.uri;
-                        // w.app.content = item.content;
+                        w.app.content = item.content;
                         w.app.title = item.title;
                         w.app.desFile = item.uri;
                         let p = item.files.map(function(item){
@@ -633,6 +634,7 @@
                         wl.push(w);
                     }
                 });
+                console.log(wl,"wl");
                 return wl;
             },
 //            添加物料

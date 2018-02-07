@@ -100,7 +100,7 @@
                                         :file-list="fileList0.index"
                                         :on-success="(res)=>{handleAppDescFile(res,item,index)}"
                                         name="file"
-                                        :before-upload="getFileType"
+                                        :before-upload="(res)=>{getFileType(res,item,index)}"
                                         :disabled="fileBtnBool.index"
                                        >
                                         <el-button size="small" type="primary">点击上传</el-button>
@@ -619,7 +619,7 @@
                             type:2,
                             title:item.app.title,
                             // 描述文件的名字（标题）
-                            content:item.app.title,
+                            content:item.app.content,
                             // 页面路径
                             uri:`${item.app.pagePath}`,
                             files:p
@@ -662,7 +662,7 @@
                                         hope:Task.hope,
                                         materials:JSON.stringify(wl)
                                     }).then(function(res){
-                                        console.log(res);
+                                        console.log(res,"新建");
                                         if(res.status==201){
                                             self.$message({
                                                 message: '任务新建成功！',
@@ -793,7 +793,10 @@
                 }
             },
             // 获取描述文件类型和名字
-            getFileType(res){
+            getFileType(res,item,index){
+                console.log(res,"lllllmmmmmm");
+                console.log(item);
+                item.app.content = res.name;
                 const isLt1M = res.size / 1024 / 1024 < 10;
                 if(!isLt1M){
                     this.$message.error('上传文件失败，文件大小不能超过 10MB!');

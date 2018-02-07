@@ -87,14 +87,14 @@
                                         action="http://test.cactus.thextrader.cn/api/V1/publishers/uploadCertificate"
                                         :on-preview="handlePreview"
                                         :on-remove="handleRemove"
-                                        :file-list="fileList0.index"
+                                        :file-list="fileList0[index]"
                                         :on-success="(res)=>{handleAppDescFile(res,item,index)}"
                                         name="file"
-                                        :before-upload="getFileType"
+                                        :before-upload="(res)=>{getFileType(res,item,index)}"
                                         :disabled="fileBtnBool.index"
                                        >
                                         <el-button size="small" type="primary">点击上传</el-button>
-                                        <div slot="tip" class="el-upload__tip">只能上传不超过10M的xml文件</div>
+                                        <div slot="tip" class="el-upload__tip">只能上传不超过10M的xml文件(若需要修改，请先移除之前的文件)</div>
                                     </el-upload>
                                 </el-form-item>
                                 <el-form-item label="上传图片"
@@ -556,7 +556,7 @@
                             type:2,
                             title:item.app.title,
                             // 描述文件的名字（标题）
-                            content:item.app.title,
+                            content:item.app.content,
                             // 页面路径
                             uri:`${item.app.pagePath}`,
                             files:p
@@ -698,6 +698,7 @@
             },
             // 获取描述文件类型和名字
             getFileType(res,item,index){
+                item.app.content = res.name;
                 const isLt1M = res.size / 1024 / 1024 < 10;
                 if(!isLt1M){
                     this.$message.error('上传文件失败，文件大小不能超过 10MB!');
@@ -706,12 +707,10 @@
             },
             // 获取描述文件上传后的地址
             handleAppDescFile(response,item,index){
-//                console.log(response);
                 this.fileBtnBool.index = response.ok;
 //                let fileUrl = response.map.material.url;
 //                this.ruleForm.materials[index].app.pics.push({filePath:response.map.material.url,fileType:"text"});
                 this.ruleForm.materials[index].app.desFile=response.map.material.url;
-                console.log(this.ruleForm.materials[index].app.pics);
             },
             // 获取图片的地址
             getPicType(res){
@@ -828,17 +827,17 @@
                     }else if(item.type==2){
                         w.type="小程序";
                         w.app.pagePath = item.uri;
-                        // w.app.content = item.content;
-                        w.app.title = item.content;
+                        w.app.content = item.content;
+                        w.app.title = item.title;
                         w.app.desFile = item.uri;
                         let p=[];
                         item.files.map(function(item1){
                             if(item1.fileType!="text"){
                                 p.push( {filePath:item1.filePath,fileType:item1.fileType});
                             }else{
-                                w.app.desFile = item1.filePath;
+                                  w.app.desFile = item1.filePath;
 //                                let fileList0=[]
-//                                fileList0[index]=[{"name":item1.filePath,"url":item1.filePath}];
+                                  self.fileList0[index]=[{"name":item.content,"url":item1.filePath}];
 //                                self.ruleForm["fileList0"]=fileList0;
 //                                self.ruleForm["fileList0"].index=
                             }
@@ -854,6 +853,7 @@
                         wl.push(w);
                     }
                 });
+                console.log(self.fileList0,"kkkkkkk");
                 return wl;
             },
 //            添加物料
@@ -870,6 +870,7 @@
                         pagePath:"",
 //                      标题
                         title:"",
+                        content:"",
 //                      描述文件
                         desFile:"",
 //                      缩略图
@@ -1039,4 +1040,5 @@
      .landPageW{
         width:70%;
     }
+    
 </style>
