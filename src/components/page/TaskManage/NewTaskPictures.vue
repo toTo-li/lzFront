@@ -249,7 +249,7 @@
                                 </el-col>
                                 <el-col :span="1" >
                                     <el-tooltip placement="top">
-                                        <div slot="content">文字备注：
+                                        <div slot="content">
                                            <br> 假如文字中包含目标链接时，需要用宏参数来代替。
                                             <br> 填写文字时，第一个目标链接用“${URL1}”来代替、
                                             <br> 第二个目标链接用“${URL2}”来表示，以此类推。
@@ -289,7 +289,7 @@
                                     </el-col>
                                 <el-col :span="1" >
                                     <el-tooltip placement="top">
-                                        <div slot="content">落地页备注：
+                                        <div slot="content">
                                             <br/> 填写落地页时，需要把落地页按照对应顺序填写在落地页1、落地页2…中。
                                             <br/>如果填写了目标链接宏参数，落地页必填，且落地页的个数和宏参数的个数保持一致。</div>
                                         <el-button type="primary" size="mini">？</el-button>

@@ -21,7 +21,7 @@
             </el-table-column>
             <el-table-column prop="name" label="可用库存" width="120">
                 <template slot-scope="scope">
-                    <el-button size="small"  @click="handleEdit(scope.index, scope.row)" >查看</el-button>
+                    <el-button size="small" type="primary"  @click="handleEdit(scope.index, scope.row)" >查看</el-button>
                 </template>
             </el-table-column>
         </el-table>

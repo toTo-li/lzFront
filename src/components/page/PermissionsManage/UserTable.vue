@@ -31,18 +31,18 @@
             </el-table-column>
             <el-table-column label="操作" prop="opertion" width="320">
                 <template slot-scope="scope">
-                    <el-button size="small"
+                    <el-button size="small" type="primary"
                                @click="handleEdit(scope, scope.row)" >查看</el-button>
-                    <el-button size="small" type="danger"
+                    <el-button size="small" type="primary"
                                @click="handleUpdate(scope.$index, scope.row)" >修改</el-button>
-                    <el-button size="small" type="danger"
+                    <el-button size="small" type="primary"
                                @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
                     <template v-if="scope.row.status==0">
-                       <el-button size="small" type="danger"
+                       <el-button size="small" type="primary"
                                @click="handleStop(scope.$index, scope.row)" >暂停</el-button>
                     </template>
                     <template v-else>
-                       <el-button size="small" type="danger"
+                       <el-button size="small" type="primary"
                                @click="handleStop(scope.$index, scope.row)" >启用</el-button>
                     </template>
 

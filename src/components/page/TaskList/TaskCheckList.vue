@@ -31,11 +31,12 @@
             </el-table-column>
             <el-table-column  label="操作" width="400">
                 <template slot-scope="scope">
-                    <el-button size="small"
+                    <el-button size="small" type="primary"
                                @click="handleRead(scope.index, scope.row)" >查看</el-button>
-                    <el-button size="small" type="danger"
-                               @click="handleAuditAndPush(scope.$index, scope.row)" :disabled="scope.row.auditStatus!=1?false:true">审核通过并发布</el-button>
-                    <el-button size="small" type="danger"
+                               <!-- :disabled="scope.row.auditStatus!=1?false:true" -->
+                    <el-button size="small" type="primary"
+                               @click="handleAuditAndPush(scope.$index, scope.row)" >审核通过并发布</el-button>
+                    <el-button size="small" type="primary"
                                @click="handleNoAudit(scope.$index, scope.row)" :disabled="scope.row.auditStatus==2">审核拒绝</el-button>
                 </template>
             </el-table-column>
@@ -47,7 +48,7 @@
                         <span v-if="scope.row.pushStatus!=2">
                             <span v-if="scope.row.auditStatus==0">未审核</span>
                             <span v-else-if="scope.row.auditStatus==1">审核通过</span>
-                            <span v-else>审核拒绝</span>
+                            <span v-else-if="scope.row.auditStatus==2">审核拒绝</span>
                         </span>
                         <span v-else>--</span>
                 </template>

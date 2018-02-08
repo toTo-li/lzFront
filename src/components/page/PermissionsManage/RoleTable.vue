@@ -24,11 +24,11 @@
             </el-table-column>-->
             <el-table-column label="操作" prop="opertion" width="300">
                 <template slot-scope="scope" >
-                    <el-button size="small"
+                    <el-button size="small" type="primary"
                                @click="handleEdit(scope.$index, scope.row)" >查看</el-button>
-                    <el-button size="small" type="danger"
+                    <el-button size="small" type="primary"
                                @click="handleUpdate(scope.$index, scope.row)" v-if="scope.row.id!=1">修改</el-button>
-                    <el-button size="small" type="danger"
+                    <el-button size="small" type="primary"
                                @click="handleDelete(scope.$index, scope.row)" v-if="scope.row.id!=1">删除</el-button>
                 </template>
             </el-table-column>

@@ -52,7 +52,7 @@
                         <span v-if="scope.row.pushStatus!=2">
                             <span v-if="scope.row.auditStatus==0">未审核</span>
                             <span v-else-if="scope.row.auditStatus==1">审核通过</span>
-                            <span v-else>审核拒绝</span>
+                            <span v-else-if="scope.row.auditStatus==2">审核拒绝</span>
                         </span>
                         <span v-else>--</span>
                     </template>
@@ -65,21 +65,21 @@
 
                 <el-table-column label="操作" prop="opertion" width="450">
                     <template slot-scope="scope">
-                        <el-button size="small"
+                        <el-button size="small" type="primary"
                                    @click="handleRead(scope.$index, scope.row)" >查看</el-button>
-                        <el-button size="small" type="danger"
+                        <el-button size="small" type="primary"
                                    @click="handleUpdate(scope.$index, scope.row)" >修改</el-button>
-                        <el-button size="small" type="danger"
+                        <el-button size="small" type="primary"
                                    @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
-                        <el-button size="small" type="danger"
+                        <el-button size="small" type="primary"
                                    @click="handleSubmit(scope.$index, scope.row)" :disabled="scope.row.commitStatus==1">{{scope.row.commitStatus==2?"任务提交中":"提交审核"}}</el-button>
-                        <el-button size="small" type="danger"
+                        <el-button size="small" type="primary"
                                    @click="handleUnPush(scope.$index, scope.row)"  >取消发布</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column label="群明细" width="100">
                     <template slot-scope="scope">
-                        <el-button size="small"
+                        <el-button size="small" type="primary"
                                    @click="handleUsed(scope, scope.row)" >查看</el-button>
                     </template>
                 </el-table-column>
@@ -120,7 +120,7 @@
                         <el-form-item label="审核状态:" prop="auditStatus">
                                 <span v-if="taskRead.auditStatus==0">未审核</span>
                                 <span v-else-if="taskRead.auditStatus==1">审核通过</span>
-                                <span v-else>审核拒绝</span>
+                                <span v-else-if="taskRead.auditStatus==2">审核拒绝</span>
                         </el-form-item>
                         <el-form-item label="发布状态:" prop="pushStatus">
                             <span>{{taskRead.pushStatus==0?"未发布":"已发布"}}</span>
