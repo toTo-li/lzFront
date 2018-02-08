@@ -203,23 +203,20 @@
                                  <el-col :span="1" >
                                      <el-tooltip placement="top">
                                          <div slot="content">
-                                             <br> 假如文字中包含目标链接时，需要用宏参数来代替。
-                                             <br> 填写文字时，第一个目标链接用“${URL1}”来代替、
-                                             <br> 第二个目标链接用“${URL2}”来表示，以此类推。
-                                             <br> 举例：当发布在社群里的内容如下时：
-                                             <br> 现在给你推荐以精选下福利，快去领取吧：
-                                             <br> 免费领薇姿小样：https://w.url.cn/s/AgElSof
-                                             <br> 0元购御泥坊红石榴面膜：https://w.url.cn/s/As6eFnI
-                                             <br> 9.9元购进口樱桃果肉酸奶4瓶：https://w.url.cn/s/A7cKbo5
-                                             <br> 此处填写的内容应该是：
-                                             <br> 现在给你推荐以精选下福利，快去领取吧：
-                                             <br> 免费领薇姿小样：${URL1}
-                                             <br> 0元购御泥坊红石榴面膜：${URL2}
-                                             <br> 9.9元购进口樱桃果肉酸奶4瓶：${URL3}
-                                             <br> 需要运营同事注意：
-                                             <br> 假如文字中填写了目标链接宏参数，宏参数名称必须不同；
-                                             <br> 且如果填写了目标链接宏参数，落地页必填，
-                                             <br> 且落地页的个数和宏参数的个数保持一致。</div>
+                                            当投放类型为“文字”，且文字中包含链接时，
+                                            <br>链接需要用“${URLn} ”表示，
+                                            <br>第一个链接用“${URL1} ”表示，
+                                            <br>第二个链接用“${URL2} ”表示……；
+                                            <br>
+                                            <br>举例，当发布的广告素材如下时：
+                                            <br>现在给你推荐以精选下福利，快去领取吧： 
+                                            <br>免费领薇姿小样：https://w.url.cn/s/AgElSof 
+                                            <br>0元购御泥坊红石榴面膜：https://w.url.cn/s/As6eFnI 
+                                            <br>
+                                            <br>“文字”需填写：
+                                            <br>现在给你推荐以精选下福利，快去领取吧： 
+                                            <br>免费领薇姿小样：${URL1} 
+                                            <br>0元购御泥坊红石榴面膜：${URL2}</div>
                                          <el-button type="primary" size="mini">？</el-button>
                                      </el-tooltip>
                                  </el-col>
@@ -238,8 +235,10 @@
                                  <el-col :span="1" >
                                      <el-tooltip placement="top">
                                          <div slot="content">
-                                             <br/> 填写落地页时，需要把落地页按照对应顺序填写在落地页1、落地页2…中。
-                                             <br/>如果填写了目标链接宏参数，落地页必填，且落地页的个数和宏参数的个数保持一致。</div>
+                                            当投放类型为“文字”，且文字中包含链接时，
+                                            <br>需要填写落地页，可以通过“+”来填写多条落地页。
+                                            <br>填写的落地页和“文字”中的“${URLn} ”一一对应
+                                        </div>
                                          <el-button type="primary" size="mini">？</el-button>
                                      </el-tooltip>
                                  </el-col>
