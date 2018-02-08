@@ -37,7 +37,7 @@
 				  <!--
 				  	关联账号这个控件需要根据后台返回的数据进行显示，目前先不显示出来
 				  -->
-				  <el-form-item label="关联账号:" prop="rAccount" v-if="rAccountFlag&&this.$store.state.userDialogNum!=2">
+				  <el-form-item label="关联账号:" v-if="rAccountFlag&&this.$store.state.userDialogNum!=2">
 				    <el-select v-model="ruleForms.rAccount" placeholder="请选择关联账号（可多选）" multiple>
 				      <el-option
 				      	v-for="item in ruleForms.accounts"
@@ -47,7 +47,7 @@
 				      	></el-option>
 				    </el-select>
 				  </el-form-item>
-					<el-form-item label="关联账号:" prop="rAccount" v-if="this.$store.state.userDialogNum==2&&ruleForms.linked.length>0">
+					<el-form-item label="关联账号:"  v-if="this.$store.state.userDialogNum==2&&ruleForms.linked.length>0">
 							<div v-for="(item,index) in ruleForms.linked" :key="index">
 								{{item.name}}
 							</div>

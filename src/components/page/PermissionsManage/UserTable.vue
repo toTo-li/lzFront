@@ -100,7 +100,7 @@
 				  <!--
 				  	关联账号这个控件需要根据后台返回的数据进行显示，目前先不显示出来
 				  -->
-				  <el-form-item label="关联账号:" prop="rAccount" v-if="rAccountFlag">
+				  <el-form-item label="关联账号:" v-if="rAccountFlag">
 				    <el-select v-model="ruleForms.rAccount" placeholder="请选择关联账号（可多选）" multiple>
 				      <el-option
 				      	v-for="item in ruleForms.accounts"
