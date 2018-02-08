@@ -157,11 +157,11 @@
                     }
                 })
             },
-            // tableRowClassNames(row){
-            //     if(row.mark==1){
-            //         return "background:#F3F3F3";
-            //     }
-            // },
+            tableRowClassNames(row){
+                // if(row.mark==1){
+                //     return "background:#F3F3F3";
+                // }
+            },
 //          弹出框确定事件
             submitForm(){
                 this.dialogVisible = false;
