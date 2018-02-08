@@ -616,7 +616,7 @@
                             type:2,
                             title:item.app.title,
                             // 描述文件的名字（标题）
-                            content:item.app.content,
+                            content:item.app.title,
                             // 页面路径
                             uri:`${item.app.pagePath}`,
                             files:p
