@@ -49,7 +49,7 @@
                 :data="tableData3"
                 height="250"
                 style="width: 100%"
-                :row-class-name="tableRowClassName"
+                :row-style="tableRowClassNames"
                 >
                 <el-table-column
                     prop="date"
@@ -157,19 +157,11 @@
                     }
                 })
             },
-            tableRowClassName(row,rowIndex){
-                console.log(row);
-                console.log(rowIndex);
-                return "usedTime";
-
-                // if(row.mark === 1){
-                //     console.log(111111111);
-                //     return "usedTime";
-                // }else{
-                //     console.log(222222222);
-                //     return "red";
-                // }
-            },
+            // tableRowClassNames(row){
+            //     if(row.mark==1){
+            //         return "background:#F3F3F3";
+            //     }
+            // },
 //          弹出框确定事件
             submitForm(){
                 this.dialogVisible = false;

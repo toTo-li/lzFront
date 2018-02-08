@@ -222,7 +222,6 @@
             // 审核通过并发布
             handleAuditAndPush(index,row){
                 let self = this;
-
                 this.$confirm('确定审核通过并发布?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -230,10 +229,10 @@
                     center: true
                 }).then(() => {
                     self.$axios.put(`/tasks/audit/${row.id}`).then(function(res){
-                        console.log(res);
+                        console.log(res,"shenhetongguo ");
                         if(res.status == 200){
                             self.$message({
-                                message: "审核通过并发布",
+                                message: res.data.msg,
                                 type: 'success'
                             });
                             self.getData();
