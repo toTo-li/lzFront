@@ -35,7 +35,7 @@
                                @click="handleRead(scope.index, scope.row)" >查看</el-button>
                                <!-- :disabled="scope.row.auditStatus!=1?false:true" -->
                     <el-button size="small" type="primary"
-                               @click="handleAuditAndPush(scope.$index, scope.row)" >审核通过并发布</el-button>
+                               @click="handleAuditAndPush(scope.$index, scope.row)" :disabled="scope.row.auditStatus==1">审核通过并发布</el-button>
                     <el-button size="small" type="primary"
                                @click="handleNoAudit(scope.$index, scope.row)" :disabled="scope.row.auditStatus==2">审核拒绝</el-button>
                 </template>
