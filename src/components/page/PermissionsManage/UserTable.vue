@@ -24,12 +24,12 @@
             </el-table-column>
             <el-table-column prop="roleName" label="角色权限" width="300">
             </el-table-column>
-            <el-table-column prop="linked" label="关联账号"  >
+            <el-table-column prop="linked" label="关联账号" >
                 <template slot-scope="scope">
                     <span>{{scope.row.linked |  rAccountf}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" prop="opertion" width="320">
+            <el-table-column label="操作" prop="opertion" width="420">
                 <template slot-scope="scope">
                     <el-button size="small" type="primary"
                                @click="handleEdit(scope, scope.row)" >查看</el-button>
@@ -45,7 +45,8 @@
                        <el-button size="small" type="primary"
                                @click="handleStop(scope.$index, scope.row)" >启用</el-button>
                     </template>
-
+                    <el-button size="small" type="primary"
+                               @click="handleUpdatePassWord(scope.$index, scope.row)" v-if="scope.row.roleId==1">修改密码</el-button>
                 </template>
             </el-table-column>
             <el-table-column prop="status" label="状态" width="120">
@@ -123,6 +124,28 @@
 			    <el-button type="primary" @click="submitForm('ruleForms')">保 存</el-button>
 			  </span>
 			</el-dialog>
+            <!-- 修改密码 -->
+        <el-dialog
+			  :visible.sync="updatePassworddialogVisible"
+			  width="20%"
+			  :before-close="closePass">
+			  <el-form :model="ruleFormUpdate" :rules="rules"  ref="ruleFormUpdate" label-width="100px">
+				  <el-form-item label="用户名:" prop="name">
+				    <el-input v-model="ruleFormUpdate.name"  @blur="checkName" :readonly="true"></el-input>
+				  </el-form-item>
+				  <el-form-item label="新密码:" prop="newPass1">
+				    <el-input type="password" v-model="ruleFormUpdate.newPass1" ></el-input>
+				  </el-form-item>
+                  <el-form-item label="确认密码:" prop="newPass2">
+				    <el-input type="password" v-model="ruleFormUpdate.newPass2" ></el-input>
+				  </el-form-item>
+				</el-form>
+			  <!--弹出框的取消/保存部分-->
+			  <span slot="footer" class="dialog-footer">
+			    <el-button @click="closePass()">取 消</el-button>
+			    <el-button type="primary" @click="submitFormPass('ruleFormUpdate')">保 存</el-button>
+			  </span>
+			</el-dialog>
     </div>
 </template>
 
@@ -193,6 +216,32 @@
                     callback();
                 }
             }
+            // 修改密码校验
+            var checkPassword = function(rule,value,callback){
+                if(!value){
+                    callback(new Error('请输入密码'));
+                }else{
+                    if(value.length<6||value.length>16){
+                        callback(new Error('请输入6-16位'));
+                    }else{
+                        if(/^[a-zA-Z0-9_]+$/.test(value)==false){
+                            callback(new Error('只能填写字母、数字、下划线'))
+                        }else{
+                            callback();
+                        }
+                    }
+                }
+            }
+            var self = this;
+            var checkNewpass = function(rule,value,callback){
+                if(!value){
+                    callback(new Error("请输入密码"));
+                }else if(value !== self.ruleFormUpdate.newPass1){
+                    callback(new Error("两次输入密码不一致"));
+                }else{
+                    callback();
+                }
+            }
             return {
 //              存放数据
                 tableData: [],
@@ -206,6 +255,8 @@
                 page_sizes:[5,10,15,20,50],
 
                 userUpdatedialogVisible:false,
+                // 修改密码
+                updatePassworddialogVisible:false,
                 ruleForms:{
                     name: '',
 		            role: [],
@@ -225,12 +276,16 @@
                 // 保存当前修改的用户名和id
                 updateId:"",
                 updateName:"",
-
+                ruleFormUpdate:{
+                    name:"",
+                    newPass1:"",
+                    newPass2:""
+                },
                 rules: {
 		          name: [
 		            {required: true, trigger: 'blur' ,validator:validName}
 							],
-							password: [
+				  password: [
 		            { required: true,  trigger: 'blur' ,validator:validPass}
 		          ],
 		          roleName: [
@@ -244,7 +299,13 @@
 		          ],
 		          email: [
 		            { required: false, trigger: 'blur',validator:validEmail }
-		          ]
+                  ],
+                  newPass1:[
+                      { required: true,  trigger: 'blur' ,validator:checkPassword}
+                  ],
+                  newPass2:[
+                      { required: true,  trigger: 'blur' ,validator:checkNewpass}
+                  ]
 				},
             }
         },
@@ -570,6 +631,44 @@
                     });
 
                 }
+            },
+            // 修改密码
+            handleUpdatePassWord(index, row){
+                this.updatePassworddialogVisible = true;
+                this.ruleFormUpdate.name = row.name;
+                this.ruleFormUpdate.newPass1 = "";
+                this.ruleFormUpdate.newPass2 = "";
+            },
+            closePass(){
+                this.updatePassworddialogVisible = false;
+                this.$refs["ruleFormUpdate"].resetFields();
+            },
+            submitFormPass(formName){
+                const self = this;
+                self.$refs[formName].validate((valid) => {
+                    if (valid) {
+						self.$axios.put("/admin/changePassword",{
+								name:self.ruleFormUpdate.name,
+                                newPass:self.ruleFormUpdate.newPass1,
+							}).then(function(res){
+                                    console.log(res);
+                                    self.$message({
+                                        message: "修改密码成功！",
+                                        type: 'success'
+                                    });
+						    },function(err){
+                                    console.log(err,'密码修改失败');
+                                    self.$message({
+                                            message: "修改密码失败！请重新输入！",
+                                            type: 'error'
+                                    });
+                            });
+
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
             },
             handleClose(){
                 this.userUpdatedialogVisible = false;

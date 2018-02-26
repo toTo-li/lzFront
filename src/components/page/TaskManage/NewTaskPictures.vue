@@ -577,7 +577,10 @@
              pickerOpt: function () {
                 return {
                     disabledDate(time) {
-                        return time.getTime() < new Date() - 8.64e7;
+                        var currData = (new Date()).getTime();
+                        var two = 13 * 24 * 3600 * 1000;
+                        var twoWeeks = currData + two;
+                        return time.getTime() < new Date() - 8.64e7 || time.getTime()>twoWeeks;
                     }
                  }
             }
