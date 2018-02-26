@@ -236,13 +236,13 @@
                                             <br>第二个链接用“${URL2} ”表示……；
                                             <br>
                                             <br>举例，当发布的广告素材如下时：
-                                            <br>现在给你推荐以精选下福利，快去领取吧： 
-                                            <br>免费领薇姿小样：https://w.url.cn/s/AgElSof 
-                                            <br>0元购御泥坊红石榴面膜：https://w.url.cn/s/As6eFnI 
+                                            <br>现在给你推荐以精选下福利，快去领取吧：
+                                            <br>免费领薇姿小样：https://w.url.cn/s/AgElSof
+                                            <br>0元购御泥坊红石榴面膜：https://w.url.cn/s/As6eFnI
                                             <br>
                                             <br>“文字”需填写：
-                                            <br>现在给你推荐以精选下福利，快去领取吧： 
-                                            <br>免费领薇姿小样：${URL1} 
+                                            <br>现在给你推荐以精选下福利，快去领取吧：
+                                            <br>免费领薇姿小样：${URL1}
                                             <br>0元购御泥坊红石榴面膜：${URL2}</div>
                                          <el-button type="primary" size="mini">？</el-button>
                                      </el-tooltip>
@@ -558,7 +558,7 @@
                             type:2,
                             title:item.app.title,
                             // 描述文件的名字（标题）
-                            content:item.app.content,
+                            content:item.app.title,
                             // 页面路径
                             uri:`${item.app.pagePath}`,
                             files:p
@@ -1042,5 +1042,5 @@
      .landPageW{
         width:70%;
     }
-    
+
 </style>
