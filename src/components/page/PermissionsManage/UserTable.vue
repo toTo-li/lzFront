@@ -647,7 +647,7 @@
                 const self = this;
                 self.$refs[formName].validate((valid) => {
                     if (valid) {
-						self.$axios.put("/admin/changePassword",{
+						self.$axios.put("/users/admin/changePassword",{
 								name:self.ruleFormUpdate.name,
                                 newPass:self.ruleFormUpdate.newPass1,
 							}).then(function(res){
@@ -656,6 +656,7 @@
                                         message: "修改密码成功！",
                                         type: 'success'
                                     });
+                                    self.updatePassworddialogVisible = false;
 						    },function(err){
                                     console.log(err,'密码修改失败');
                                     self.$message({
