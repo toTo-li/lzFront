@@ -165,9 +165,9 @@
                         label="发布状态"
                     >
                         <template slot-scope="scope">
-                                <span v-if="scope.row.pushStatus==1">已发布</span>
-                                <span v-else-if="scope.row.pushStatus==0">未发布</span>
-                                <!-- <span v-else>已取消</span> -->
+                                <span v-if="scope.row.result==1">投放成功</span>
+                                <span v-else-if="scope.row.result==0">尚未投放</span>
+                                <span v-else-if="scope.row.result==2">投放失败</span>
                         </template>
 
                     </el-table-column>

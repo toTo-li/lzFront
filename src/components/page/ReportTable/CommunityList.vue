@@ -13,11 +13,15 @@
                 </el-select>
                 <el-input v-model="select_word" placeholder="任务ID或名称、社群ID或名称搜索" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
-                <!--  <el-button type="primary" icon="download" @click="download">下载</el-button>  -->
+                <el-button type="primary" icon="el-icon-download" @click="download">下载</el-button> 
             </div>
 
         </div>
-        <el-table :data="data" border style="width: 100%" ref="multipleTable" >
+        <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+            <el-table-column
+                type="selection"
+                width="55">
+            </el-table-column>
             <el-table-column prop="taskId" label="任务ID" width="120" ></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="taskName" label="任务名称"  >
             </el-table-column>
@@ -25,11 +29,11 @@
             </el-table-column>
             <el-table-column prop="groupName" label="社群名称" >
             </el-table-column>
-            <el-table-column prop="groupCount" label="群人数"  width="120">
+            <el-table-column prop="groupCount" label="群人数"  width="120" sortable>
             </el-table-column>
-            <el-table-column prop="pm" label="曝光数" width="120">
+            <el-table-column prop="pm" label="曝光数" width="120" sortable>
             </el-table-column>
-            <el-table-column prop="cm" label="点击数" width="120">
+            <el-table-column prop="cm" label="点击数" width="120" sortable>
             </el-table-column>
         </el-table>
         <div class="pagination">
@@ -79,8 +83,8 @@ end.setHours(23,59,59);
                 page_sizes:[10,15,20,25,30],
                 // 总条数
                 total:1,
-                date_range: [formatDate(start, "yyyy-MM-dd"),formatDate(end, "yyyy-MM-dd")]
-
+                date_range: [formatDate(start, "yyyy-MM-dd"),formatDate(end, "yyyy-MM-dd")],
+                multipleSelection:[]
 
             }
         },
@@ -129,8 +133,13 @@ end.setHours(23,59,59);
                 this.is_search = true;
                 this.getData();
             },
+            // 下载
             download(){
                 console.log("下载按钮");
+            },
+            // 多选
+            handleSelectionChange(val){
+                this.multipleSelection = val;
             }
         }
     }
