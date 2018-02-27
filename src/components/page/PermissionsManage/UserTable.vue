@@ -46,7 +46,7 @@
                                @click="handleStop(scope.$index, scope.row)" >启用</el-button>
                     </template>
                     <el-button size="small" type="primary"
-                               @click="handleUpdatePassWord(scope.$index, scope.row)" v-if="scope.row.roleId==1">修改密码</el-button>
+                               @click="handleUpdatePassWord(scope.$index, scope.row)" v-if="passFlag">修改密码</el-button>
                 </template>
             </el-table-column>
             <el-table-column prop="status" label="状态" width="120">
@@ -281,6 +281,7 @@
                     newPass1:"",
                     newPass2:""
                 },
+                passFlag:"",
                 rules: {
 		          name: [
 		            {required: true, trigger: 'blur' ,validator:validName}
@@ -316,6 +317,7 @@
         },
         created(){
             let self = this;
+            self.passFlag = JSON.parse(localStorage.getItem("user")).roleId==1;
             // 获取所有的关联账号
             self.$axios.get(`/users/linked`).then(function(res){
                         // console.log(res);
@@ -651,14 +653,14 @@
 								name:self.ruleFormUpdate.name,
                                 newPass:self.ruleFormUpdate.newPass1,
 							}).then(function(res){
-                                    console.log(res);
+                                    // console.log(res);
                                     self.$message({
                                         message: "修改密码成功！",
                                         type: 'success'
                                     });
                                     self.updatePassworddialogVisible = false;
 						    },function(err){
-                                    console.log(err,'密码修改失败');
+                                    // console.log(err,'密码修改失败');
                                     self.$message({
                                             message: "修改密码失败！请重新输入！",
                                             type: 'error'

@@ -71,6 +71,8 @@
                                         localStorage.setItem('user_id',res.data.user.id);
                                         localStorage.setItem("ms_username",res.data.user.name);
                                         localStorage.setItem("menus",res.data.menus);
+                                        localStorage.setItem("user",JSON.stringify(res.data.user));
+                                        
                                         // 将拿到的token存放到状态管理对象里面
                                         self.$store.commit(types.LOGIN,res.data);
                                         // 然后跳转页面，需要做用户验证
