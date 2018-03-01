@@ -14,16 +14,20 @@
                 </el-select>
                 <el-input v-model="select_word" placeholder="任务ID或名称搜索" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
-                <!-- <el-button type="primary" icon="download" @click="download">下载</el-button>-->
+                <el-button type="primary"  @click="download">下载</el-button> 
             </div>
         </div>
-        <el-table :data="data" border style="width: 100%" ref="multipleTable" >
+        <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="sortFun">
+             <el-table-column
+                type="selection"
+                width="55">
+            </el-table-column>
             <el-table-column prop="taskId" label="任务ID" width="120" ></el-table-column>  <!-- type="selection" -->
             <el-table-column prop="taskName" label="任务名称"  >
             </el-table-column>
-            <el-table-column prop="pm" label="曝光数" width="120">
+            <el-table-column prop="pm" label="曝光数" width="120" sortable="custom">
             </el-table-column>
-            <el-table-column prop="cm" label="点击数" width="120">
+            <el-table-column prop="cm" label="点击数" width="120" sortable="custom">
             </el-table-column>
         </el-table>
         <div class="pagination">
@@ -70,8 +74,10 @@ end.setHours(23,59,59);
                 page_sizes:[10,15,20,25,30],
                 // 总数
                 total:0,
-                date_range: [formatDate(start, "yyyy-MM-dd"),formatDate(end, "yyyy-MM-dd")]
-
+                date_range: [formatDate(start, "yyyy-MM-dd"),formatDate(end, "yyyy-MM-dd")],
+                multipleSelection:[],
+                sortFlag:0,
+                orderField:"pm"
             }
         },
          components: { datepicker },
@@ -109,7 +115,7 @@ end.setHours(23,59,59);
             },
             getData(){
                 let self = this;
-                self.$axios.get(`/reports/task?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}&startTime=${this.date_range[0].split("-").join("")}&endTime=${this.date_range[1].split("-").join("")}`).then((res) => {
+                self.$axios.get(`/reports/task?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}&startTime=${this.date_range[0].split("-").join("")}&endTime=${this.date_range[1].split("-").join("")}&field=${this.orderField}&sort=${this.sortFlag}`).then((res) => {
                     console.log(res);
                     self.tableData = res.data.data;
                     self.total = res.data.pagination.total==0?1:res.data.pagination.total;;
@@ -121,6 +127,21 @@ end.setHours(23,59,59);
             },
             download(){
                 console.log("下载按钮");
+            },
+            // 多选
+            handleSelectionChange(val){
+                this.multipleSelection = val;
+            },
+            sortFun({column, prop, order}){
+                console.log(prop);
+                console.log(order);
+
+                let self = this;
+                self.sortFlag = order=="descending"?1:0;
+                self.orderField = prop;
+                self.getData();
+
+
             }
         }
     }

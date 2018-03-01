@@ -84,8 +84,9 @@ end.setHours(23,59,59);
                 // 总条数
                 total:1,
                 date_range: [formatDate(start, "yyyy-MM-dd"),formatDate(end, "yyyy-MM-dd")],
-                multipleSelection:[]
-
+                multipleSelection:[],
+                sortFlag:0,
+                orderField:"groupCount"
             }
         },
         created(){
@@ -123,7 +124,7 @@ end.setHours(23,59,59);
             },
             getData(){
                 let self = this;
-                self.$axios.get(`/reports/group?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}&startTime=${this.date_range[0].split("-").join("")}&endTime=${this.date_range[1].split("-").join("")}`).then((res) => {
+                self.$axios.get(`/reports/group?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}&startTime=${this.date_range[0].split("-").join("")}&endTime=${this.date_range[1].split("-").join("")}&field=${this.orderField}&sort=${this.sortFlag}`).then((res) => {
                     console.log(res);
                     self.tableData = res.data.data;
                     self.total = res.data.pagination.total==0?1:res.data.pagination.total;
@@ -142,9 +143,13 @@ end.setHours(23,59,59);
                 this.multipleSelection = val;
             },
             sortFun({column, prop, order}){
-                console.log(column);
                 console.log(prop);
                 console.log(order);
+
+                let self = this;
+                self.sortFlag = order=="descending"?1:0;
+                self.orderField = prop;
+                self.getData();
             }
         }
     }
