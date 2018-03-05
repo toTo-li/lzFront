@@ -13,7 +13,7 @@
                 </el-select>
                 <el-input v-model="select_word" placeholder="任务ID或名称、社群ID或名称搜索" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
-                <!-- <el-button type="primary"  @click="download">下载</el-button>  -->
+                <el-button type="primary"  @click="download">下载</el-button> 
             </div>
 
         </div>
@@ -140,11 +140,11 @@ end.setHours(23,59,59);
                 let self = this;
                 let userCurrent = JSON.parse(localStorage.getItem("user"));
                 let sels = self.multipleSelection.map(function(item){
-                    return item.taskId;
+                    return item.taskId+"|"+item.groupId;
                 });
                 sels = sels.join(",");
                 if(sels){
-                    window.location.href=`http://192.168.2.58:8082/api/V1/lzCloud/export?uid=${userCurrent.id}&rid=${userCurrent.roleId}&sels=${sels}&startTime=${this.date_range[0].split("-").join("")}&endTime=${this.date_range[1].split("-").join("")}`;
+                    window.location.href=`http://192.168.2.58:8082/api/V1/lzCloud/group/export?uid=${userCurrent.id}&rid=${userCurrent.roleId}&sels=${sels}&startTime=${this.date_range[0].split("-").join("")}&endTime=${this.date_range[1].split("-").join("")}`;
                 }else{
                     self.$message({
                         type: 'info',
@@ -154,6 +154,7 @@ end.setHours(23,59,59);
             },
             // 多选
             handleSelectionChange(val){
+                console.log(val);
                 this.multipleSelection = val;
             },
             sortFun({column, prop, order}){
