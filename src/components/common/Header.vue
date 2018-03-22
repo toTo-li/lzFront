@@ -8,6 +8,7 @@
                     {{username}}
                 </span>
                 <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="changepass">修改密码</el-dropdown-item>
                     <el-dropdown-item command="loginout">退出</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
@@ -15,23 +16,27 @@
     </div>
 </template>
 <script>
+    import * as types from '../../store/types'
     export default {
         data() {
             return {
-                name: 'ljy'
+                name: ""
             }
         },
         computed:{
             username(){
-                let username = localStorage.getItem('ms_username');
-                return username ? username : this.name;
+                 let username = localStorage.getItem('ms_username');
+                 return username ? username : this.name;
             }
         },
         methods:{
             handleCommand(command) {
+
                 if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
+                    this.$store.commit(types.LOGOUT);
                     this.$router.push('/login');
+                }else if(command == 'changepass'){
+                    this.$router.push('/changepass');
                 }
             }
         }

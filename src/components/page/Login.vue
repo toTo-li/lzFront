@@ -2,9 +2,9 @@
     <div class="login-wrap">
         <div class="ms-title">Gemii任务系统</div>
         <div class="ms-login">
-            <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
+            <el-form :model="ruleForm"  ref="ruleForm" label-width="0px" class="demo-ruleForm">
                 <el-form-item prop="username">
-                    <el-input v-model="ruleForm.username" placeholder="请输入用户名" error="true"></el-input>
+                    <el-input v-model="ruleForm.username" placeholder="请输入用户名" ></el-input>
                 </el-form-item>
                 <el-form-item prop="password">
                     <el-input type="password" placeholder="请输入密码" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
@@ -12,71 +12,106 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
                 </div>
-                <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名和密码随便填。</p>
+                <p style="font-size:14px;line-height:30px;color:red;" v-if="errorFlag">{{errorMsg}}</p>
             </el-form>
         </div>
     </div>
 </template>
 
 <script>
+    import * as types from "../../store/types";
     export default {
         data: function(){
         	 var checkName = (rule, value, callback)=>{
         		if(value === ''){
-        			callback(new Error("用户名错误!"));
+        			callback(new Error("用户名不能为空!"));
         		}else{
         			callback();
         		}
-        	}
+            };
+            var checkPass = (rule, value, callback)=>{
+                if(value === ''){
+        			callback(new Error("密码不能为空!"));
+        		}else{
+        			callback();
+        		}
+            }
             return {
                 ruleForm: {
                     username: '',
                     password: ''
                 },
-                formData:{
-                	name:"ljy",
-                	psd:"111"
-                },
+                errorMsg:"",
+                errorFlag:false,
                 rules: {
                     username: [
                         { validator:checkName,trigger: 'blur'}
                     ],
                     password: [
-                        { required: true, message: '请输入密码', trigger: 'blur' }
+                        { validator:checkPass, trigger: 'blur' }
                     ]
                 }
             }
-            
-           
+
+
         },
         methods: {
             submitForm(formName) {
-                const self = this;
-                self.$refs[formName].validate((valid) => {
-                    if (valid) {
-//                      localStorage.setItem('ms_username',self.ruleForm.username);
+                        const self = this;
+                // self.$refs[formName].validate((valid) => {
+                //     if (valid) {
+						this.$axios.post("/users/login",{
+								username:self.ruleForm.username,
+                                password:self.ruleForm.password
+							}).then(function(res){
 
+                                if(res.data.token){
+                                    if(res.data.user.status==0){
+                                        self.errorFlag = false;
+                                        localStorage.setItem('user_id',res.data.user.id);
+                                        localStorage.setItem("ms_username",res.data.user.name);
+                                        localStorage.setItem("menus",res.data.menus);
+                                        localStorage.setItem("user",JSON.stringify(res.data.user));
+                                        
+                                        // 将拿到的token存放到状态管理对象里面
+                                        self.$store.commit(types.LOGIN,res.data);
+                                        // 然后跳转页面，需要做用户验证
+                                        self.$router.push('/home');
+                                    }else{
+                                        self.$message({
+                                            message: '该用户是暂停状态，登录失败！',
+                                            type: 'error'
+                                        });
+                                    }
+                                }else{
 
-//						this.$axios.get("http://localhost:8088",{
-//							params:{
-//								name:self.ruleForm.username
-//							}
-//						}).then(function(res){
-//							console.log(res);
-//						});
-                        if(self.ruleForm.username==self.formData.name){
-                        	self.$router.push('/home');
-                        }else{
-                        	this.$message({
-					          message: '用户名错误!!!',
-					          type: 'warning'
-					        });
-                        }
-                    } else {
-                        console.log('error submit!!');
-                        return false;
-                    }
-                });
+                                }
+						    },function(err){
+                                self.errorFlag = true;
+                                switch(err.code){
+                                    case 1:
+                                        self.errorMsg = err.msg;
+                                        break;
+                                    case 2:
+                                        self.errorMsg = err.msg;
+                                        break;
+                                    case 3:
+                                        self.errorMsg = err.msg;
+                                        break;
+                                    case 4:
+                                        self.errorMsg = err.msg;
+                                        break;
+                                }
+                            }).catch(function(error){
+                                console.log(error);
+
+                            });
+
+                //     } else {
+                //         console.log('error submit!!');
+                //         return false;
+                //     }
+                // });
             }
         }
     }

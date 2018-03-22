@@ -11,7 +11,7 @@ a{text-decoration: none}
 .content{
     background: none repeat scroll 0 0 #fff;
     position: absolute;
-    left: 250px;
+    left: 200px;
     right: 0;
     top: 70px;
     bottom:0;
@@ -77,11 +77,8 @@ a{text-decoration: none}
 }
 .el-upload--text {
     background-color: #fff;
-    border: 1px dashed #d9d9d9;
     border-radius: 6px;
     box-sizing: border-box;
-    width: 360px;
-    height: 180px;
     text-align: center;
     cursor: pointer;
     position: relative;
@@ -90,7 +87,7 @@ a{text-decoration: none}
 .el-upload--text .el-icon-upload {
     font-size: 67px;
     color: #97a8be;
-    margin: 40px 0 16px;
+    /* margin: 40px 0 16px; */
     line-height: 50px;
 }
 .el-upload--text {
@@ -110,4 +107,7 @@ a{text-decoration: none}
 }
 .editor-btn{
     margin-top: 20px;
+}
+.el-tabs__content{
+    overflow:visible !important;
 }

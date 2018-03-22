@@ -4,35 +4,54 @@
         <!--<el-button type="primary" @click="">同步社群信息</el-button>-->
         <div class="handle-box">
             <div>
-                <el-select v-model="select_per" placeholder="10" class="handle-select mr10">
+                <el-select v-model="select_per" placeholder="10" class="handle-select mr10" @change="selectChange">
                     <el-option v-for="(item,index) in page_sizes"  :key="index" :label="item" :value="item">{{item}}</el-option>
                 </el-select>
             </div>
 
             <div>
-                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <span>审核状态：</span>
+                    <el-select v-model="audit_state" class="handle-select mr10" @change="auditStaChange">
+                        <el-option v-for="(item,index) in audit_states"  :key="index" :label="item" :value="index-1">{{item}}</el-option>
+                    </el-select>
+                <el-input v-model="select_word" placeholder="任务ID或名称搜索" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </div>
 
         </div>
-        <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-            <el-table-column prop="name" label="任务ID" sortable width="100">
+        <el-table :data="data" border style="width: 100%" ref="multipleTable" >
+            <el-table-column prop="id" label="任务ID"  width="100">
             </el-table-column>
             <el-table-column prop="name" label="任务名称" width="240">
             </el-table-column>
-            <el-table-column prop="date" label="发送时间点" width="360">
-            </el-table-column>
-            <el-table-column prop="name" label="操作" >
+            <el-table-column prop="times" label="发送时间点">
                 <template slot-scope="scope">
-                    <el-button size="small"
-                               @click="handleEdit(scope.index, scope.row)" >查看</el-button>
-                    <el-button size="small" type="danger"
-                               @click="handleEdit(scope.$index, scope.row)">审核通过并发送</el-button>
-                    <el-button size="small" type="danger"
-                               @click="handleEdit(scope.$index, scope.row)">审核拒绝</el-button>
+                    <span>{{scope.row.times | timesTran}}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="name" label="状态" width="120">
+            <el-table-column  label="操作" width="400">
+                <template slot-scope="scope">
+                    <el-button size="small" type="primary"
+                               @click="handleRead(scope.index, scope.row)" >查看</el-button>
+                               <!-- :disabled="scope.row.auditStatus!=1?false:true" -->
+                    <el-button size="small" type="primary"
+                               @click="handleAuditAndPush(scope.$index, scope.row)" :disabled="scope.row.auditStatus==1">审核通过并发布</el-button>
+                    <el-button size="small" type="primary"
+                               @click="handleNoAudit(scope.$index, scope.row)" :disabled="scope.row.auditStatus==2">审核拒绝</el-button>
+                </template>
+            </el-table-column>
+            <el-table-column prop="auditStatus" label="状态" width="140">
+                <template slot-scope="scope">
+                        <!-- <span v-if="scope.row.auditStatus==0">未审核</span>
+                        <span v-else-if="scope.row.auditStatus==1">审核通过</span>
+                        <span v-else>审核拒绝</span> -->
+                        <span v-if="scope.row.pushStatus!=2">
+                            <span v-if="scope.row.auditStatus==0">未审核</span>
+                            <span v-else-if="scope.row.auditStatus==1">审核通过</span>
+                            <span v-else-if="scope.row.auditStatus==2">审核拒绝</span>
+                        </span>
+                        <span v-else>--</span>
+                </template>
             </el-table-column>
         </el-table>
         <!--分页器-->
@@ -40,8 +59,8 @@
             <el-pagination
                 @current-change ="handleCurrentChange"
                 @size-change="pageSizeChange"
-                layout="sizes,prev, pager, next"
-                :total="1000"
+                layout="prev, pager, next"
+                :total="total"
                 :page-size="select_per"
                 :page-sizes="page_sizes"
             >
@@ -52,7 +71,6 @@
             width="30%"
             :visible.sync="dialogVisible"
             :before-close="handleClose"
-
             >
             <el-form  label-width="100px">
                 <el-form-item label="任务名称:" >
@@ -115,19 +133,17 @@
                 tableData: [],
 //              当前显示第几页
                 cur_page: 1,
-//              多选
-                multipleSelection: [],
-//
-                select_cate: '',
 //              每页显示条数
                 select_per:10,
 //              查找关键字
                 select_word: '',
-                del_list: [],
 //              搜索关键字
                 is_search: false,
 //              设置每页显示的条数
-                page_sizes:[10,15,20,25,30]
+                page_sizes:[5,10,15,20,25,30],
+                total:1,
+                audit_states:["全部","未审核","审核通过","审核拒绝"],
+                audit_state:-1,
             }
         },
         created(){
@@ -138,56 +154,123 @@
 //          数据过滤筛选
             data(){
                 const self = this;
-                return self.tableData.filter(function(d){
-                    let is_del = false;
-                    for (let i = 0; i < self.del_list.length; i++) {
-                        if(d.name === self.del_list[i].name){
-                            is_del = true;
-                            break;
-                        }
+                return self.tableData;
+            }
+        },
+        filters:{
+            timesTran:function(val){
+
+                if(val != "undefined"){
+                    if(typeof val == "string"){
+                        val = JSON.parse(val)
                     }
-                    if(!is_del){
-                        if(self.select_word==""||d.name.indexOf(self.select_word) > -1){
-                            return d;
-                        }
+                    if(typeof val != "undefined"){
+                        return val.join(";  ");
                     }
-                })
+
+                }else{
+                    return false;
+                }
+
+            }
+        },
+        watch:{
+            select_word:function(){
+                this.getData();
             }
         },
         methods: {
 //            获取数据的方法
             getData(){
                 let self = this;
-                if(process.env.NODE_ENV === 'development'){
-//                    self.url = '/ms/table/list';
-                    self.url = '/static/vuetable.json';
-                };
-                self.$axios.get(self.url, {page:self.cur_page}).then((res) => {
-                    self.tableData = res.data.list;
+                self.$axios.get(`/tasks/beAudited?per_page=${this.select_per}&page=${this.cur_page}&search=${this.select_word}&audit=${this.audit_state}`).then((res) => {
+                    console.log(res);
+                    if(res.status == 200){
+                        self.tableData = res.data.data;
+                        self.total = res.data.pagination.total==0?1:res.data.pagination.total;
+                    }
                 })
+            },
+//          每页显示条数事件
+            selectChange(val){
+                this.pageSizeChange(val);
             },
 //          每页显示数改变触发
             pageSizeChange(val){
                 this.select_per = val;
+                this.getData();
             },
 //          分页器切换改变
             handleCurrentChange(val){
                 this.cur_page = val;
                 this.getData();
             },
+            auditStaChange(val){
+                this.getData();
+            },
 //          搜索事件
             search(){
                 this.is_search = true;
+                this.getData();
             },
-//          多选事件
-            handleSelectionChange(val) {
-                console.log(val);
-                this.multipleSelection = val;
-            },
+
 //          查看
-            handleEdit(index,row){
-                this.dialogVisible = true;
-                console.log(row);
+            handleRead(index,row){
+               this.$store.commit('getTaskUpdateId',row.id);
+               this.$router.push('/taskcheckread');
+            },
+            // 审核通过并发布
+            handleAuditAndPush(index,row){
+                let self = this;
+                this.$confirm('确定审核通过并发布?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    self.$axios.put(`/tasks/audit/${row.id}`).then(function(res){
+                        console.log(res,"shenhetongguo ");
+                        if(res.status == 200){
+                            self.$message({
+                                message: res.data.msg,
+                                type: 'success'
+                            });
+                            self.getData();
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消'
+                    });
+                });
+            },
+            // 拒绝审核
+            handleNoAudit(index,row){
+                let self = this;
+
+                this.$confirm('确定拒绝审核?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    self.$axios.put(`/tasks/reject/${row.id}`).then(function(res){
+                        console.log(res);
+                        if(res.status == 200){
+                            self.$message({
+                                message: "审核拒绝成功",
+                                type: 'success'
+                            });
+                            self.getData();
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消'
+                    });
+                });
             },
 //          弹出框确定事件
             submitForm(){
@@ -195,11 +278,7 @@
             },
             //弹出框关闭前的确认
             handleClose(done) {
-                this.$confirm('确认关闭？')
-                    .then(_ => {
-                        done();
-                    })
-                    .catch(_ => {});
+
             }
 
         }
@@ -211,12 +290,14 @@
         margin-top:10px;
         overflow:hidden;
         *zoom:1;
+         min-width: 1200px;
     }
     .handle-box{
 
         margin: 10px 0px 5px 0px;
         display:flex;
         justify-content:space-between;
+        min-width: 1200px;
     }
     .handle-select{
         width: 120px;
