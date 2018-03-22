@@ -134,7 +134,7 @@ end.setHours(23,59,59);
                 });
                 sels = sels.join(",");
                 if(sels){
-                    window.location.href=`http://192.168.2.58:8082/api/V1/lzCloud/export?uid=${userCurrent.id}&rid=${userCurrent.roleId}&sels=${sels}&startTime=${this.date_range[0].split("-").join("")}&endTime=${this.date_range[1].split("-").join("")}`;
+                    window.location.href=`http://cactus.thextrader.cn/api/V1/lzCloud/export?uid=${userCurrent.id}&rid=${userCurrent.roleId}&sels=${sels}&startTime=${this.date_range[0].split("-").join("")}&endTime=${this.date_range[1].split("-").join("")}`;
                 }else{
                     self.$message({
                         type: 'info',

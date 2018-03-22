@@ -87,7 +87,6 @@ if(window.localStorage.getItem('token')){
     store.commit(types.LOGIN,{token:window.localStorage.getItem('token')});
 }
 router.beforeEach((to,from,next)=>{
-
     if(to.matched.some(r=>r.meta.requireAuth)){
         if(store.state.token){
             next();
